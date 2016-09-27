@@ -35,6 +35,8 @@ void hostParseArgs(
     int argc, char** argv);
 void tester(vec_t**, uint32_t,vec_t**, uint32_t,
             vec_t**, uint32_t,vec_t**, uint32_t, vec_t**);
+void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
+                uint32_t threads, uint32_t* splitters);
 
 // Global Host Variables
 ////////////////////////////
@@ -159,7 +161,7 @@ void serialMerge(
 }
 
 
-  
+
 void serialMergeNoBranch(
       vec_t* A, uint32_t A_length,
       vec_t* B, uint32_t B_length,
@@ -201,7 +203,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     // level 2
     __m128i sL2 = _mm_min_epu32(sH1p, sL1p);
     __m128i sH2 = _mm_max_epu32(sH1p, sL1p);
-    __m128i c1010 = _mm_set_epi32(-1, 0, -1, 0); 
+    __m128i c1010 = _mm_set_epi32(-1, 0, -1, 0);
     __m128i c0101 = _mm_set_epi32(0, -1, 0, -1);
     // use blend
     __m128i sL2p = _mm_or_si128(_mm_and_si128(sL2, c1010), _mm_and_si128(_mm_shuffle_epi32(sH2, m0321), c0101));
@@ -214,7 +216,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     // store back data into C from SIMD registers
     _mm_storeu_si128((__m128i*)&(C[Cindex]), sL3p);
     // calculate index for the next run
-    sB=sH3p;          
+    sB=sH3p;
     Cindex+=4;
     if (A[Aindex+4]<B[Bindex+4]){
     	Aindex+=4;
@@ -224,7 +226,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     	Bindex+=4;
     	sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
     }
- } 
+ }
 }
 
 inline void serialMergeIntrinsic( vec_t* A, int32_t A_length,
@@ -260,6 +262,49 @@ inline void serialMergeIntrinsic( vec_t* A, int32_t A_length,
 	while(bi < B_length) {
 		C[ci++] = B[bi++];
 	}
+}
+
+inline void serialMergeAVX2(vec_t* A, int32_t A_length,
+                                                     vec_t* B, int32_t B_length,
+                                                     vec_t* C, uint32_t C_length) {
+
+    uint32_t splitters[18];
+    MergePathSplitter(A, A_length, B, B_length, C, C_length, 8, splitters);
+    /*printf("[");
+    for (int i = 0; i < 18; i++) {
+
+        printf("%i, ", splitters[i]);
+
+    }
+    printf("]\n");*/
+    __m256i vindexA = _mm256_set_epi32(splitters[14], splitters[12], splitters[10], splitters[8], splitters[6], splitters[4], splitters[2], splitters[0]);
+    __m256i vindexB = _mm256_set_epi32(splitters[15], splitters[13], splitters[11], splitters[9], splitters[7], splitters[5], splitters[3], splitters[1]);
+    __m256i vindexC = _mm256_add_epi32(_mm256_add_epi32(vindexA, vindexB), _mm256_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1));
+
+    __m256i vindexAStop = _mm256_set_epi32(splitters[16], splitters[14], splitters[12], splitters[10], splitters[8], splitters[6], splitters[4], splitters[2]);
+    __m256i vindexBStop = _mm256_set_epi32(splitters[17], splitters[15], splitters[13], splitters[11], splitters[9], splitters[7], splitters[5], splitters[3]);
+
+    __m256i mione = _mm256_set_epi32(1,1,1,1,1,1,1,1);
+	__m256i miand, miandnot;
+	__m256i miAi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
+	__m256i miBi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
+
+    while (_mm256_cmpgt_epi32(vindexAStop, vindexA)
+        || _mm256_cmpgt_epi32(vindexBStop, vindexB)) {
+        __m256i miAelems = _mm256_i32gather_epi32(A, vindexA, 1);
+        __m256i miBelems = _mm256_i32gather_epi32(B, vindexB, 1);
+        __m256i micmp   = _mm256_cmpgt_epi32(miBelems, miAelems);
+        miand           = _mm256_and_si256(micmp, mione);
+		miandnot        = _mm256_andnot_si256(micmp, mione);
+        miAelems         = _mm256_and_si256(micmp, miAelems);
+		miBelems         = _mm256_andnot_si256(micmp, miBelems);
+        miAi            = _mm256_add_epi32(miAi, miand);
+		miBi            = _mm256_add_epi32(miBi, miandnot);
+        _mm256_i32scatter_epi32(C, vindexC, _mm256_add_epi32(miAelems, miBelems), 1);
+        vindexC = _mm256_add_epi32(vindexC, _mm256_set_epi32(1,1,1,1,1,1,1,1));
+        vindexA = _mm256_add_epi32(vindexA, miAi);
+        vindexB = _mm256_add_epi32(vindexB, miBi);
+    }
 }
 
 #define PRINTEXTRA 0
@@ -319,7 +364,7 @@ void mergeNetwork(vec_t* A, int32_t A_length,
       #endif
       _mm_storeu_si128((__m128i*)&(C[Cindex]), smin4);
       // calculate index for the next run
-      sB=smax4; 
+      sB=smax4;
       Cindex+=4;
 
       __m128i tempA = _mm_loadu_si128((const __m128i*)&(A[Aindex+4]));
@@ -327,7 +372,7 @@ void mergeNetwork(vec_t* A, int32_t A_length,
       // __m128i tempAS = _mm_shuffle_epi32(tempA,0);
       // __m128i tempBS = _mm_shuffle_epi32(tempB,0);
       // __m128i cmpAB = _mm_cmplt_epi32(tempAS,tempBS);
-      
+
       __m128i cmpAB = _mm_cmplt_epi32(_mm_shuffle_epi32(tempA,0),_mm_shuffle_epi32(tempB,0));
 
       __m128i addA  = _mm_and_si128(cmpAB,mifour);
@@ -389,7 +434,7 @@ void mergeNetwork(vec_t* A, int32_t A_length,
     //     return;
     //   }
     // }
-    
+
 
 }
 
@@ -413,7 +458,7 @@ void tester(
   float mergenet = 0.0;
   float avx2 = 0.0;
 
-  vec_t* Cptr=*C; 
+  vec_t* Cptr=*C;
 
   for (int i = 0; i < RUNS; i++) {
 
@@ -429,18 +474,24 @@ void tester(
 
     tic_reset();
     bitonicMergeReal(*A, A_length, *B, B_length, *C, Ct_length);
-    bitonicReal+=tic_sincelast();	
+    bitonicReal+=tic_sincelast();
     for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
 
     tic_reset();
     serialMergeIntrinsic(*A, A_length, *B, B_length, *C, Ct_length);
-    intrinsic+=tic_sincelast();	
+    intrinsic+=tic_sincelast();
     for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
 
     tic_reset();
     mergeNetwork(*A, A_length, *B, B_length, *C, Ct_length);
-    mergenet+=tic_sincelast(); 
+    mergenet+=tic_sincelast();
     for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+
+    tic_reset();
+    serialMergeAVX2(*A, A_length, *B, B_length, *C, Ct_length);
+    avx2+=tic_sincelast();
+    for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+
 
     const int threads=8;
   	uint32_t* Aindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
@@ -450,7 +501,7 @@ void tester(
   	uint32_t* BEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
   	uint32_t* CEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
 
-   	
+
   	free(Aindices);
   	free(Bindices);
   	free(Cindices);
@@ -492,7 +543,7 @@ void tester(
 }
 
 
-void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length, 
+void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* splitters) {
   splitters[threads*2] = A_length;
   splitters[threads*2+1] = B_length;
