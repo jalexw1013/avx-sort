@@ -289,8 +289,11 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
 	__m256i miAi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
 	__m256i miBi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
 
-    while (_mm256_cmpgt_epi32(vindexAStop, vindexA) != _mm256_set_epi32(1,1,1,1,1,1,1,1)
-        || _mm256_cmpgt_epi32(vindexBStop, vindexB) != _mm256_set_epi32(1,1,1,1,1,1,1,1)) {
+    __m256i mizero = _mm256_set_epi32(0,0,0,0,0,0,0,0);
+
+    uint32_t cmp[8];
+
+    while (cmp[0] && cmp[2] && cmp[3] && cmp[4] && cmp[5] && cmp[6] && cmp[7]) {
         __m256i miAelems = _mm256_i32gather_epi32(A, vindexA, 1);
         __m256i miBelems = _mm256_i32gather_epi32(B, vindexB, 1);
         __m256i micmp   = _mm256_cmpgt_epi32(miBelems, miAelems);
@@ -304,6 +307,8 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
         vindexC = _mm256_add_epi32(vindexC, _mm256_set_epi32(1,1,1,1,1,1,1,1));
         vindexA = _mm256_add_epi32(vindexA, miAi);
         vindexB = _mm256_add_epi32(vindexB, miBi);
+
+        _mm256_i32scatter_epi32(cmp, _mm256_set_epi32(7,6,5,4,3,2,1,0), _mm256_and_si256(_mm256_cmpgt_epi32(vindexAStop, vindexA), _mm256_cmpgt_epi32(vindexBStop, vindexB)), 1);
     }
 
     int a0 = _mm256_extract_epi32(vindexA, 0);
