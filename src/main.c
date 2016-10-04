@@ -306,50 +306,50 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
         vindexB = _mm256_add_epi32(vindexB, miBi);
     }
 
-    __int32 a0 = _mm256_extract_epi32(vindexA, 0);
-    __int32 a1 = _mm256_extract_epi32(vindexA, 1);
-    __int32 a2 = _mm256_extract_epi32(vindexA, 2);
-    __int32 a3 = _mm256_extract_epi32(vindexA, 3);
-    __int32 a4 = _mm256_extract_epi32(vindexA, 4);
-    __int32 a5 = _mm256_extract_epi32(vindexA, 5);
-    __int32 a6 = _mm256_extract_epi32(vindexA, 6);
-    __int32 a7 = _mm256_extract_epi32(vindexA, 7);
+    int a0 = _mm256_extract_epi32(vindexA, 0);
+    int a1 = _mm256_extract_epi32(vindexA, 1);
+    int a2 = _mm256_extract_epi32(vindexA, 2);
+    int a3 = _mm256_extract_epi32(vindexA, 3);
+    int a4 = _mm256_extract_epi32(vindexA, 4);
+    int a5 = _mm256_extract_epi32(vindexA, 5);
+    int a6 = _mm256_extract_epi32(vindexA, 6);
+    int a7 = _mm256_extract_epi32(vindexA, 7);
 
-    __int32 a0Stop = _mm256_extract_epi32(vindexAStop, 0);
-    __int32 a1Stop = _mm256_extract_epi32(vindexAStop, 1);
-    __int32 a2Stop = _mm256_extract_epi32(vindexAStop, 2);
-    __int32 a3Stop = _mm256_extract_epi32(vindexAStop, 3);
-    __int32 a4Stop = _mm256_extract_epi32(vindexAStop, 4);
-    __int32 a5Stop = _mm256_extract_epi32(vindexAStop, 5);
-    __int32 a6Stop = _mm256_extract_epi32(vindexAStop, 6);
-    __int32 a7Stop = _mm256_extract_epi32(vindexAStop, 7);
+    int a0Stop = _mm256_extract_epi32(vindexAStop, 0);
+    int a1Stop = _mm256_extract_epi32(vindexAStop, 1);
+    int a2Stop = _mm256_extract_epi32(vindexAStop, 2);
+    int a3Stop = _mm256_extract_epi32(vindexAStop, 3);
+    int a4Stop = _mm256_extract_epi32(vindexAStop, 4);
+    int a5Stop = _mm256_extract_epi32(vindexAStop, 5);
+    int a6Stop = _mm256_extract_epi32(vindexAStop, 6);
+    int a7Stop = _mm256_extract_epi32(vindexAStop, 7);
 
-    __int32 b0 = _mm256_extract_epi32(vindexB, 0);
-    __int32 b1 = _mm256_extract_epi32(vindexB, 1);
-    __int32 b2 = _mm256_extract_epi32(vindexB, 2);
-    __int32 b3 = _mm256_extract_epi32(vindexB, 3);
-    __int32 b4 = _mm256_extract_epi32(vindexB, 4);
-    __int32 b5 = _mm256_extract_epi32(vindexB, 5);
-    __int32 b6 = _mm256_extract_epi32(vindexB, 6);
-    __int32 b7 = _mm256_extract_epi32(vindexB, 7);
+    int b0 = _mm256_extract_epi32(vindexB, 0);
+    int b1 = _mm256_extract_epi32(vindexB, 1);
+    int b2 = _mm256_extract_epi32(vindexB, 2);
+    int b3 = _mm256_extract_epi32(vindexB, 3);
+    int b4 = _mm256_extract_epi32(vindexB, 4);
+    int b5 = _mm256_extract_epi32(vindexB, 5);
+    int b6 = _mm256_extract_epi32(vindexB, 6);
+    int b7 = _mm256_extract_epi32(vindexB, 7);
 
-    __int32 b0Stop = _mm256_extract_epi32(vindexBStop, 0);
-    __int32 b1Stop = _mm256_extract_epi32(vindexBStop, 1);
-    __int32 b2Stop = _mm256_extract_epi32(vindexBStop, 2);
-    __int32 b3Stop = _mm256_extract_epi32(vindexBStop, 3);
-    __int32 b4Stop = _mm256_extract_epi32(vindexBStop, 4);
-    __int32 b5Stop = _mm256_extract_epi32(vindexBStop, 5);
-    __int32 b6Stop = _mm256_extract_epi32(vindexBStop, 6);
-    __int32 b7Stop = _mm256_extract_epi32(vindexBStop, 7);
+    int b0Stop = _mm256_extract_epi32(vindexBStop, 0);
+    int b1Stop = _mm256_extract_epi32(vindexBStop, 1);
+    int b2Stop = _mm256_extract_epi32(vindexBStop, 2);
+    int b3Stop = _mm256_extract_epi32(vindexBStop, 3);
+    int b4Stop = _mm256_extract_epi32(vindexBStop, 4);
+    int b5Stop = _mm256_extract_epi32(vindexBStop, 5);
+    int b6Stop = _mm256_extract_epi32(vindexBStop, 6);
+    int b7Stop = _mm256_extract_epi32(vindexBStop, 7);
 
-    __int32 c0 = _mm256_extract_epi32(vindexC, 0);
-    __int32 c1 = _mm256_extract_epi32(vindexC, 1);
-    __int32 c2 = _mm256_extract_epi32(vindexC, 2);
-    __int32 c3 = _mm256_extract_epi32(vindexC, 3);
-    __int32 c4 = _mm256_extract_epi32(vindexC, 4);
-    __int32 c5 = _mm256_extract_epi32(vindexC, 5);
-    __int32 c6 = _mm256_extract_epi32(vindexC, 6);
-    __int32 c7 = _mm256_extract_epi32(vindexC, 7);
+    int c0 = _mm256_extract_epi32(vindexC, 0);
+    int c1 = _mm256_extract_epi32(vindexC, 1);
+    int c2 = _mm256_extract_epi32(vindexC, 2);
+    int c3 = _mm256_extract_epi32(vindexC, 3);
+    int c4 = _mm256_extract_epi32(vindexC, 4);
+    int c5 = _mm256_extract_epi32(vindexC, 5);
+    int c6 = _mm256_extract_epi32(vindexC, 6);
+    int c7 = _mm256_extract_epi32(vindexC, 7);
 
     while (a0 < a0Stop && b0 < b0Stop) {
         C[c0++] = A[a0] < B[b0] ? A[a0++] : B[b0++];
@@ -445,6 +445,15 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
 
     while (b7 < b7Stop) {
         C[c7++] = B[b7++];
+    }
+
+     // check sanity of results
+    for(int i = 0; i < C_length; ++i) {
+        assert(C[i] == globalC[i]);
+        if(C[i]!=CSorted[i]) {
+            printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
+            return;
+        }
     }
 }
 
