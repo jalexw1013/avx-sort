@@ -1,0 +1,36 @@
+#if defined(TARGET_LINUX)
+.weak _start
+.globl main
+_start:
+main:
+#if defined(__GNUC__) && defined(__LP64__)
+mov $0x3c,%eax
+syscall
+#else
+mov $0x1,%eax
+int $0x80
+#endif
+
+#endif
+#if defined(TARGET_MAC)
+#if defined(__LP64__)
+.globl start
+.globl _main
+start:
+_main:
+mov $0x02000001, %eax
+syscall
+#else
+.globl start
+.globl _main
+start:
+_main:
+mov $0x00040001, %eax
+call _systrap
+
+_systrap:
+pop %edx
+mov %esp, %ecx
+sysenter
+#endif
+#endif

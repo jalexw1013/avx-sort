@@ -1,6 +1,6 @@
 
-CC = gcc
-CFLAGS += -fopenmp --std=c99 -march=native -fverbose-asm -funroll-loops -march=core-avx2 -fverbose-asm -mavx2 -mfma -ffp-contract=fast -mavx512f -mavx512er -mavx512cd -mavx512pf
+CC = sde/sde64 -- gcc
+CFLAGS += -fopenmp --std=c99 -march=native -fverbose-asm -funroll-loops -march=core-avx2 -fverbose-asm -mavx2 -mfma -ffp-contract=fast -mavx512f
 #CFLAGS += -I $IPPROOT/include -L $IPPROOT/lib/intel64
 #LDFLAGS+= -lippcore -lippvm -lipps
 
