@@ -1,7 +1,7 @@
 
 CC = gcc
-CFLAGS += -fopenmp --std=c99 -march=native -fverbose-asm -funroll-loops -march=core-avx2 -fverbose-asm -mavx2 -mfma -ffp-contract=fast
-#CFLAGS += -I $IPPROOT/include -L $IPPROOT/lib/intel64 
+CFLAGS += -fopenmp --std=c99 -march=native -fverbose-asm -funroll-loops -march=core-avx2 -fverbose-asm -mavx2 -mfma -ffp-contract=fast -mavx512f -mavx512er -mavx512cd -mavx512pf
+#CFLAGS += -I $IPPROOT/include -L $IPPROOT/lib/intel64
 #LDFLAGS+= -lippcore -lippvm -lipps
 
 OS = $(shell uname)
@@ -23,5 +23,3 @@ merge: main.c util.c xmalloc.c
 
 clean:
 	rm merge
-
-
