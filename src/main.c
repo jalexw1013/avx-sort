@@ -276,6 +276,14 @@ inline void serialMergeIntrinsic( vec_t* A, int32_t A_length,
 	}
 }
 
+void print256_num(__m256i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("Numerical: %i %i %i %i %i %i %i %i \n",
+           val[0], val[1], val[2], val[3], val[4], val[5],
+           val[6], val[7]);
+}
+
 inline void serialMergeAVX2(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
@@ -303,12 +311,18 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
 
     __m256i mizero = _mm256_set_epi32(0,0,0,0,0,0,0,0);
 
-    uint32_t cmp[8];
+    int cmp[8] = {1,1,1,1,1,1,1,1};
+    printf("Comparisons Start: %i %i %i %i %i %i %i %i\n", cmp[0] , cmp[1], cmp[2] , cmp[3] , cmp[4] , cmp[5] , cmp[6] , cmp[7]);
 
+    printf("\n\n\n\n\n\n\n");
+    int a = 0;
 
-    while (cmp[0] && cmp[2] && cmp[3] && cmp[4] && cmp[5] && cmp[6] && cmp[7]) {
-        __m256i miAelems = _mm256_i32gather_epi32(A, vindexA, 1);
-        __m256i miBelems = _mm256_i32gather_epi32(B, vindexB, 1);
+    while (cmp[0] && cmp[1] && cmp[2] && cmp[3] && cmp[4] && cmp[5] && cmp[6] && cmp[7] && a != -1) {
+        __m256i miAelems = _mm256_set_epi32(A[_mm256_extract_epi32(vindexA, 7)],A[_mm256_extract_epi32(vindexA, 6)],A[_mm256_extract_epi32(vindexA, 5)],A[_mm256_extract_epi32(vindexA, 4)],A[_mm256_extract_epi32(vindexA, 3)],A[_mm256_extract_epi32(vindexA, 2)],A[_mm256_extract_epi32(vindexA, 1)],A[_mm256_extract_epi32(vindexA, 0)]);
+        __m256i miBelems = _mm256_set_epi32(B[_mm256_extract_epi32(vindexB, 7)],B[_mm256_extract_epi32(vindexB, 6)],B[_mm256_extract_epi32(vindexB, 5)],B[_mm256_extract_epi32(vindexB, 4)],B[_mm256_extract_epi32(vindexB, 3)],B[_mm256_extract_epi32(vindexB, 2)],B[_mm256_extract_epi32(vindexB, 1)],B[_mm256_extract_epi32(vindexB, 0)]);
+
+        //__m256i miAelems = _mm256_i32gather_epi32(A, vindexA, 1);
+        //__m256i miBelems = _mm256_i32gather_epi32(B, vindexB, 1);
         __m256i micmp   = _mm256_cmpgt_epi32(miBelems, miAelems);
         miand           = _mm256_and_si256(micmp, mione);
 		miandnot        = _mm256_andnot_si256(micmp, mione);
@@ -316,13 +330,61 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
 		miBelems         = _mm256_andnot_si256(micmp, miBelems);
         miAi            = _mm256_add_epi32(miAi, miand);
 		miBi            = _mm256_add_epi32(miBi, miandnot);
-        _mm256_i32scatter_epi32(C, vindexC, _mm256_add_epi32(miAelems, miBelems), 1);
+
+        C[_mm256_extract_epi32(vindexC, 0)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 0);
+        C[_mm256_extract_epi32(vindexC, 1)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 1);
+        C[_mm256_extract_epi32(vindexC, 2)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 2);
+        C[_mm256_extract_epi32(vindexC, 3)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 3);
+        C[_mm256_extract_epi32(vindexC, 4)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 4);
+        C[_mm256_extract_epi32(vindexC, 5)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 5);
+        C[_mm256_extract_epi32(vindexC, 6)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 6);
+        C[_mm256_extract_epi32(vindexC, 7)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 7);
+
+        //_mm256_i32scatter_epi32(C, vindexC, _mm256_add_epi32(miAelems, miBelems), 1);
         vindexC = _mm256_add_epi32(vindexC, _mm256_set_epi32(1,1,1,1,1,1,1,1));
         vindexA = _mm256_add_epi32(vindexA, miAi);
         vindexB = _mm256_add_epi32(vindexB, miBi);
 
-        _mm256_i32scatter_epi32(cmp, _mm256_set_epi32(7,6,5,4,3,2,1,0), _mm256_and_si256(_mm256_cmpgt_epi32(vindexAStop, vindexA), _mm256_cmpgt_epi32(vindexBStop, vindexB)), 1);
+        printf("Comparisons: %i %i %i %i %i %i %i %i\n", cmp[0] , cmp[1], cmp[2] , cmp[3] , cmp[4] , cmp[5] , cmp[6] , cmp[7]);
+
+        __m256i comparison = _mm256_and_si256(_mm256_cmpgt_epi32(_mm256_add_epi32(vindexAStop, mione), vindexA), _mm256_cmpgt_epi32(_mm256_add_epi32(vindexBStop, mione), vindexB));
+        printf("_mm256_add_epi32(vindexAStop, mione): ");
+        print256_num(_mm256_add_epi32(vindexAStop, mione));
+        printf("vindexa:");
+        print256_num(vindexA);
+        printf("_mm256_cmpgt_epi32(_mm256_add_epi32(vindexAStop, mione), vindexA)");
+        print256_num(_mm256_cmpgt_epi32(_mm256_add_epi32(vindexAStop, mione), vindexA));
+        printf("comparison");
+        print256_num(comparison);
+
+        cmp[0] = _mm256_extract_epi32(comparison, 0);
+        cmp[1] = _mm256_extract_epi32(comparison, 1);
+        cmp[2] = _mm256_extract_epi32(comparison, 2);
+        cmp[3] = _mm256_extract_epi32(comparison, 3);
+        cmp[4] = _mm256_extract_epi32(comparison, 4);
+        cmp[5] = _mm256_extract_epi32(comparison, 5);
+        cmp[6] = _mm256_extract_epi32(comparison, 6);
+        cmp[7] = _mm256_extract_epi32(comparison, 7);
+
+
+        //_mm256_i32scatter_epi32(cmp, _mm256_set_epi32(7,6,5,4,3,2,1,0), comparison, 1);
+        printf("Comparisons before converting from negative: %i %i %i %i %i %i %i %i\n", cmp[0] , cmp[1], cmp[2] , cmp[3] , cmp[4] , cmp[5] , cmp[6] , cmp[7]);
+        for (int i = 0; i < 8; i++) {
+            cmp[i] *= -1;
+        }
+
+
+        printf("Final Comparisons: %i %i %i %i %i %i %i %i\n", cmp[0] , cmp[1], cmp[2] , cmp[3] , cmp[4] , cmp[5] , cmp[6] , cmp[7]);
+        printf("\n\n");
+        a++;
     }
+
+    printf("Comparisons: %i %i %i %i %i %i %i %i\n", cmp[0] , cmp[1], cmp[2] , cmp[3] , cmp[4] , cmp[5] , cmp[6] , cmp[7]);
+
+    print256_num(vindexAStop);
+    print256_num(vindexBStop);
+    print256_num(vindexA);
+    print256_num(vindexB);
 
     int a0 = _mm256_extract_epi32(vindexA, 0);
     int a1 = _mm256_extract_epi32(vindexA, 1);
