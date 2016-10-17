@@ -183,7 +183,7 @@ void serialMergeNoBranch(
     uint32_t Bindex = 0;
     uint32_t Cindex = 0;
     int32_t flag;
-    //	uint32_t mask,notMask;
+    //    uint32_t mask,notMask;
     while(Aindex < A_length && Bindex < B_length) {
       flag = ((unsigned int)(A[Aindex] - B[Bindex]) >> 31 ) ;
       C[Cindex++] = (flag)*A[Aindex] + (1-flag)*B[Bindex];
@@ -231,12 +231,12 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     sB=sH3p;
     Cindex+=4;
     if (A[Aindex+4]<B[Bindex+4]){
-    	Aindex+=4;
-    	sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+        Aindex+=4;
+        sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
     }
     else {
-    	Bindex+=4;
-    	sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+        Bindex+=4;
+        sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
     }
  }
 }
@@ -244,36 +244,36 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
 inline void serialMergeIntrinsic( vec_t* A, int32_t A_length,
                                   vec_t* B, int32_t B_length,
                                   vec_t* C, uint32_t C_length){
-	uint32_t ai = 0;
-	uint32_t bi = 0;
-	uint32_t ci = 0;
+    uint32_t ai = 0;
+    uint32_t bi = 0;
+    uint32_t ci = 0;
 
-	__m128i mione = _mm_cvtsi32_si128(1);
-	__m128i miand, miandnot;
-	__m128i miAi = _mm_cvtsi32_si128(0);//ai);
-	__m128i miBi = _mm_cvtsi32_si128(0);//bi);
+    __m128i mione = _mm_cvtsi32_si128(1);
+    __m128i miand, miandnot;
+    __m128i miAi = _mm_cvtsi32_si128(0);//ai);
+    __m128i miBi = _mm_cvtsi32_si128(0);//bi);
 
-	while(ai < A_length && bi < B_length) {
-		__m128i miAelem = _mm_cvtsi32_si128(A[ai]);
-		__m128i miBelem = _mm_cvtsi32_si128(B[bi]);
-		__m128i micmp   = _mm_cmplt_epi32(miAelem,miBelem);
-		miand           = _mm_and_si128(micmp,mione);
-		miandnot        = _mm_andnot_si128(micmp,mione);
-		miAelem         = _mm_and_si128(micmp,miAelem);
-		miBelem         = _mm_andnot_si128(micmp,miBelem);
-		miAi            = _mm_add_epi32(miAi,miand);
-		miBi            = _mm_add_epi32(miBi,miandnot);
-		C[ci++]         = _mm_cvtsi128_si32(_mm_add_epi32(miAelem,miBelem));
-		ai              = _mm_cvtsi128_si32(miAi);
-		bi              = _mm_cvtsi128_si32(miBi);
-	}
+    while(ai < A_length && bi < B_length) {
+        __m128i miAelem = _mm_cvtsi32_si128(A[ai]);
+        __m128i miBelem = _mm_cvtsi32_si128(B[bi]);
+        __m128i micmp   = _mm_cmplt_epi32(miAelem,miBelem);
+        miand           = _mm_and_si128(micmp,mione);
+        miandnot        = _mm_andnot_si128(micmp,mione);
+        miAelem         = _mm_and_si128(micmp,miAelem);
+        miBelem         = _mm_andnot_si128(micmp,miBelem);
+        miAi            = _mm_add_epi32(miAi,miand);
+        miBi            = _mm_add_epi32(miBi,miandnot);
+        C[ci++]         = _mm_cvtsi128_si32(_mm_add_epi32(miAelem,miBelem));
+        ai              = _mm_cvtsi128_si32(miAi);
+        bi              = _mm_cvtsi128_si32(miBi);
+    }
 
-	while(ai < A_length) {
-		C[ci++] = A[ai++];
-	}
-	while(bi < B_length) {
-		C[ci++] = B[bi++];
-	}
+    while(ai < A_length) {
+        C[ci++] = A[ai++];
+    }
+    while(bi < B_length) {
+        C[ci++] = B[bi++];
+    }
 }
 
 void print256_num(__m256i var)
@@ -282,6 +282,151 @@ void print256_num(__m256i var)
     printf("Numerical: %i %i %i %i %i %i %i %i \n",
            val[0], val[1], val[2], val[3], val[4], val[5],
            val[6], val[7]);
+}
+
+void print512_num(char *text, __m512i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+
+void print16intarray(char *text, int *val) {
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+
+void printmmask16(char *text, __mmask16 mask) {
+    /*uint16_t *val = (uint16_t*) &mask;
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);*/
+    uint16_t num = (uint16_t)mask;
+    printf("%s: %i\n", text, num);
+}
+
+inline void serialMergeTester(vec_t* A, int32_t A_length,
+                                                     vec_t* B, int32_t B_length,
+                                                     vec_t* C, uint32_t C_length) {
+        uint32_t splitters[34];
+        MergePathSplitter(A, A_length, B, B_length, C, C_length, 16, splitters);
+        //stop indexes
+        __m512i vindexA = _mm512_set_epi32(splitters[30], splitters[28],
+                                           splitters[26], splitters[24],
+                                           splitters[22], splitters[20],
+                                           splitters[18], splitters[16],
+                                           splitters[14], splitters[12],
+                                           splitters[10], splitters[8],
+                                           splitters[6], splitters[4],
+                                           splitters[2], splitters[0]);
+        __m512i vindexB = _mm512_set_epi32(splitters[31], splitters[29],
+                                           splitters[27], splitters[25],
+                                           splitters[23], splitters[21],
+                                           splitters[19], splitters[17],
+                                           splitters[15], splitters[13],
+                                           splitters[11], splitters[9],
+                                           splitters[7], splitters[5],
+                                           splitters[3], splitters[1]);
+        //stop indexes
+        __m512i vindexAStop = _mm512_set_epi32(splitters[32], splitters[30],
+                                           splitters[28], splitters[26],
+                                           splitters[24], splitters[22],
+                                           splitters[20], splitters[18],
+                                           splitters[16], splitters[14],
+                                           splitters[12], splitters[10],
+                                           splitters[8], splitters[6],
+                                           splitters[4], splitters[2]);
+        __m512i vindexBStop = _mm512_set_epi32(splitters[33], splitters[31],
+                                           splitters[29], splitters[27],
+                                           splitters[25], splitters[23],
+                                           splitters[21], splitters[19],
+                                           splitters[17], splitters[15],
+                                           splitters[13], splitters[11],
+                                           splitters[9], splitters[7],
+                                           splitters[5], splitters[3]);
+        //vindex start
+        __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
+
+        //other Variables
+        __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+        __m512i miand, miandnot;
+        __m512i miAi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        __m512i miBi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        int cmp[16] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+
+        print512_num("vindexA", vindexA);
+        print512_num("vindexB", vindexB);
+
+        //temprary debugging Variables
+        int a = 0;
+        uint32_t *val = (uint32_t*) &vindexC;
+
+        __mmask16 exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
+        __mmask16 exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
+
+        printf("Exceeded A stop: %i\n", exceededAStop);
+        printf("Exceeded B stop: %i\n", exceededBStop);
+        while ((exceededAStop & exceededBStop) == 65535) {
+            //code goes here
+
+            //printf("Hello\n");
+
+            //get the current elements
+            __m512i miAelems = _mm512_i32gather_epi32(vindexA, A, 4);
+            __m512i miBelems = _mm512_i32gather_epi32(vindexB, B, 4);
+
+            //compare the elements
+            __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
+
+            //printf("Compare: %i\n", micmp);
+            //printf("Compare: %i\n", ~micmp);
+
+            //copy the elements to the final elements
+            __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
+
+            _mm512_i32scatter_epi32(C, vindexC, miCelems, 4);
+
+            vindexA = _mm512_mask_add_epi32(vindexA, micmp, vindexA, mione);
+            vindexB = _mm512_mask_add_epi32(vindexB, ~micmp, vindexB, mione);
+            vindexC = _mm512_add_epi32(vindexC, mione);
+
+            exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
+            exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
+
+            //temprary sanity check
+            a++;
+
+            //print16intarray("vindexAArray", val);
+            //printf("C Value: %i\n", C[val[1] - 1]);
+            //print512_num("miAelems", miAelems);
+            //print512_num("miBelems", miBelems);
+            //print512_num("miCelems", miCelems);
+            //print512_num("vindexA", vindexA);
+            //print512_num("vindexB", vindexB);
+
+        }
+
+        //print16intarray("cmp", cmp);
+        //print512_num("vindexA", vindexA);
+        //print512_num("vindexB", vindexB);
+        //print512_num("vindexAStop", vindexAStop);
+        //print512_num("vindexBStop", vindexBStop);
+        //print512_num("vindexC", vindexC);
+        //print512_num("mione", mione);
+        //print512_num("miAi", miAi);
+        //print512_num("miBi", miBi);
+
+        // check sanity of results
+       for(int i = 0; i < 100/*C_length*/; ++i) {
+           assert(C[i] == globalC[i]);
+           if(C[i]!=CSorted[i]) {
+               printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
+               return;
+           }
+       }
 }
 
 inline void serialMergeAVX2(vec_t* A, int32_t A_length,
@@ -305,9 +450,9 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
     __m256i vindexBStop = _mm256_set_epi32(splitters[17], splitters[15], splitters[13], splitters[11], splitters[9], splitters[7], splitters[5], splitters[3]);
 
     __m256i mione = _mm256_set_epi32(1,1,1,1,1,1,1,1);
-	__m256i miand, miandnot;
-	__m256i miAi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
-	__m256i miBi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
+    __m256i miand, miandnot;
+    __m256i miAi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
+    __m256i miBi = _mm256_set_epi32(0,0,0,0,0,0,0,0);
 
     __m256i mizero = _mm256_set_epi32(0,0,0,0,0,0,0,0);
 
@@ -325,11 +470,11 @@ inline void serialMergeAVX2(vec_t* A, int32_t A_length,
         //__m256i miBelems = _mm256_i32gather_epi32(B, vindexB, 1);
         __m256i micmp   = _mm256_cmpgt_epi32(miBelems, miAelems);
         miand           = _mm256_and_si256(micmp, mione);
-		miandnot        = _mm256_andnot_si256(micmp, mione);
+        miandnot        = _mm256_andnot_si256(micmp, mione);
         miAelems         = _mm256_and_si256(micmp, miAelems);
-		miBelems         = _mm256_andnot_si256(micmp, miBelems);
+        miBelems         = _mm256_andnot_si256(micmp, miBelems);
         miAi            = _mm256_add_epi32(miAi, miand);
-		miBi            = _mm256_add_epi32(miBi, miandnot);
+        miBi            = _mm256_add_epi32(miBi, miandnot);
 
         C[_mm256_extract_epi32(vindexC, 0)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 0);
         C[_mm256_extract_epi32(vindexC, 1)] = _mm256_extract_epi32(_mm256_add_epi32(miAelems, miBelems), 1);
@@ -718,26 +863,26 @@ void tester(
     for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
 
     tic_reset();
-    serialMergeAVX2(*A, A_length, *B, B_length, *C, Ct_length);
+    serialMergeTester(*A, A_length, *B, B_length, *C, Ct_length);
     avx2+=tic_sincelast();
     for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
 
 
     const int threads=8;
-  	uint32_t* Aindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
-  	uint32_t* Bindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
-  	uint32_t* Cindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
-  	uint32_t* AEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
-  	uint32_t* BEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
-  	uint32_t* CEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
+      uint32_t* Aindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
+      uint32_t* Bindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
+      uint32_t* Cindices = (uint32_t*)memalign(32, (threads+1) * sizeof(uint32_t));
+      uint32_t* AEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
+      uint32_t* BEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
+      uint32_t* CEndindices = (uint32_t*)memalign(32, (threads) * sizeof(uint32_t));
 
 
-  	free(Aindices);
-  	free(Bindices);
-  	free(Cindices);
-  	free(AEndindices);
-  	free(BEndindices);
-  	free(CEndindices);
+      free(Aindices);
+      free(Bindices);
+      free(Cindices);
+      free(AEndindices);
+      free(BEndindices);
+      free(CEndindices);
 
   }
 
