@@ -352,13 +352,14 @@ inline void serialMergeTester(vec_t* A, int32_t A_length,
         //other Variables
         __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+        __m512i minegone = _mm512_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
         __m512i miand, miandnot;
         __m512i miAi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         __m512i miBi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         int cmp[16] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
-        print512_num("vindexA", vindexA);
-        print512_num("vindexB", vindexB);
+        //print512_num("vindexA", vindexA);
+        //print512_num("vindexB", vindexB);
 
         //temprary debugging Variables
         int a = 0;
@@ -367,9 +368,9 @@ inline void serialMergeTester(vec_t* A, int32_t A_length,
         __mmask16 exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
         __mmask16 exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
 
-        printf("Exceeded A stop: %i\n", exceededAStop);
-        printf("Exceeded B stop: %i\n", exceededBStop);
-        while ((exceededAStop & exceededBStop) == 65535) {
+        //printf("Exceeded A stop: %i\n", exceededAStop);
+        //printf("Exceeded B stop: %i\n", exceededBStop);
+        while ((exceededAStop & exceededBStop) != 0) {
             //code goes here
 
             //printf("Hello\n");
@@ -380,6 +381,9 @@ inline void serialMergeTester(vec_t* A, int32_t A_length,
 
             //compare the elements
             __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
+            micmp = (micmp & exceededAStop);
+            micmp = (~exceededBStop | micmp);
+
 
             //printf("Compare: %i\n", micmp);
             //printf("Compare: %i\n", ~micmp);
@@ -395,6 +399,10 @@ inline void serialMergeTester(vec_t* A, int32_t A_length,
 
             exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
             exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
+
+            vindexA = _mm512_mask_add_epi32(vindexA, (~exceededAStop & micmp), vindexA, minegone);
+            vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
+            vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
 
             //temprary sanity check
             a++;
@@ -419,8 +427,56 @@ inline void serialMergeTester(vec_t* A, int32_t A_length,
         //print512_num("miAi", miAi);
         //print512_num("miBi", miBi);
 
+        /*__mmask16 test = (exceededAStop | exceededBStop);
+        int index = -1;
+        for (int i = 0; i < 16; i++) {
+            if (~((test >> i) & 0x1)) {
+                index = i;
+            }
+        }
+
+        vindexA = _mm512_set_epi32(splitters[30], splitters[28],
+                                           splitters[26], splitters[24],
+                                           splitters[22], splitters[20],
+                                           splitters[18], splitters[16],
+                                           splitters[14], splitters[12],
+                                           splitters[10], splitters[8],
+                                           splitters[6], splitters[4],
+                                           splitters[2], splitters[0]);
+        vindexB = _mm512_set_epi32(splitters[31], splitters[29],
+                                           splitters[27], splitters[25],
+                                           splitters[23], splitters[21],
+                                           splitters[19], splitters[17],
+                                           splitters[15], splitters[13],
+                                           splitters[11], splitters[9],
+                                           splitters[7], splitters[5],
+                                           splitters[3], splitters[1]);
+        //stop indexes
+        vindexAStop = _mm512_set_epi32(splitters[32], splitters[30],
+                                           splitters[28], splitters[26],
+                                           splitters[24], splitters[22],
+                                           splitters[20], splitters[18],
+                                           splitters[16], splitters[14],
+                                           splitters[12], splitters[10],
+                                           splitters[8], splitters[6],
+                                           splitters[4], splitters[2]);
+        vindexBStop = _mm512_set_epi32(splitters[33], splitters[31],
+                                           splitters[29], splitters[27],
+                                           splitters[25], splitters[23],
+                                           splitters[21], splitters[19],
+                                           splitters[17], splitters[15],
+                                           splitters[13], splitters[11],
+                                           splitters[9], splitters[7],
+                                           splitters[5], splitters[3]);
+        //vindex start
+        vindexC = _mm512_add_epi32(vindexA, vindexB);
+        __m512i vindexCStop = _mm512_add_epi32(vindexAStop, vindexBStop);
+
+        uint32_t *val2 = (uint32_t*) &vindexC;
+        uint32_t *valStop = (uint32_t*) &vindexCStop;*/
+
         // check sanity of results
-       for(int i = 0; i < 100/*C_length*/; ++i) {
+       for(int i = 0; i < C_length; ++i) {
            assert(C[i] == globalC[i]);
            if(C[i]!=CSorted[i]) {
                printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
