@@ -10,7 +10,7 @@ TARGETS_NTHD = main util xmalloc
 
 
 
-merge: main.c util.c xmalloc.c
+merge: main.c sorts.c util.c xmalloc.c
 	$(CC) -O${O} -o $@ $(CFLAGS) $^  $(LDFLAGS)
 
 #	$(CC) -O${O} -g -Wa,-a,-ad  $@ $(CFLAGS) $^  $(LDFLAGS) > listing.lst
@@ -21,5 +21,13 @@ merge: main.c util.c xmalloc.c
 #icc:
 #	icc -fasm-blocks -std=c99 -O${O} *.c -g -o merge
 
+debug: main.c sorts.c util.c xmalloc.c
+	$(CC) -O${O} -o $@ -g -O1 -mavx2 -mavx512f $^  $(LDFLAGS)
+
+sde64: main.c sorts.c util.c xmalloc.c
+	sde/sde64 -- $(CC) -O${O} -o $@ $(CFLAGS) $^  $(LDFLAGS)
+
 clean:
-	rm merge
+	rm merge -f
+	rm debug -f
+	rm sde64 -f
