@@ -1,12 +1,24 @@
-
 //#include <ipps.h>
-
 //#include <ippcore.h>
 //#include <ippvm.h>
+#include <stdio.h>
+#include "xmalloc.h"
+#include <sys/time.h>
+#include <stdint.h>
+#include <float.h>
+#include <getopt.h>
+#include <assert.h>
+#include <errno.h>
+#include "util.h"
+#include <stdlib.h>
+#include <omp.h>
+#include <time.h>
+#include <string.h>
+#include <malloc.h>
+#include <x86intrin.h>
 
+#include "sorts.h"
 #include "main.h"
-//#include "sorts.h"
-//#include "sorts.c"
 
 // Random Tuning Parameters
 //////////////////////////////

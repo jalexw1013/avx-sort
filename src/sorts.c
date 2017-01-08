@@ -1,3 +1,15 @@
+#include <stdio.h>
+#include "xmalloc.h"
+#include <stdint.h>
+#include <float.h>
+#include <assert.h>
+#include <errno.h>
+#include "util.h"
+#include <stdlib.h>
+#include <omp.h>
+#include <malloc.h>
+#include <x86intrin.h>
+
 #include "sorts.h"
 
 // _MM_SHUFFLE (z, y, x, w)
