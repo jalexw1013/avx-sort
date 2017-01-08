@@ -833,3 +833,24 @@ void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
     assert(arr != NULL);
     quickSortHelperRecursive(arr, 0, arr_length - 1);
 }
+
+//TODO Implement non-recusrive quicksort
+
+//code copied from java implementation for reference
+//TODO convert to c and develop efficient algorithm
+/*
+public static <T> void mergeSort(T[] arr, Comparator<T> comparator) {
+    if (arr == null || comparator == null) {
+        throw new IllegalArgumentException("This method "
+                + "requires non null parameters.");
+    }
+    if (arr.length < 2) {
+        return;
+    }
+    int mid = arr.length / 2;
+    T[] a = copyArrayInRange(arr, 0, mid);
+    T[] b = copyArrayInRange(arr, mid, arr.length);
+    mergeSort(a, comparator);
+    mergeSort(b, comparator);
+    merge(a, b, arr, comparator);
+}*/
