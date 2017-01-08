@@ -39,4 +39,7 @@ void mergeNetwork(
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length);
 
+void quickSortRecursive(
+    vec_t* arr, uint32_t arr_length);
+
 #endif
