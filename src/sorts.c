@@ -9,6 +9,7 @@
 #include <omp.h>
 #include <malloc.h>
 #include <x86intrin.h>
+#include <time.h>
 
 #include "sorts.h"
 
@@ -784,4 +785,51 @@ void mergeNetwork(vec_t* A, int32_t A_length,
     //     return;
     //   }
     // }
+}
+
+/**
+ * this function is a recursive helper for the quick sort function
+ */
+void quickSortHelperRecursive(vec_t* arr, int a, int b) {
+    assert(arr != NULL);
+    if (a >= b) {
+        return;
+    }
+    int left = a + 1;
+    int right = b;
+    int pivotIndex = (rand() % (b - a)) + a;
+    uint32_t pivot = arr[pivotIndex];
+    uint32_t temp;
+    arr[pivotIndex] = arr[a];
+    arr[a] = pivot;
+    while (left <= right) {
+        while (left <= right && arr[left] < pivot) {
+            left++;
+        }
+        while (left <= right && arr[right] > pivot) {
+            right--;
+        }
+        if (left <= right) {
+            temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    temp = arr[right];
+    arr[right] = arr[a];
+    arr[a] = temp;
+    quickSortHelperRecursive(arr, a, right - 1);
+    quickSortHelperRecursive(arr, right + 1, b);
+}
+
+/**
+ * Implementation of quick sort.
+ * Uses the the recursive quick sort helper function
+ */
+void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
+    srand(time(NULL));
+    assert(arr != NULL);
+    quickSortHelperRecursive(arr, 0, arr_length - 1);
 }
