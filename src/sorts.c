@@ -836,21 +836,45 @@ void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
 
 //TODO Implement non-recusrive quicksort
 
-//code copied from java implementation for reference
-//TODO convert to c and develop efficient algorithm
-/*
-public static <T> void mergeSort(T[] arr, Comparator<T> comparator) {
-    if (arr == null || comparator == null) {
-        throw new IllegalArgumentException("This method "
-                + "requires non null parameters.");
+/**
+ * copies an array from input to dest only between the startIndex and endIndex
+ * will fail if endIndex - startIndex > dest
+ * not inclusive of the end index (ie to copy array of size 5 use index 0-5)
+ */
+void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t endIndex) {
+    assert(endIndex > startIndex);
+    int counter = 0;
+    for (int i = startIndex; i < endIndex; i++) {
+        dest[counter] = input[i];
+        counter++;
     }
-    if (arr.length < 2) {
+}
+
+/**
+ * Implementation of merge sort.
+ * Uses the the avx-512 merge function
+ */
+void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
+    //validate array
+    assert(arr != NULL);
+    if (arr_length < 2) {
         return;
     }
-    int mid = arr.length / 2;
-    T[] a = copyArrayInRange(arr, 0, mid);
-    T[] b = copyArrayInRange(arr, mid, arr.length);
-    mergeSort(a, comparator);
-    mergeSort(b, comparator);
-    merge(a, b, arr, comparator);
-}*/
+
+    //split array in half
+    uint32_t mid = arr_length / 2;
+    vec_t a[mid];
+    vec_t b[mid];
+    copyArrayInRange(arr, a, 0, mid);
+    copyArrayInRange(arr, b, mid, arr_length);
+
+    //recursively split array again
+    mergeSortRecursive(a, mid);
+    mergeSortRecursive(b, (arr_length - mid));
+
+    //merge parts
+    serialMergeAVX512(
+        a, (int32_t)mid,
+        b, (int32_t)(arr_length - mid),
+        arr, arr_length);
+}
