@@ -42,15 +42,15 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 1000000;
-uint32_t  h_ui_B_length                = 1000000;
-uint32_t  h_ui_C_length                = 2000000;
-uint32_t  h_ui_Ct_length               = 2000000;
-uint32_t  RUNS                         = 1000;
+uint32_t  h_ui_A_length                = 10000000;
+uint32_t  h_ui_B_length                = 10000000;
+uint32_t  h_ui_C_length                = 20000000;
+uint32_t  h_ui_Ct_length               = 20000000;
+uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
-static const uint32_t lengths[] = {32, 100, 128};
-static const uint32_t lengthOfLengths = 3;
+static const uint32_t lengths[] = {10000000};
+static const uint32_t lengthOfLengths = 1;
 
 
 #define min(a,b) (a <= b)? a : b

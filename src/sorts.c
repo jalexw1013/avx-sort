@@ -248,7 +248,7 @@ void printmmask16(char *text, __mmask16 mask) {
 void serialMergeAVX512(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
-        uint32_t splitters[34];
+        /*uint32_t splitters[34];
         MergePathSplitter(A, A_length, B, B_length, C, C_length, 16, splitters);
         //stop indexes
         __m512i vindexA = _mm512_set_epi32(splitters[30], splitters[28],
