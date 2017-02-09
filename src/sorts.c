@@ -248,7 +248,7 @@ void printmmask16(char *text, __mmask16 mask) {
 void serialMergeAVX512(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
-        /*uint32_t splitters[34];
+        uint32_t splitters[34];
         MergePathSplitter(A, A_length, B, B_length, C, C_length, 16, splitters);
         //stop indexes
         __m512i vindexA = _mm512_set_epi32(splitters[30], splitters[28],
@@ -296,9 +296,6 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
         __m512i miBi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         int cmp[16] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
-        //print512_num("vindexA", vindexA);
-        //print512_num("vindexB", vindexB);
-
         //temprary debugging Variables
         int a = 0;
         uint32_t *val = (uint32_t*) &vindexC;
@@ -306,12 +303,8 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
         __mmask16 exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
         __mmask16 exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
 
-        //printf("Exceeded A stop: %i\n", exceededAStop);
-        //printf("Exceeded B stop: %i\n", exceededBStop);
         while ((exceededAStop & exceededBStop) != 0) {
             //code goes here
-
-            //printf("Hello\n");
 
             //get the current elements
             __m512i miAelems = _mm512_i32gather_epi32(vindexA, A, 4);
@@ -321,10 +314,6 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
             __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
             micmp = (micmp & exceededAStop);
             micmp = (~exceededBStop | micmp);
-
-
-            //printf("Compare: %i\n", micmp);
-            //printf("Compare: %i\n", ~micmp);
 
             //copy the elements to the final elements
             __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
@@ -342,78 +331,8 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
             vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
             vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
 
-            //temprary sanity check
-            a++;
-
-            //print16intarray("vindexAArray", val);
-            //printf("C Value: %i\n", C[val[1] - 1]);
-            //print512_num("miAelems", miAelems);
-            //print512_num("miBelems", miBelems);
-            //print512_num("miCelems", miCelems);
-            //print512_num("vindexA", vindexA);
-            //print512_num("vindexB", vindexB);
 
         }
-
-        //print16intarray("cmp", cmp);
-        //print512_num("vindexA", vindexA);
-        //print512_num("vindexB", vindexB);
-        //print512_num("vindexAStop", vindexAStop);
-        //print512_num("vindexBStop", vindexBStop);
-        //print512_num("vindexC", vindexC);
-        //print512_num("mione", mione);
-        //print512_num("miAi", miAi);
-        //print512_num("miBi", miBi);
-
-        /*__mmask16 test = (exceededAStop | exceededBStop);
-        int index = -1;
-        for (int i = 0; i < 16; i++) {
-            if (~((test >> i) & 0x1)) {
-                index = i;
-            }
-        }
-
-        vindexA = _mm512_set_epi32(splitters[30], splitters[28],
-                                           splitters[26], splitters[24],
-                                           splitters[22], splitters[20],
-                                           splitters[18], splitters[16],
-                                           splitters[14], splitters[12],
-                                           splitters[10], splitters[8],
-                                           splitters[6], splitters[4],
-                                           splitters[2], splitters[0]);
-        vindexB = _mm512_set_epi32(splitters[31], splitters[29],
-                                           splitters[27], splitters[25],
-                                           splitters[23], splitters[21],
-                                           splitters[19], splitters[17],
-                                           splitters[15], splitters[13],
-                                           splitters[11], splitters[9],
-                                           splitters[7], splitters[5],
-                                           splitters[3], splitters[1]);
-        //stop indexes
-        vindexAStop = _mm512_set_epi32(splitters[32], splitters[30],
-                                           splitters[28], splitters[26],
-                                           splitters[24], splitters[22],
-                                           splitters[20], splitters[18],
-                                           splitters[16], splitters[14],
-                                           splitters[12], splitters[10],
-                                           splitters[8], splitters[6],
-                                           splitters[4], splitters[2]);
-        vindexBStop = _mm512_set_epi32(splitters[33], splitters[31],
-                                           splitters[29], splitters[27],
-                                           splitters[25], splitters[23],
-                                           splitters[21], splitters[19],
-                                           splitters[17], splitters[15],
-                                           splitters[13], splitters[11],
-                                           splitters[9], splitters[7],
-                                           splitters[5], splitters[3]);
-        //vindex start
-        vindexC = _mm512_add_epi32(vindexA, vindexB);
-        __m512i vindexCStop = _mm512_add_epi32(vindexAStop, vindexBStop);
-
-        uint32_t *val2 = (uint32_t*) &vindexC;
-        uint32_t *valStop = (uint32_t*) &vindexCStop;*/
-
-        // check sanity of results
 }
 
 void serialMergeAVX2(vec_t* A, int32_t A_length,
