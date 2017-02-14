@@ -42,14 +42,14 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 12;
-uint32_t  h_ui_B_length                = 12;
-uint32_t  h_ui_C_length                = 24;
-uint32_t  h_ui_Ct_length               = 24;
+uint32_t  h_ui_A_length                = 9000000;
+uint32_t  h_ui_B_length                = 9000000;
+uint32_t  h_ui_C_length                = 18000000;
+uint32_t  h_ui_Ct_length               = 18000000;
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
-static const uint32_t lengths[] = {12};
+static const uint32_t lengths[] = {9000000};
 static const uint32_t lengthOfLengths = 1;
 
 
