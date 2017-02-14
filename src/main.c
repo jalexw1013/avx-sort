@@ -50,8 +50,8 @@ uint32_t  h_ui_Ct_length               = 18000000;
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
-static const uint32_t lengths[] = {9000000};
-static const uint32_t lengthOfLengths = 1;
+uint32_t lengths[] = {9000000};
+uint32_t lengthOfLengths = 1;
 
 
 #define min(a,b) (a <= b)? a : b
