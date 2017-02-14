@@ -170,7 +170,7 @@ void tester(
   for (int j = 0; j < lengthOfLengths; j++) {
 
       int cpus = sysconf(_SC_NPROCESSORS_ONLN);
-      lengths[j] = cpus * 500000;
+      lengths[j] = cpus * 50000;
 
       //init the arrays of new lengths
       A_length = lengths[j];
