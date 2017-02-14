@@ -168,6 +168,9 @@ void tester(
   //int j = 0;
   for (int j = 0; j < lengthOfLengths; j++) {
 
+      int cpus = sysconf(_SC_NPROCESSORS_ONLN);
+      lengths[j] = cpus * 3;
+
       //init the arrays of new lengths
       A_length = lengths[j];
       B_length = lengths[j];
@@ -257,7 +260,7 @@ void tester(
       printf("Something\n");*/
 
       tic_reset();
-      parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch);
+      parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, cpus);
       multiCoreMergeSort[j] +=tic_sincelast();
       for(int i = 0; i < C_length; ++i) {
           //assert((*CUnsorted)[i] == globalC[i]);

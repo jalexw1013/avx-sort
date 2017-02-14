@@ -44,7 +44,7 @@ void quickSortRecursive(
 
 int uint32Compare(const void *one, const void *two);
 
-void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t));
+void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int cpus);
 
 
 #endif

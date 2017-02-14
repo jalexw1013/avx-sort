@@ -812,8 +812,7 @@ int uint32Compare(const void *one, const void *two) {
 }
 
 //must be multiple of cpus
-void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)) {
-    int cpus = sysconf(_SC_NPROCESSORS_ONLN);
+void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int cpus) {
 
     #pragma omp parallel for
     for (int i = 0; i < cpus; i++) {
