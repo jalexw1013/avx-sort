@@ -16,6 +16,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <x86intrin.h>
+#include <unistd.h>
 
 #include "sorts.h"
 #include "main.h"
