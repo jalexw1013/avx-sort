@@ -10,6 +10,7 @@
 #include <malloc.h>
 #include <x86intrin.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "sorts.h"
 
@@ -77,7 +78,7 @@ void serialMergeNoBranch(
 void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length){
-    uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+    /*uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
     int isA, isB;
     __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
     __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
@@ -176,7 +177,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
             }
         }
     }
-    return;
+    return;*/
 }
 
 void serialMergeIntrinsic( vec_t* A, int32_t A_length,
@@ -248,7 +249,7 @@ void printmmask16(char *text, __mmask16 mask) {
 void serialMergeAVX512(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
-        uint32_t splitters[34];
+        /*uint32_t splitters[34];
         MergePathSplitter(A, A_length, B, B_length, C, C_length, 16, splitters);
         //stop indexes
         __m512i vindexA = _mm512_set_epi32(splitters[30], splitters[28],
@@ -332,14 +333,14 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
             vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
 
 
-        }
+        }*/
 }
 
 void serialMergeAVX2(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
 
-    uint32_t splitters[18];
+    /*uint32_t splitters[18];
     MergePathSplitter(A, A_length, B, B_length, C, C_length, 8, splitters);
     /*printf("[");
     for (int i = 0; i < 18; i++) {
@@ -348,7 +349,7 @@ void serialMergeAVX2(vec_t* A, int32_t A_length,
 
     }
     printf("]\n");*/
-    __m256i vindexA = _mm256_set_epi32(splitters[14], splitters[12], splitters[10], splitters[8], splitters[6], splitters[4], splitters[2], splitters[0]);
+    /*__m256i vindexA = _mm256_set_epi32(splitters[14], splitters[12], splitters[10], splitters[8], splitters[6], splitters[4], splitters[2], splitters[0]);
     __m256i vindexB = _mm256_set_epi32(splitters[15], splitters[13], splitters[11], splitters[9], splitters[7], splitters[5], splitters[3], splitters[1]);
     __m256i vindexC = _mm256_add_epi32(_mm256_add_epi32(vindexA, vindexB), _mm256_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1));
 
@@ -576,7 +577,7 @@ void serialMergeAVX2(vec_t* A, int32_t A_length,
 
     while (b7 < b7Stop) {
         C[c7++] = B[b7++];
-    }
+    }*/
 }
 
 #define PRINTEXTRA 0
@@ -588,7 +589,7 @@ const uint8_t max1=(2<<6)| (1<<4);
 void mergeNetwork(vec_t* A, int32_t A_length,
                   vec_t* B, int32_t B_length,
                   vec_t* C, uint32_t C_length){
-  uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+  /*uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
 
   __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
   __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
@@ -703,7 +704,7 @@ void mergeNetwork(vec_t* A, int32_t A_length,
     //     printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
     //     return;
     //   }
-    // }
+    // }*/
 }
 
 /**
@@ -796,4 +797,38 @@ void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
         a, (int32_t)mid,
         b, (int32_t)(arr_length - mid),
         arr, arr_length);
+}
+
+int uint32Compare(const void *one, const void *two) {
+    uint32_t first = *(uint32_t*)one;
+    uint32_t second = *(uint32_t*)two;
+    if (first < second) {
+        return -1;
+    } else if (first > second) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+//must be multiple of cpus
+void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)) {
+    int cpus = sysconf(_SC_NPROCESSORS_ONLN);
+
+    #pragma omp parallel for
+    for (int i = 0; i < cpus; i++) {
+        qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), uint32Compare);
+    }
+
+    int count = cpus/2;
+    while (count > 0) {
+        #pragma omp parallel for
+        for (int i = 0; i < count; i++) {
+            vec_t* C = (vec_t*)xmalloc((array_length/count) * sizeof(vec_t));
+            mergeFunction(array + i*array_length/count, array_length/(count*2), array + i*array_length/count + array_length/(count*2), array_length/(count*2),C, array_length/count);
+            copyArrayInRange(C, array + i*array_length/count, 0, array_length/count);
+            free(C);
+        }
+        count /= 2;
+    }
 }

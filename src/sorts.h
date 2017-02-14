@@ -42,4 +42,9 @@ void mergeNetwork(
 void quickSortRecursive(
     vec_t* arr, uint32_t arr_length);
 
+int uint32Compare(const void *one, const void *two);
+
+void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t));
+
+
 #endif
