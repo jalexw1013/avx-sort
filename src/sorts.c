@@ -819,6 +819,8 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), uint32Compare);
     }
 
+    //just use single input and output and swap.
+
     int count = cpus/2;
     while (count > 0) {
         #pragma omp parallel for

@@ -17,6 +17,7 @@
 #include <malloc.h>
 #include <x86intrin.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 #include "sorts.h"
 #include "main.h"
@@ -31,8 +32,18 @@
 //////////////////////////////
 void hostParseArgs(
     int argc, char** argv);
-void tester(vec_t**, uint32_t,vec_t**, uint32_t,
-            vec_t**, uint32_t,vec_t**, uint32_t, vec_t**);
+void tester(vec_t*, uint32_t,vec_t*, uint32_t,
+            vec_t*, uint32_t,vec_t*, uint32_t, vec_t*);
+void initArrays(vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    vec_t* CSorted, uint32_t Ct_length,
+    vec_t* CUnsorted);
+void insertData(vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    vec_t* CSorted, uint32_t Ct_length,
+    vec_t* CUnsorted);
 /*void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
                 uint32_t threads, uint32_t* splitters);*/
 void freeGlobalData();
@@ -43,16 +54,12 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 9000000;
-uint32_t  h_ui_B_length                = 9000000;
-uint32_t  h_ui_C_length                = 18000000;
-uint32_t  h_ui_Ct_length               = 18000000;
+uint32_t  h_ui_A_length                = 128;
+uint32_t  h_ui_B_length                = 128;
+uint32_t  h_ui_C_length                = 256; //array to put values in
+uint32_t  h_ui_Ct_length               = 256; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
-
-uint32_t lengths[] = {9000000};
-uint32_t lengthOfLengths = 1;
-
 
 #define min(a,b) (a <= b)? a : b
 #define max(a,b) (a <  b)? b : a
@@ -61,16 +68,28 @@ uint32_t lengthOfLengths = 1;
 ////////////////////////////
 int main(int argc, char** argv)
 {
-  // parse langths of A and B if user entered
-  hostParseArgs(argc, argv);
+    // parse langths of A and B if user entered
+    hostParseArgs(argc, argv);
 
-  tester(&globalA, h_ui_A_length,
-      &globalB, h_ui_B_length,
-      &globalC, h_ui_C_length,
-      &CSorted, h_ui_Ct_length,
-      &CUnsorted);
+    initArrays(globalA, h_ui_A_length,
+        globalB, h_ui_B_length,
+        globalC, h_ui_C_length,
+        CSorted, h_ui_Ct_length,
+        CUnsorted);
 
-   freeGlobalData();
+    insertData(globalA, h_ui_A_length,
+        globalB, h_ui_B_length,
+        globalC, h_ui_C_length,
+        CSorted, h_ui_Ct_length,
+        CUnsorted);
+
+    tester(globalA, h_ui_A_length,
+        globalB, h_ui_B_length,
+        globalC, h_ui_C_length,
+        CSorted, h_ui_Ct_length,
+        CUnsorted);
+
+    freeGlobalData();
 
 }
 
@@ -79,160 +98,191 @@ int hostBasicCompare(const void * a, const void * b) {
   return (int) (*(vec_t *)a - *(vec_t *)b);
 }
 
-void Init(vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted)
+/**
+* Allocates the arrays A,B,C,CSorted, and CUnsorted
+*/
+void initArrays(vec_t* A, uint32_t A_length,
+          vec_t* B, uint32_t B_length,
+          vec_t* C, uint32_t C_length,
+          vec_t* CSorted, uint32_t Ct_length,
+          vec_t* CUnsorted)
 {
-  *A  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
-  *B  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
-  *C  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
-  *CSorted = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
-  *CUnsorted = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
-
-   uint32_t seed = time(0);// % 100000000;
-//  uint32_t seed = 13503;
-  srand(seed);
-
-  for(uint32_t i = 0; i < A_length; ++i) {
-    (*A)[i] = rand() % (1 << (entropy - 1));
-    (*CUnsorted)[i] = (*A)[i];
-  }
-
-  for(uint32_t i = 0; i < B_length; ++i) {
-    (*B)[i] = rand() % (1 << (entropy - 1));
-   (*CUnsorted)[i+A_length] = (*B)[i];
-  }
-
-  qsort(*A, A_length, sizeof(vec_t), hostBasicCompare);
-  qsort(*B, B_length, sizeof(vec_t), hostBasicCompare);
-
-  for(int i = 0; i < 8; ++i) {
-    (*A)[A_length + i] = INFINITY_VALUE; (*B)[B_length + i] = INFINITY_VALUE;
-  }
-
-  // reference 'CORRECT' results
-  uint32_t ai = 0,bi = 0,ci = 0;
-  while(ai < A_length && bi < B_length) {
-    (*CSorted)[ci++] = (*A)[ai] < (*B)[bi] ? (*A)[ai++] : (*B)[bi++];
-  }
-  while(ai < A_length) (*CSorted)[ci++] = (*A)[ai++];
-  while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];
+    A  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
+    B  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
+    C  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
+    CSorted = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
+    CUnsorted = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
 }
 
-void reshuffleData(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted)
+/**
+* inserts the data into the arrays A,B,CUnsorted, and CSorted.
+* This can be called over and over to re randomize the data
+*/
+void insertData(vec_t* A, uint32_t A_length,
+                vec_t* B, uint32_t B_length,
+                vec_t* C, uint32_t C_length,
+                vec_t* CSorted, uint32_t Ct_length,
+                vec_t* CUnsorted)
 {
-    freeGlobalData();
-    Init(A,A_length,B,B_length,C, C_length,CSorted, Ct_length,CUnsorted);
+    uint32_t seed = time(0);
+    srand(seed);
+
+    for(uint32_t i = 0; i < A_length; ++i) {
+        A[i] = rand() % (1 << (entropy - 1));
+        CUnsorted[i] = A[i];
+    }
+
+    for(uint32_t i = 0; i < B_length; ++i) {
+        B[i] = rand() % (1 << (entropy - 1));
+        CUnsorted[i+A_length] = B[i];
+    }
+
+    qsort(A, A_length, sizeof(vec_t), hostBasicCompare);
+    qsort(B, B_length, sizeof(vec_t), hostBasicCompare);
+
+    for(int i = 0; i < 8; ++i) {
+        A[A_length + i] = INFINITY_VALUE; B[B_length + i] = INFINITY_VALUE;
+    }
+
+    // reference 'CORRECT' results
+    uint32_t ai = 0,bi = 0,ci = 0;
+    while(ai < A_length && bi < B_length) {
+        CSorted[ci++] = A[ai] < B[bi] ? A[ai++] : B[bi++];
+    }
+    while(ai < A_length) CSorted[ci++] = A[ai++];
+    while(bi < B_length) CSorted[ci++] = B[bi++];
 }
 
 void freeGlobalData() {
-      //free(globalA);
-      //free(globalB);
-      //free(globalC);
-      //free(CSorted);
-      //free(CUnsorted);
+      free(globalA);
+      free(globalB);
+      free(globalC);
+      free(CSorted);
+      free(CUnsorted);
+}
+
+void verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
+    for(int i = 0; i < length; i++) {
+        if(output[i] != sortedData[i]) {
+            printf("\nAlgorithm Failed To Produce Correct Results: %s\n", name);
+            printf("Index:%d, Given Value:%d, Correct "
+            "Value:%d \n", i, output[i], sortedData[i]);
+            return;
+        }
+    }
+}
+
+void clearArray(vec_t* array, uint32_t length) {
+    for (int i = 0; i < length; i++) {
+        array[i] = 0;
+    }
 }
 
 void tester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted)
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    vec_t* CSorted, uint32_t Ct_length,
+    vec_t* CUnsorted)
 {
-  Init(A, A_length,
-      B, B_length,
-      C, C_length,
-      CSorted, Ct_length,
-      CUnsorted);
+    float serial = 0.0;
+    float serialNoBranch = 0.0;
+    float bitonicReal = 0.0;
+    float intrinsic = 0.0;
+    float avx512 = 0.0;
+    float avx2 = 0.0;
+    float mergenet = 0.0;
 
-    float* serial = xmalloc(lengthOfLengths*sizeof(float));
-    float* serialNoBranch = xmalloc(lengthOfLengths*sizeof(float));
-    float* bitonicReal = xmalloc(lengthOfLengths*sizeof(float));
-    float* intrinsic = xmalloc(lengthOfLengths*sizeof(float));
-    float* avx512 = xmalloc(lengthOfLengths*sizeof(float));
-    float* avx2 = xmalloc(lengthOfLengths*sizeof(float));
-    float* mergenet = xmalloc(lengthOfLengths*sizeof(float));
+    float qsortTime = 0.0;
+    float singleCoreSort = 0.0;
+    float multiCoreMergeSort = 0.0;
 
-    float* qsortTime = xmalloc(lengthOfLengths*sizeof(float));
-    float* singleCoreSort = xmalloc(lengthOfLengths*sizeof(float));
-    float* multiCoreMergeSort = xmalloc(lengthOfLengths*sizeof(float));
+    int cpus = sysconf(_SC_NPROCESSORS_ONLN);
 
-    vec_t* Cptr=*C;
-  //int j = 0;
-  for (int j = 0; j < lengthOfLengths; j++) {
+    printf("Parameters\n");
+    printf("Entropy: %d\n", entropy);
+    printf("A Size: %" PRIu32 "\n", A_length);
+    printf("B Size: %" PRIu32 "\n", B_length);
+    printf("C Size: %" PRIu32 "\n", C_length);
+    printf("\n");
 
-      int cpus = sysconf(_SC_NPROCESSORS_ONLN);
-      lengths[j] = cpus * 50 / 2;
+    //---------------------------------------------------------------------
+    //
+    // Begin section for merging algorithms
+    // Comment out this section to skip all merging comparisions.
+    //
+    //---------------------------------------------------------------------
 
-      //init the arrays of new lengths
-      A_length = lengths[j];
-      B_length = lengths[j];
-      C_length = A_length + B_length;
-      Ct_length = C_length;
-      reshuffleData(
-          A, A_length,
-          B, B_length,
-          C, C_length,
-          CSorted, Ct_length,
-          CUnsorted);
-      Cptr=*C;
-
-      /*for (int i = 0; i < RUNS; i++) {
+    for (int i = 0; i < RUNS; i++) {
 
         tic_reset();
-        serialMerge(*A, A_length, *B, B_length, *C, C_length);
-        serial[j] += tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+        serialMerge(A, A_length, B, B_length, C, C_length);
+        serial += tic_sincelast();
+        clearArray(C, C_length);
 
         tic_reset();
-        serialMergeNoBranch(*A, A_length, *B, B_length, *C, Ct_length);
-        serialNoBranch[j] += tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+        serialMergeNoBranch(A, A_length, B, B_length, C, Ct_length);
+        serialNoBranch += tic_sincelast();
+        clearArray(C, C_length);
 
         tic_reset();
-        bitonicMergeReal(*A, A_length, *B, B_length, *C, Ct_length);
-        bitonicReal[j] +=tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+        bitonicMergeReal(A, A_length, B, B_length, C, Ct_length);
+        bitonicReal += tic_sincelast();
+        clearArray(C, C_length);
 
         tic_reset();
-        serialMergeIntrinsic(*A, A_length, *B, B_length, *C, Ct_length);
-        intrinsic[j] +=tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
-
-        /*tic_reset();
-        serialMergeAVX512(*A, A_length, *B, B_length, *C, Ct_length);
-        avx512[j] +=tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+        serialMergeIntrinsic(A, A_length, B, B_length, C, Ct_length);
+        intrinsic += tic_sincelast();
+        clearArray(C, C_length);
 
         tic_reset();
-        //serialMergeAVX2(*A, A_length, *B, B_length, *C, Ct_length);
-        avx2[j] +=tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}
+        serialMergeAVX512(A, A_length, B, B_length, C, Ct_length);
+        avx512 += tic_sincelast();
+        clearArray(C, C_length);
 
         tic_reset();
-        mergeNetwork(*A, A_length, *B, B_length, *C, Ct_length);
-        mergenet[j] +=tic_sincelast();
-        for(int ci=0; ci<C_length; ci++) {Cptr[ci]=0;}*/
+        serialMergeAVX2(A, A_length, B, B_length, C, Ct_length);
+        avx2 += tic_sincelast();
+        clearArray(C, C_length);
 
-        /*for(int i = 0; i < C_length; ++i) {
-            assert(C[i] == globalC[i]);
-            if(C[i]!=CSorted[i]) {
-                printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
-                return;
-            }
-        }
+        tic_reset();
+        mergeNetwork(A, A_length, B, B_length, C, Ct_length);
+        mergenet += tic_sincelast();
+        clearArray(C, C_length);
+
+        printf("Merging Results:\n");
+        printf("\nSerial Merge:          ");
+        printf("%15.10f", 1e8*(serial / (float)(Ct_length)));
+        printf("\nSerial Merge no Branch:");
+        printf("%15.10f", 1e8*(serialNoBranch / (float)(Ct_length)));
+        printf("\nBitonic Merge Real:    ");
+        printf("%15.10f", 1e8*(bitonicReal / (float)(Ct_length)));
+        printf("\nSerial Merge Intrinsic:");
+        printf("%15.10f", 1e8*(intrinsic / (float)(Ct_length)));
+        printf("\nSerial Merge AVX2:     ");
+        printf("%15.10f", 1e8*(avx2 / (float)(Ct_length)));
+        printf("\nSerial Merge AVX-512:  ");
+        printf("%15.10f", 1e8*(avx512 / (float)(Ct_length)));
+        printf("\nMerge Network:         ");
+        printf("%15.10f", 1e8*(mergenet / (float)(Ct_length)));
+
+        serial = 0.0;
+        serialNoBranch = 0.0;
+        bitonicReal = 0.0;
+        intrinsic = 0.0;
+        avx512 = 0.0;
+        avx2 = 0.0;
+        mergenet = 0.0;
+    }
+
+    //---------------------------------------------------------------------
+    //
+    // Begin section for sorting algorithms
+    // Comment out this section to skip all sorting comparisions.
+    //
+    //---------------------------------------------------------------------
 
 
-
-      }*/
 
       /*tic_reset();
       qsort(*CUnsorted, Ct_length, sizeof(uint32_t), uint32Compare);
@@ -260,17 +310,17 @@ void tester(
 
       printf("Something\n");*/
 
-      tic_reset();
+      /*tic_reset();
       parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, cpus);
-      multiCoreMergeSort[j] +=tic_sincelast();/*
+      multiCoreMergeSort[j] +=tic_sincelast();*
       for(int i = 0; i < C_length; ++i) {
           //assert((*CUnsorted)[i] == globalC[i]);
-          if((*CUnsorted)[i]!=(*CSorted)[i]) {
-              printf("\n %d,%d,%d \n", i,(*C)[i],(*CSorted)[i]);
-              //return;
-          }
+    //      if((*CUnsorted)[i]!=(*CSorted)[i]) {
+    //          printf("\n %d,%d,%d \n", i,(*C)[i],(*CSorted)[i]);
+        //       return;
+        //   }
       }
-      for(int ci=0; ci<Ct_length; ci++) {CUnsorted[ci]=0;}*/
+      for(int ci=0; ci<Ct_length; ci++) {CUnsorted[ci]=0;}
 
   }
 
@@ -349,7 +399,7 @@ void tester(
 
 
   printf("\n");
-  int32_t swapped,missed;
+  /*int32_t swapped,missed;
 
 
   vec_t Astam[20]={1,1,1,3,4,4,7,7,8,9,100000,100000,100000,100000,100000,100000,100000,100000,100000,100000};
@@ -366,7 +416,7 @@ void tester(
 
 //  return;
 
-  return;
+  return;*/
 
 
 }
@@ -431,14 +481,8 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
   }
 }
 
-
-
-
-
 #define PRINT_ARRAY(ARR) for (int t=0; t<threads;t++){printf("%10d, ",ARR[t]);}printf("\n");
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
-
-
 
 void hostParseArgs(int argc, char** argv)
 {
