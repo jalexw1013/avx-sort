@@ -32,8 +32,8 @@
 //////////////////////////////
 void hostParseArgs(
     int argc, char** argv);
-void tester(vec_t*, uint32_t,vec_t*, uint32_t,
-            vec_t*, uint32_t,vec_t*, uint32_t, vec_t*);
+void tester(vec_t**, uint32_t,vec_t**, uint32_t,
+            vec_t**, uint32_t,vec_t**, uint32_t, vec_t**);
 void initArrays(vec_t** A, uint32_t A_length,
     vec_t** B, uint32_t B_length,
     vec_t** C, uint32_t C_length,
@@ -215,56 +215,56 @@ void tester(
 
     for (int i = 0; i < RUNS; i++) {
 
+        printf("Merging Results:\n");
+
         tic_reset();
         serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
         serial += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Serial Merge:          ");
+        printf("%15.10f\n", 1e8*(serial / (float)(Ct_length)));
 
         tic_reset();
         serialMergeNoBranch((*A), A_length, (*B), B_length, (*C), Ct_length);
         serialNoBranch += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Serial Merge no Branch:");
+        printf("%15.10f\n", 1e8*(serialNoBranch / (float)(Ct_length)));
 
         tic_reset();
         bitonicMergeReal((*A), A_length, (*B), B_length, (*C), Ct_length);
         bitonicReal += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Bitonic Merge Real:    ");
+        printf("%15.10f\n", 1e8*(bitonicReal / (float)(Ct_length)));
 
         tic_reset();
         serialMergeIntrinsic((*A), A_length, (*B), B_length, (*C), Ct_length);
         intrinsic += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Serial Merge Intrinsic:");
+        printf("%15.10f\n", 1e8*(intrinsic / (float)(Ct_length)));
 
         tic_reset();
         serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length);
         avx512 += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Serial Merge AVX-512:  ");
+        printf("%15.10f\n", 1e8*(avx512 / (float)(Ct_length)));
 
         tic_reset();
         serialMergeAVX2((*A), A_length, (*B), B_length, (*C), Ct_length);
         avx2 += tic_sincelast();
-        clearArray(C, C_length);
+        clearArray((*C), C_length);
+        printf("Serial Merge AVX2:     ");
+        printf("%15.10f\n", 1e8*(avx2 / (float)(Ct_length)));
 
         tic_reset();
         mergeNetwork((*A), A_length, (*B), B_length, (*C), Ct_length);
         mergenet += tic_sincelast();
-        clearArray(C, C_length);
-
-        printf("Merging Results:\n");
-        printf("\nSerial Merge:          ");
-        printf("%15.10f", 1e8*(serial / (float)(Ct_length)));
-        printf("\nSerial Merge no Branch:");
-        printf("%15.10f", 1e8*(serialNoBranch / (float)(Ct_length)));
-        printf("\nBitonic Merge Real:    ");
-        printf("%15.10f", 1e8*(bitonicReal / (float)(Ct_length)));
-        printf("\nSerial Merge Intrinsic:");
-        printf("%15.10f", 1e8*(intrinsic / (float)(Ct_length)));
-        printf("\nSerial Merge AVX2:     ");
-        printf("%15.10f", 1e8*(avx2 / (float)(Ct_length)));
-        printf("\nSerial Merge AVX-512:  ");
-        printf("%15.10f", 1e8*(avx512 / (float)(Ct_length)));
-        printf("\nMerge Network:         ");
-        printf("%15.10f", 1e8*(mergenet / (float)(Ct_length)));
+        clearArray((*C), C_length);
+        printf("Merge Network:         ");
+        printf("%15.10f\n", 1e8*(mergenet / (float)(Ct_length)));
 
         serial = 0.0;
         serialNoBranch = 0.0;
@@ -398,7 +398,7 @@ void tester(
   printf(",%.10f", 1e8*(mergenet / (float)(RUNS*Ct_length)));*/
 
 
-  printf("\n");
+  //printf("\n");
   /*int32_t swapped,missed;
 
 

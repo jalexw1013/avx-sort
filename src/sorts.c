@@ -78,7 +78,7 @@ void serialMergeNoBranch(
 void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length){
-    /*uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+    uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
     int isA, isB;
     __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
     __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
@@ -177,7 +177,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
             }
         }
     }
-    return;*/
+    return;
 }
 
 void serialMergeIntrinsic( vec_t* A, int32_t A_length,
@@ -589,7 +589,7 @@ const uint8_t max1=(2<<6)| (1<<4);
 void mergeNetwork(vec_t* A, int32_t A_length,
                   vec_t* B, int32_t B_length,
                   vec_t* C, uint32_t C_length){
-  /*uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+  uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
 
   __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
   __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
