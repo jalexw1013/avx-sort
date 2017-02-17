@@ -54,10 +54,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 128;
-uint32_t  h_ui_B_length                = 128;
-uint32_t  h_ui_C_length                = 256; //array to put values in
-uint32_t  h_ui_Ct_length               = 256; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 1000000;
+uint32_t  h_ui_B_length                = 1000000;
+uint32_t  h_ui_C_length                = 2000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 2000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -185,19 +185,12 @@ void tester(
     vec_t** CSorted, uint32_t Ct_length,
     vec_t** CUnsorted)
 {
-    float serial = 0.0;
-    float serialNoBranch = 0.0;
-    float bitonicReal = 0.0;
-    float intrinsic = 0.0;
-    float avx512 = 0.0;
-    float avx2 = 0.0;
-    float mergenet = 0.0;
 
-    float qsortTime = 0.0;
-    float singleCoreSort = 0.0;
-    float multiCoreMergeSort = 0.0;
+    //float qsortTime = 0.0;
+    //float singleCoreSort = 0.0;
+    //float multiCoreMergeSort = 0.0;
 
-    int cpus = sysconf(_SC_NPROCESSORS_ONLN);
+    //int cpus = sysconf(_SC_NPROCESSORS_ONLN);
 
     printf("Parameters\n");
     printf("Entropy: %d\n", entropy);
@@ -213,6 +206,13 @@ void tester(
     //
     //---------------------------------------------------------------------
 
+    float serial = 0.0;
+    float serialNoBranch = 0.0;
+    float bitonicReal = 0.0;
+    float intrinsic = 0.0;
+    float avx512 = 0.0;
+    float mergenet = 0.0;
+
     for (int i = 0; i < RUNS; i++) {
 
         printf("Merging Results:\n");
@@ -222,56 +222,48 @@ void tester(
         serial += tic_sincelast();
         clearArray((*C), C_length);
         printf("Serial Merge:          ");
-        printf("%15.10f\n", 1e8*(serial / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(serial / (float)(Ct_length)));
 
         tic_reset();
         serialMergeNoBranch((*A), A_length, (*B), B_length, (*C), Ct_length);
         serialNoBranch += tic_sincelast();
         clearArray((*C), C_length);
         printf("Serial Merge no Branch:");
-        printf("%15.10f\n", 1e8*(serialNoBranch / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(serialNoBranch / (float)(Ct_length)));
 
         tic_reset();
         bitonicMergeReal((*A), A_length, (*B), B_length, (*C), Ct_length);
         bitonicReal += tic_sincelast();
         clearArray((*C), C_length);
         printf("Bitonic Merge Real:    ");
-        printf("%15.10f\n", 1e8*(bitonicReal / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(bitonicReal / (float)(Ct_length)));
 
         tic_reset();
         serialMergeIntrinsic((*A), A_length, (*B), B_length, (*C), Ct_length);
         intrinsic += tic_sincelast();
         clearArray((*C), C_length);
         printf("Serial Merge Intrinsic:");
-        printf("%15.10f\n", 1e8*(intrinsic / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(intrinsic / (float)(Ct_length)));
 
         tic_reset();
         serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length);
         avx512 += tic_sincelast();
         clearArray((*C), C_length);
         printf("Serial Merge AVX-512:  ");
-        printf("%15.10f\n", 1e8*(avx512 / (float)(Ct_length)));
-
-        tic_reset();
-        serialMergeAVX2((*A), A_length, (*B), B_length, (*C), Ct_length);
-        avx2 += tic_sincelast();
-        clearArray((*C), C_length);
-        printf("Serial Merge AVX2:     ");
-        printf("%15.10f\n", 1e8*(avx2 / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(avx512 / (float)(Ct_length)));
 
         tic_reset();
         mergeNetwork((*A), A_length, (*B), B_length, (*C), Ct_length);
         mergenet += tic_sincelast();
         clearArray((*C), C_length);
         printf("Merge Network:         ");
-        printf("%15.10f\n", 1e8*(mergenet / (float)(Ct_length)));
+        printf("%18.10f\n", 1e8*(mergenet / (float)(Ct_length)));
 
         serial = 0.0;
         serialNoBranch = 0.0;
         bitonicReal = 0.0;
         intrinsic = 0.0;
         avx512 = 0.0;
-        avx2 = 0.0;
         mergenet = 0.0;
     }
 
