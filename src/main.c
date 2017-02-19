@@ -71,6 +71,8 @@ int main(int argc, char** argv)
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
+    checkFeatures();
+
     initArrays(&globalA, h_ui_A_length,
         &globalB, h_ui_B_length,
         &globalC, h_ui_C_length,
@@ -93,9 +95,154 @@ int main(int argc, char** argv)
 
 }
 
+//---------------------------------------------------------------------
+//
+// Begin section for feature detection
+//
+//---------------------------------------------------------------------
+
+void checkFeatures() {
+    printf("Performing Self Feature Check.\n");
+    printf("The Following Technologies Are Avaliable On This Compiler.\n");
+
+    printf("SSE: ");
+    #ifdef __SSE__
+    printf("Yes");
+    #else
+    printf("No");
+    #endif
+    printf("\n");
+
+    printf("SSE2: ");
+    #ifdef __SSE2__
+    printf("Yes");
+    #else
+    printf("No");
+    #endif
+    printf("\n");
+
+    printf("SSE3: ");
+    #ifdef __SSE3__
+    printf("Yes");
+    #else
+    printf("No");
+    #endif
+    printf("\n");
+
+    printf("AVX: ");
+    #ifdef __AVX__
+    printf("Yes");
+    #else
+    printf("No");
+    #endif
+    printf("\n");
+
+    printf("AVX2: ");
+    #ifdef __AVX2__
+    printf("Yes");
+    #else
+    printf("No");
+    #endif
+    printf("\n");
+
+    printf("AVX-512: ");
+    //#ifdef __FEATURE_AVX512F__
+    if (can_use_intel_knl_features())
+    printf("Yes");
+    //#else
+    else printf("No");
+    //#endif
+    printf("\n");
+}
+
+/*
+ * The following code is taken directly from:
+ * https://software.intel.com/en-us/articles/how-to-detect-knl-instruction-support
+ * Used for educational/research purposes
+ */
+
+#if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
+
+static int has_intel_knl_features()
+{
+  const unsigned long knl_features =
+      (_FEATURE_AVX512F);
+  return _may_i_use_cpu_feature( knl_features );
+}
+#else /* non-Intel compiler */
+
+#if defined(_MSC_VER)
+#include <intrin.h>
+#endif
+
+void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
+{
+    #if defined(_MSC_VER)
+      __cpuidex(abcd, eax, ecx);
+    #else
+      uint32_t ebx, edx;
+     #if defined( __i386__ ) && defined ( __PIC__ )
+      /* in case of PIC under 32-bit EBX cannot be clobbered */
+      __asm__ ( "movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
+     # else
+      __asm__ ( "cpuid" : "+b" (ebx),
+     # endif
+    		      "+a" (eax), "+c" (ecx), "=d" (edx) );
+    	    abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
+    #endif
+}
+
+int check_xcr0_zmm() {
+      uint32_t xcr0;
+      uint32_t zmm_ymm_xmm = (7 << 5) | (1 << 2) | (1 << 1);
+    #if defined(_MSC_VER)
+      xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
+    #else
+      __asm__ ("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx" );
+    #endif
+      return ((xcr0 & zmm_ymm_xmm) == zmm_ymm_xmm); /* check if xmm, zmm and zmm state are enabled in XCR0 */
+}
+
+int has_intel_knl_features() {
+  uint32_t abcd[4];
+  uint32_t osxsave_mask = (1 << 27); // OSX.
+  uint32_t avx2_bmi12_mask = (1 << 16) | // AVX-512F
+                             (1 << 26) | // AVX-512PF
+                             (1 << 27) | // AVX-512ER
+                             (1 << 28);  // AVX-512CD
+  run_cpuid( 1, 0, abcd );
+  // step 1 - must ensure OS supports extended processor state management
+  if ( (abcd[2] & osxsave_mask) != osxsave_mask )
+    return 0;
+  printf("HELLO\n");
+  // step 2 - must ensure OS supports ZMM registers (and YMM, and XMM)
+  if ( ! check_xcr0_zmm() )
+    return 0;
+
+  return 1;
+}
+
+static int can_use_intel_knl_features() {
+  static int knl_features_available = -1;
+  /* test is performed once */
+  if (knl_features_available < 0 )
+    knl_features_available = has_intel_knl_features();
+  return knl_features_available;
+}
+
+#endif /* non-Intel compiler */
+
+/*int main(int argc, char *argv[]) {
+  if ( can_use_intel_knl_features() )
+    printf("This CPU supports AVX-512F+CD+ER+PF as introduced in Knights Landing\n");
+  else
+    printf("This CPU does not support all Knights Landing AVX-512 features\n");
+  return 1;
+}(*/
+
 
 int hostBasicCompare(const void * a, const void * b) {
-  return (int) (*(vec_t *)a - *(vec_t *)b);
+    return (int) (*(vec_t *)a - *(vec_t *)b);
 }
 
 /**
