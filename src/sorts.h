@@ -23,10 +23,10 @@ void serialMergeIntrinsic(
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length);
 
-void serialMergeAVX512(
+/*void serialMergeAVX512(
     vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length);*/
 
 void mergeNetwork(
     vec_t* A, int32_t A_length,

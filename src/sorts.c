@@ -246,7 +246,7 @@ void printmmask16(char *text, __mmask16 mask) {
     printf("%s: %i\n", text, num);
 }*/
 
-void serialMergeAVX512(vec_t* A, int32_t A_length,
+/*void serialMergeAVX512(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
         uint32_t splitters[34];
@@ -334,7 +334,7 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
 
 
         }
-}
+}*/
 
 #define PRINTEXTRA 0
 #define STORE_AND_PRINT(str,reg) {if (PRINTEXTRA){vec_t arr[4]; _mm_storeu_si128((__m128i*)&arr,reg);printf("%s : %d %d %d %d\n", str, arr[3],arr[2],arr[1],arr[0]); }}
@@ -549,10 +549,10 @@ void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
     mergeSortRecursive(b, (arr_length - mid));
 
     //merge parts
-    serialMergeAVX512(
+    /*serialMergeAVX512(
         a, (int32_t)mid,
         b, (int32_t)(arr_length - mid),
-        arr, arr_length);
+        arr, arr_length);*/
 }
 
 int uint32Compare(const void *one, const void *two) {
