@@ -1,6 +1,6 @@
 
 GCC = gcc
-GCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -march=core-avx2 -mavx2 -mfma -ffp-contract=fast -mavx512f -Wall -pedantic
+GCFLAGS += -g -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -mavx512f -Wall -pedantic
 
 ICC = icc
 ICCFLAGS += -fopenmp -std=c99 -axMIC-AVX512 funroll-loops -Wall -pedantic

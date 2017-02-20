@@ -180,7 +180,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     return;
 }
 
-void serialMergeIntrinsic( vec_t* A, int32_t A_length,
+/*void serialMergeIntrinsic( vec_t* A, int32_t A_length,
                                   vec_t* B, int32_t B_length,
                                   vec_t* C, uint32_t C_length){
     uint32_t ai = 0;
@@ -213,7 +213,7 @@ void serialMergeIntrinsic( vec_t* A, int32_t A_length,
     while(bi < B_length) {
         C[ci++] = B[bi++];
     }
-}
+}*/
 
 /*void print256_num(__m256i var)
 {
@@ -246,7 +246,7 @@ void printmmask16(char *text, __mmask16 mask) {
     printf("%s: %i\n", text, num);
 }*/
 
-/*void serialMergeAVX512(vec_t* A, int32_t A_length,
+void serialMergeAVX512(vec_t* A, int32_t A_length,
                                                      vec_t* B, int32_t B_length,
                                                      vec_t* C, uint32_t C_length) {
         uint32_t splitters[34];
@@ -334,9 +334,9 @@ void printmmask16(char *text, __mmask16 mask) {
 
 
         }
-}*/
+}
 
-#define PRINTEXTRA 0
+/*#define PRINTEXTRA 0
 #define STORE_AND_PRINT(str,reg) {if (PRINTEXTRA){vec_t arr[4]; _mm_storeu_si128((__m128i*)&arr,reg);printf("%s : %d %d %d %d\n", str, arr[3],arr[2],arr[1],arr[0]); }}
 
 const uint8_t min1=(3<<6)| (3<<4)|(2<<2) |1;
@@ -460,13 +460,13 @@ void mergeNetwork(vec_t* A, int32_t A_length,
     //     printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
     //     return;
     //   }
-    // }*/
-}
+    // }
+}*/
 
 /**
  * this function is a recursive helper for the quick sort function
  */
-void quickSortHelperRecursive(vec_t* arr, int a, int b) {
+/*void quickSortHelperRecursive(vec_t* arr, int a, int b) {
     assert(arr != NULL);
     if (a >= b) {
         return;
@@ -498,19 +498,17 @@ void quickSortHelperRecursive(vec_t* arr, int a, int b) {
     arr[a] = temp;
     quickSortHelperRecursive(arr, a, right - 1);
     quickSortHelperRecursive(arr, right + 1, b);
-}
+}*/
 
 /**
  * Implementation of quick sort.
  * Uses the the recursive quick sort helper function
  */
-void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
+/*void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
     srand(time(NULL));
     assert(arr != NULL);
     quickSortHelperRecursive(arr, 0, arr_length - 1);
-}
-
-//TODO Implement non-recusrive quicksort
+}*/
 
 /**
  * copies an array from input to dest only between the startIndex and endIndex
@@ -530,7 +528,7 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
  * Implementation of merge sort.
  * Uses the the avx-512 merge function
  */
-void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
+/*void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
     //validate array
     assert(arr != NULL);
     if (arr_length < 2) {
@@ -549,13 +547,13 @@ void mergeSortRecursive(vec_t* arr, uint32_t arr_length) {
     mergeSortRecursive(b, (arr_length - mid));
 
     //merge parts
-    /*serialMergeAVX512(
+    serialMergeAVX512(
         a, (int32_t)mid,
         b, (int32_t)(arr_length - mid),
-        arr, arr_length);*/
-}
+        arr, arr_length);
+}*/
 
-int uint32Compare(const void *one, const void *two) {
+/*int uint32Compare(const void *one, const void *two) {
     uint32_t first = *(uint32_t*)one;
     uint32_t second = *(uint32_t*)two;
     if (first < second) {
@@ -565,14 +563,14 @@ int uint32Compare(const void *one, const void *two) {
     } else {
         return 0;
     }
-}
+}*/
 
 //must be multiple of cpus
 void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int cpus) {
 
     #pragma omp parallel for
     for (int i = 0; i < cpus; i++) {
-        qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), uint32Compare);
+        qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), hostBasicCompare);
     }
 
     //just use single input and output and swap.

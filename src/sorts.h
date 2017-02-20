@@ -18,23 +18,23 @@ void bitonicMergeReal(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 
-void serialMergeIntrinsic(
-    vec_t* A, int32_t A_length,
-    vec_t* B, int32_t B_length,
-    vec_t* C, uint32_t C_length);
-
-/*void serialMergeAVX512(
+/*void serialMergeIntrinsic(
     vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length);*/
 
-void mergeNetwork(
+void serialMergeAVX512(
     vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length);
 
-void quickSortRecursive(
-    vec_t* arr, uint32_t arr_length);
+/*void mergeNetwork(
+    vec_t* A, int32_t A_length,
+    vec_t* B, int32_t B_length,
+    vec_t* C, uint32_t C_length);*/
+
+/*void quickSortRecursive(
+    vec_t* arr, uint32_t arr_length);*/
 
 int uint32Compare(const void *one, const void *two);
 

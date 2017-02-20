@@ -8,4 +8,7 @@ void MergePathSplitter(
     vec_t * B, uint32_t B_length,
     vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* splitters);
+
+int hostBasicCompare(const void * a, const void * b);
+
 #endif
