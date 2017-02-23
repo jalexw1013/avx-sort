@@ -9,8 +9,6 @@ OS = $(shell uname)
 
 TARGETS_NTHD = main util xmalloc
 
-
-
 merge: main.c sorts.c util.c xmalloc.c
 	$(GCC) -O2 -o $@ $(GCFLAGS) $^
 

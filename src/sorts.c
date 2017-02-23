@@ -570,16 +570,16 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
 //must be multiple of cpus
 void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int cpus) {
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < cpus; i++) {
         qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), hostBasicCompare);
     }
 
     //just use single input and output and swap.
-
+    
     int count = cpus/2;
     while (count > 0) {
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for (int i = 0; i < count; i++) {
             vec_t* C = (vec_t*)xmalloc((array_length/count) * sizeof(vec_t));
             mergeFunction(array + i*array_length/count, array_length/(count*2), array + i*array_length/count + array_length/(count*2), array_length/(count*2),C, array_length/count);
