@@ -1,0 +1,36 @@
+Parameters
+Entropy: 28
+A Size: 10000
+B Size: 10000
+C Size: 20000
+
+Merging Results:
+Serial Merge:               10.3545190200
+Serial Merge no Branch:      0.9453296812
+Bitonic Merge Real:          0.9596347716
+Serial Merge AVX-512:        0.3051757735
+    Merge Path Only:         0.0154972077
+Parameters
+Entropy: 28
+A Size: 1000000
+B Size: 1000000
+C Size: 2000000
+
+Merging Results:
+Serial Merge:                0.9088992670
+Serial Merge no Branch:      0.9699940406
+Bitonic Merge Real:          0.8074045432
+Serial Merge AVX-512:        0.3260493209
+    Merge Path Only:         0.0010490418
+Parameters
+Entropy: 28
+A Size: 10000000
+B Size: 10000000
+C Size: 20000000
+
+Merging Results:
+Serial Merge:                0.8548855845
+Serial Merge no Branch:      0.9108400256
+Bitonic Merge Real:          0.7666754342
+Serial Merge AVX-512:        0.3104889457
+    Merge Path Only:         0.0001156330
