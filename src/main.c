@@ -183,67 +183,6 @@ int main(int argc, char** argv)
    return knl_features_available;
  }
 
-/*void checkFeatures() {
-    printf("Performing Self Feature Check.\n");
-    printf("The Following Technologies Are Avaliable On This Compiler.\n");
-
-    printf("SSE: ");
-    #ifdef __SSE__
-    printf("Yes");
-    #else
-    printf("No");
-    #endif
-    printf("\n");
-
-    printf("SSE2: ");
-    #ifdef __SSE2__
-    printf("Yes");
-    #else
-    printf("No");
-    #endif
-    printf("\n");
-
-    printf("SSE3: ");
-    #ifdef __SSE3__
-    printf("Yes");
-    #else
-    printf("No");
-    #endif
-    printf("\n");
-
-    printf("AVX: ");
-    #ifdef __AVX__
-    printf("Yes");
-    #else
-    printf("No");
-    #endif
-    printf("\n");
-
-    printf("AVX2: ");
-    #ifdef __AVX2__
-    printf("Yes");
-    #else
-    printf("No");
-    #endif
-    printf("\n");
-
-    printf("AVX-512: ");
-    //#ifdef __FEATURE_AVX512F__
-    if (can_use_intel_knl_features())
-    printf("Yes");
-    //#else
-    else printf("No");
-    //#endif
-    printf("\n");
-
-    if ( can_use_intel_knl_features() )
-      printf("This CPU supports AVX-512F+CD+ER+PF as introduced in Knights Landing\n");
-    else
-      printf("This CPU does not support all Knights Landing AVX-512 features\n");
-    return 1;
-}*/
-
-
 int hostBasicCompare(const void * a, const void * b) {
     return (int) (*(vec_t *)a - *(vec_t *)b);
 }
@@ -311,15 +250,16 @@ void freeGlobalData() {
       free(CUnsorted);
 }
 
-void verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
-    for(int i = 0; i < length; i++) {
+int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
+    for(int i = 0; i < 100; i++) {
         if(output[i] != sortedData[i]) {
             printf("\nAlgorithm Failed To Produce Correct Results: %s\n", name);
             printf("Index:%d, Given Value:%d, Correct "
             "Value:%d \n", i, output[i], sortedData[i]);
-            return;
+            return 0;
         }
     }
+    return 1;
 }
 
 void clearArray(vec_t* array, uint32_t length) {
@@ -359,35 +299,43 @@ void tester(
     #ifdef MERGE
 
     for (int i = 0; i < RUNS; i++) {
+        clearArray((*C), C_length);
 
+        //Serial Merge
         float* serial = (float*)xcalloc(1, sizeof(float));
         printf("Merging Results:\n");
         tic_reset();
         serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
         *serial = tic_sincelast();
+        verifyOutput((*C), (*CSorted), C_length, "Serial Merge");
         clearArray((*C), C_length);
         printf("Serial Merge:          ");
         printf("%18.10f\n", 1e8*(*serial / (float)(Ct_length)));
         free(serial);
 
+        //Branchless serial merge
         float* serialNoBranch = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         serialMergeNoBranch((*A), A_length, (*B), B_length, (*C), Ct_length);
         *serialNoBranch = tic_sincelast();
+        verifyOutput((*C), (*CSorted), C_length, "Serial Merge Branchless");
         clearArray((*C), C_length);
         printf("Serial Merge no Branch:");
         printf("%18.10f\n", 1e8*(*serialNoBranch / (float)(Ct_length)));
         free(serialNoBranch);
 
+        //Bitonic
         float* bitonicReal = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         bitonicMergeReal((*A), A_length, (*B), B_length, (*C), Ct_length);
         *bitonicReal = tic_sincelast();
+        verifyOutput((*C), (*CSorted), C_length, "Bitonic");
         clearArray((*C), C_length);
         printf("Bitonic Merge Real:    ");
         printf("%18.10f\n", 1e8*(*bitonicReal / (float)(Ct_length)));
         free(bitonicReal);
 
+        //Intrinsics merge (avx single wide)
         /*float* intrinsic = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         serialMergeIntrinsic((*A), A_length, (*B), B_length, (*C), Ct_length);
@@ -397,17 +345,30 @@ void tester(
         printf("%18.10f\n", 1e8*(*intrinsic / (float)(Ct_length)));
         free(intrinsic);*/
 
+        //AVX512 Merge (our algorithm)
         if ( can_use_intel_knl_features() ) {
             float* avx512 = (float*)xcalloc(1, sizeof(float));
+            float* mergePath = (float*)xcalloc(1, sizeof(float));
             tic_reset();
-            serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length);
+            uint32_t ASplitters[17];
+            uint32_t BSplitters[17];
+            MergePathSplitter((*A), A_length, (*B), B_length, (*C),
+                Ct_length, 16, ASplitters, BSplitters);
+            *mergePath = tic_sincelast();
+            serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length,
+                ASplitters, BSplitters);
             *avx512 = tic_sincelast();
+            verifyOutput((*C), (*CSorted), C_length, "AVX512 Merge");
             clearArray((*C), C_length);
             printf("Serial Merge AVX-512:  ");
             printf("%18.10f\n", 1e8*(*avx512 / (float)(Ct_length)));
+            printf("    Merge Path Only:   ");
+            printf("%18.10f\n", 1e8*(*mergePath / (float)(Ct_length)));
             free(avx512);
+            free(mergePath);
         }
 
+        //Merge network
         /*float* mergenet = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         mergeNetwork((*A), A_length, (*B), B_length, (*C), Ct_length);
@@ -567,9 +528,9 @@ void tester(
 
 
 void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
-    uint32_t threads, uint32_t* splitters) {
-  splitters[threads*2] = A_length;
-  splitters[threads*2+1] = B_length;
+    uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters) {
+  ASplitters[threads] = A_length;
+  BSplitters[threads] = B_length;
 
   for (int thread=0; thread<threads;thread++)
   {
@@ -598,7 +559,8 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
         }
 
         if(Ai <= Bi) {//Found it
-          splitters[thread*2]   = current_x;splitters[thread*2+1] = current_y;
+          ASplitters[thread]   = current_x;
+          BSplitters[thread] = current_y;
           break;
         } else {//Both zeros
           x_top = current_x - 1;y_top = current_y + 1;

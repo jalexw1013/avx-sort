@@ -26,7 +26,8 @@ void bitonicMergeReal(
 void serialMergeAVX512(
     vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    uint32_t* ASplitters, uint32_t* BSplitters);
 
 /*void mergeNetwork(
     vec_t* A, int32_t A_length,

@@ -247,44 +247,46 @@ void printmmask16(char *text, __mmask16 mask) {
 }*/
 
 void serialMergeAVX512(vec_t* A, int32_t A_length,
-                                                     vec_t* B, int32_t B_length,
-                                                     vec_t* C, uint32_t C_length) {
-        uint32_t splitters[34];
-        MergePathSplitter(A, A_length, B, B_length, C, C_length, 16, splitters);
+    vec_t* B, int32_t B_length,
+    vec_t* C, uint32_t C_length,
+    uint32_t* ASplitters, uint32_t* BSplitters) {
+
+        //start indexes
+        __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
+                                           ASplitters[13], ASplitters[12],
+                                           ASplitters[11], ASplitters[10],
+                                           ASplitters[9], ASplitters[8],
+                                           ASplitters[7], ASplitters[6],
+                                           ASplitters[5], ASplitters[4],
+                                           ASplitters[3], ASplitters[2],
+                                           ASplitters[1], ASplitters[0]);
+        __m512i vindexB = _mm512_set_epi32(BSplitters[15], BSplitters[14],
+                                           BSplitters[13], BSplitters[12],
+                                           BSplitters[11], BSplitters[10],
+                                           BSplitters[9], BSplitters[8],
+                                           BSplitters[7], BSplitters[6],
+                                           BSplitters[5], BSplitters[4],
+                                           BSplitters[3], BSplitters[2],
+                                           BSplitters[1], BSplitters[0]);
         //stop indexes
-        __m512i vindexA = _mm512_set_epi32(splitters[30], splitters[28],
-                                           splitters[26], splitters[24],
-                                           splitters[22], splitters[20],
-                                           splitters[18], splitters[16],
-                                           splitters[14], splitters[12],
-                                           splitters[10], splitters[8],
-                                           splitters[6], splitters[4],
-                                           splitters[2], splitters[0]);
-        __m512i vindexB = _mm512_set_epi32(splitters[31], splitters[29],
-                                           splitters[27], splitters[25],
-                                           splitters[23], splitters[21],
-                                           splitters[19], splitters[17],
-                                           splitters[15], splitters[13],
-                                           splitters[11], splitters[9],
-                                           splitters[7], splitters[5],
-                                           splitters[3], splitters[1]);
-        //stop indexes
-        __m512i vindexAStop = _mm512_set_epi32(splitters[32], splitters[30],
-                                           splitters[28], splitters[26],
-                                           splitters[24], splitters[22],
-                                           splitters[20], splitters[18],
-                                           splitters[16], splitters[14],
-                                           splitters[12], splitters[10],
-                                           splitters[8], splitters[6],
-                                           splitters[4], splitters[2]);
-        __m512i vindexBStop = _mm512_set_epi32(splitters[33], splitters[31],
-                                           splitters[29], splitters[27],
-                                           splitters[25], splitters[23],
-                                           splitters[21], splitters[19],
-                                           splitters[17], splitters[15],
-                                           splitters[13], splitters[11],
-                                           splitters[9], splitters[7],
-                                           splitters[5], splitters[3]);
+        __m512i vindexAStop = _mm512_set_epi32(ASplitters[16],
+                                           ASplitters[15], ASplitters[14],
+                                           ASplitters[13], ASplitters[12],
+                                           ASplitters[11], ASplitters[10],
+                                           ASplitters[9], ASplitters[8],
+                                           ASplitters[7], ASplitters[6],
+                                           ASplitters[5], ASplitters[4],
+                                           ASplitters[3], ASplitters[2],
+                                           ASplitters[1]);
+        __m512i vindexBStop = _mm512_set_epi32(BSplitters[16],
+                                           BSplitters[15], BSplitters[14],
+                                           BSplitters[13], BSplitters[12],
+                                           BSplitters[11], BSplitters[10],
+                                           BSplitters[9], BSplitters[8],
+                                           BSplitters[7], BSplitters[6],
+                                           BSplitters[5], BSplitters[4],
+                                           BSplitters[3], BSplitters[2],
+                                           BSplitters[1]);
         //vindex start
         __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
 
