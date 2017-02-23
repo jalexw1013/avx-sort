@@ -12,15 +12,7 @@ TARGETS_NTHD = main util xmalloc
 
 
 merge: main.c sorts.c util.c xmalloc.c
-	$(ICC) -O2 -o $@ $(GCFLAGS) $^
-
-debug: main.c sorts.c util.c xmalloc.c
-	$(CC) -O0 -o $@ -g -O1 -mavx2 -mavx512f $^  $(LDFLAGS)
-
-sde64: main.c sorts.c util.c xmalloc.c
-	sde/sde64 -- $(CC) -O2 -o $@ $(GCFLAGS) $^  $(LDFLAGS)
+	$(GCC) -O2 -o $@ $(GCFLAGS) $^
 
 clean:
 	rm merge -f
-	rm debug -f
-	rm sde64 -f
