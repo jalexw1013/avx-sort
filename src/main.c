@@ -383,10 +383,24 @@ void tester(
     //---------------------------------------------------------------------
     //
     // Begin section for sorting algorithms
-    // Comment out this section to skip all sorting comparisions.
+    // Change the type define at the top to easily switch between whether
+    // to run this or not.
     //
     //---------------------------------------------------------------------
+    #ifdef SORT
 
+    //parallelComboSort
+    float* parallelCombo = (float*)xcalloc(1, sizeof(float));
+    tic_reset();
+    parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, 3);
+    *parallelCombo = tic_sincelast();
+    verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Combo Sort");
+    clearArray((*CUnsorted), Ct_length);
+    printf("Parallel Combo Sort:    ");
+    printf("%18.10f\n", 1e8*(*parallelCombo / (float)(Ct_length)));
+    free(parallelCombo);
+
+    #endif
 
 
       /*tic_reset();

@@ -568,15 +568,35 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
 }*/
 
 //must be multiple of cpus
-void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int cpus) {
+void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
+
+    //Calculate variables for the number of arrays and elements
+    int numSubArrays = threads;
+    int elementsPerArray = array_length / numSubArrays;
+    int numExtraElems = array_length % numSubArrays;
+
+    //create splitters to mark beggining and end of each subarray
+    int splitters[numSubArrays + 1];
+    splitters[0] = 0;
+    for (int i = 1; i < numSubArrays + 1; i++) {
+        splitters[i] = splitters[i - 1] + elementsPerArray;
+        if (numExtraElems > 0) {
+            splitters[i]++;
+            numExtraElems--;
+        }
+    }
+
+    for (int i = 0; i < numSubArrays + 1; i++) {
+        printf("S%i: %i\n", i, splitters[i]);
+    }
 
     //#pragma omp parallel for
-    for (int i = 0; i < cpus; i++) {
+    /*for (int i = 0; i < cpus; i++) {
         qsort((void*)(array + i*array_length/cpus), array_length/cpus, sizeof(uint32_t), hostBasicCompare);
     }
 
     //just use single input and output and swap.
-    
+
     int count = cpus/2;
     while (count > 0) {
         //#pragma omp parallel for
@@ -587,5 +607,5 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
             free(C);
         }
         count /= 2;
-    }
+    }*/
 }
