@@ -23,7 +23,7 @@
 #include "main.h"
 
 //Functionality parametters
-#define MERGE //Coment this out to not test merging functionality
+//#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -58,10 +58,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 1000000;
-uint32_t  h_ui_B_length                = 1000000;
-uint32_t  h_ui_C_length                = 2000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 2000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 13;
+uint32_t  h_ui_B_length                = 0;
+uint32_t  h_ui_C_length                = 13; //array to put values in
+uint32_t  h_ui_Ct_length               = 13; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -298,7 +298,7 @@ void tester(
     //---------------------------------------------------------------------
     #ifdef MERGE
 
-    for (int i = 0; i < RUNS; i++) {
+    //for (int i = 0; i < RUNS; i++) {
         clearArray((*C), C_length);
 
         //Serial Merge
@@ -377,7 +377,7 @@ void tester(
         printf("Merge Network:         ");
         printf("%18.10f\n", 1e8*(*mergenet / (float)(Ct_length)));
         free(mergenet);*/
-    }
+    //}
     #endif
 
     //---------------------------------------------------------------------
@@ -601,7 +601,6 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
   }
 }
 
-#define PRINT_ARRAY(ARR) for (int t=0; t<threads;t++){printf("%10d, ",ARR[t]);}printf("\n");
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
 
 void hostParseArgs(int argc, char** argv)
