@@ -570,34 +570,86 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
 //must be multiple of cpus
 void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
 
+    //allocate memory to swap array with
+    vec_t* C = (vec_t*)xmalloc((array_length) * sizeof(vec_t));
+
+    printf("Preparing to sort array!! Yay!!\n");
+    for (int i = 0; i < array_length; i++) {
+        printf("C%i:%i\n", i, array[i]);
+    }
+
     //Calculate variables for the number of arrays and elements
     int numSubArrays = threads;
     int elementsPerArray = array_length / numSubArrays;
     int numExtraElems = array_length % numSubArrays;
 
     //create splitters to mark beggining and end of each subarray
-    int splitters[numSubArrays + 1];
-    splitters[0] = 0;
+    vec_t* splitters[numSubArrays + 1];
+    int splittersLengths[numSubArrays + 1];
+    splittersLengths[0] = 0;
+    splitters[0] = array;
     for (int i = 1; i < numSubArrays + 1; i++) {
         splitters[i] = splitters[i - 1] + elementsPerArray;
+        splittersLengths[i] = splittersLengths[i - 1] + elementsPerArray;
         if (numExtraElems > 0) {
-            splitters[i]++;
+            splitters[i] += 1;
+            splittersLengths[i]++;
             numExtraElems--;
         }
     }
 
-    //#pragma omp parallel for
-    for (int i = 0; i < numSubArrays; i++) {
-        qsort((void*)(array + splitters[i]), splitters[i+1] - splitters[i], sizeof(uint32_t), hostBasicCompare);
+    printf("\n");
+    for (int j = 0; j < numSubArrays + 1; j++) {
+        printf("Splitters%i:%i\n", j, splittersLengths[j]);
     }
 
-    for (int i = 0; i < array_length; i++) {
-        printf("Array%i: %i\n", i, array[i]);
+    printf("\n");
+    //#pragma omp parallel for
+    for (int i = 0; i < numSubArrays; i++) {
+        qsort((void*)(splitters[i]), splittersLengths[i+1] - splittersLengths[i], sizeof(uint32_t), hostBasicCompare);
+        printf("Just sorted this array!! Yay!!\n");
+        for (int j = 0; j < splittersLengths[i+1] - splittersLengths[i]; j++) {
+            printf("Sub%i:%i\n", j, (splitters[i])[j]);
+        }
+        printf("Total array now!! Yay!!\n");
+        for (int j = 0; j < array_length; j++) {
+            printf("C%i:%i\n", j, array[j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    while (numSubArrays > 1) {
+        for (int i = 0; i < numSubArrays; i += 2) {
+            printf("\n\nPreparing for Merge\n");
+            printf("Array before Merge:\n");
+            printf("C before Merge:\n");
+            printf("Merging Addresses:\n");
+            mergeFunction(splitters[i], splittersLengths[i], splitters[i+1], splittersLengths[i+1],C + (splitters[i] - array), splittersLengths[i] + splittersLengths[i+1]);
+        }
+
+        for (int i = 0; i < numSubArrays + 1; i++) {
+            splitters[i] = C + (splitters[i*2] - splitters[0]);
+            splittersLengths[i] = (splitters[(i + 1)*2] - splitters[0]);
+        }
+
+        numSubArrays /= 2;
+
+        for (int i = 0; i < numSubArrays; i += 2) {
+            mergeFunction(splitters[i], splittersLengths[i], splitters[i+1], splittersLengths[i+1],array + (splitters[i] - C), splittersLengths[i] + splittersLengths[i+1]);
+        }
+
+        for (int i = 0; i < numSubArrays + 1; i++) {
+            splitters[i] = array + (splitters[i*2] - splitters[0]);
+            splittersLengths[i] = (splitters[(i + 1)*2] - splitters[0]);
+        }
+
+        numSubArrays /= 2;
     }
 
     //just use single input and output and swap.
 
-    numSubArrays /= 2;
+    /*numSubArrays /= 2;
     while (count > 0) {
         //#pragma omp parallel for
         for (int i = 0; i < numSubArrays; i++) {
@@ -606,6 +658,6 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
             copyArrayInRange(C, array + i*array_length/count, 0, array_length/count);
             free(C);
         }
-        count /= 2;
-    }
+        count /= 2;*/
+    //}
 }
