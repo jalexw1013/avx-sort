@@ -94,7 +94,8 @@ int main(int argc, char** argv)
         &CUnsorted);
 
     freeGlobalData();
-
+    #if defined(__MIC__) && defined(SIMD_AVX512)
+    #endif
 }
 
 //---------------------------------------------------------------------

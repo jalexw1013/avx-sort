@@ -39,5 +39,6 @@ void serialMergeAVX512(
 
 void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads);
 
+static void AVX512mergeOutPlace(uint32_t* input, uint32_t*output, int left, int mid, int right);
 
 #endif
