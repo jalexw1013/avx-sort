@@ -13,6 +13,7 @@ merge: main.c sorts.c util.c xmalloc.c
 	$(GCC) -O2 -o $@ $(GCFLAGS) $^
 	
 run:
+	make merge
 	./merge
 
 clean:

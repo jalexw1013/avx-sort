@@ -782,10 +782,10 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
     //allocate memory to swap array with
     vec_t* C = (vec_t*)xmalloc((array_length) * sizeof(vec_t));
 
-    /*printf("Preparing to sort array!! Yay!!\n");
+    printf("Preparing to sort array!! Yay!!\n");
     for (int i = 0; i < array_length; i++) {
         printf("Array%i:%i\n", i, array[i]);
-    }*/
+    }
 
     //Calculate variables for the number of arrays and elements
     int numSubArrays = threads;
@@ -834,8 +834,12 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
     }
     //printf("\n");
 
+    int count = 0;
     while (numSubArrays > 1) {
         for (int i = 0; i < numSubArrays - 1; i += 2) {
+            printf("numSubArrays:%i\n", numSubArrays);
+            printf("i%i\n", i);
+            count++;
             /*printf("\n\nPreparing for Merge\n");
             printf("Array before Merge:\n");
             for (int j = 0; j < array_length; j++) {
@@ -846,9 +850,9 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
                 printf("C%i:%i\n", j, C[j]);
             }
             printf("Merging Addresses:\n");
-            printf("Array:%x\n", array);
+            printf("Array:%x\n", array);*/
             //printf("A:%x\n", splitters[i]);
-            //printf("B:%x\n", splitters[i+1]);*/
+            //printf("B:%x\n", splitters[i+1]);
             mergeFunction(array + splittersLengths[i], splittersLengths[i+1]-splittersLengths[i], array + splittersLengths[i+1], splittersLengths[i+2]-splittersLengths[i+1],C + splittersLengths[i], splittersLengths[i+2]-splittersLengths[i]);
             /*printf("Merging Done:\n");
             printf("Array after Merge:\n");
@@ -872,12 +876,12 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
             break;
         }
 
-        //printf("Reshuffling Splitters\n");
-        //printf("Splitters are before shuffle:\n");
-        //for (int j = 0; j < numSubArrays + 1; j++) {
-        //    printf("Splitters%i:%i\n", j, splittersLengths[j]);
-        //}
-        //printf("There are:%i sub arrays\n", numSubArrays);
+        /*printf("Reshuffling Splitters\n");
+        printf("Splitters are before shuffle:\n");
+        for (int j = 0; j < numSubArrays + 1; j++) {
+            printf("Splitters%i:%i\n", j, splittersLengths[j]);
+        }
+        printf("There are:%i sub arrays\n", numSubArrays);*/
         int count = 0;
         for (int i = 0; i < numSubArrays + 1; i += 2) {
             splittersLengths[count++] = splittersLengths[i];
@@ -888,9 +892,9 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         for (;count < threads + 1; count++) {
             splittersLengths[count] = 0;
         }
-        //for (int j = 0; j < numSubArrays + 1; j++) {
-        //    printf("Splitters%i:%i\n", j, splittersLengths[j]);
-        //}
+        /*for (int j = 0; j < numSubArrays + 1; j++) {
+            printf("Splitters%i:%i\n", j, splittersLengths[j]);
+        }*/
 
         numSubArrays /= 2;
         //copyArrayInRange(C, array, 0, array_length);
@@ -920,6 +924,12 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         printf("\n");*/
     }
     copyArrayInRange(C, array, 0, array_length);
+
+    printf("Array after Merge:\n");
+    for (int j = 0; j < array_length; j++) {
+        printf("Array%i:%i\n", j, array[j]);
+    }
+    printf("Count:%i\n", count);
 
     //just use single input and output and swap.
 
