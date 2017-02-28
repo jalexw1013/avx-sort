@@ -58,10 +58,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 13;
+uint32_t  h_ui_A_length                = 150;
 uint32_t  h_ui_B_length                = 0;
-uint32_t  h_ui_C_length                = 13; //array to put values in
-uint32_t  h_ui_Ct_length               = 13; //for unsorted and sorted
+uint32_t  h_ui_C_length                = 150; //array to put values in
+uint32_t  h_ui_Ct_length               = 150; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -252,7 +252,7 @@ void freeGlobalData() {
 }
 
 int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
             printf("\nAlgorithm Failed To Produce Correct Results: %s\n", name);
             printf("Index:%d, Given Value:%d, Correct "
@@ -393,7 +393,7 @@ void tester(
     //parallelComboSort
     float* parallelCombo = (float*)xcalloc(1, sizeof(float));
     tic_reset();
-    parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, 3);
+    parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, 200);
     *parallelCombo = tic_sincelast();
     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Combo Sort");
     clearArray((*CUnsorted), Ct_length);
