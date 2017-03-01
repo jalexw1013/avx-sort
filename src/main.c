@@ -393,7 +393,7 @@ void tester(
         //parallelComboSort
         float* parallelCombo = (float*)xcalloc(1, sizeof(float));
         tic_reset();
-        parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, 75);
+        iterativeComboMergeSort(*CUnsorted, Ct_length, serialMergeNoBranch, 75);
         *parallelCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Combo Sort");
         clearArray((*CUnsorted), Ct_length);

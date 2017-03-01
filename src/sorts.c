@@ -777,7 +777,7 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
 }*/
 
 //must be multiple of cpus
-void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
+/*void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
 
     //allocate memory to swap array with
     vec_t* C = (vec_t*)xmalloc((array_length) * sizeof(vec_t));
@@ -811,12 +811,12 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
     /*vec_t* splittersC[numSubArrays + 1];
     int splittersLengthsC[numSubArrays + 1];
     splittersLengthsC[0] = 0;
-    splittersC[0] = array;*/
+    splittersC[0] = array;
 
     /*printf("\n");
     for (int j = 0; j < numSubArrays + 1; j++) {
         printf("Splitters%i:%i\n", j, splittersLengths[j]);
-    }*/
+    }
 
     //printf("\n");
     //#pragma omp parallel for
@@ -830,7 +830,7 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         for (int j = 0; j < array_length; j++) {
             printf("Array%i:%i\n", j, array[j]);
         }
-        printf("\n");*/
+        printf("\n");
     }
     //printf("\n");
 
@@ -850,7 +850,7 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
                 printf("C%i:%i\n", j, C[j]);
             }
             printf("Merging Addresses:\n");
-            printf("Array:%x\n", array);*/
+            printf("Array:%x\n", array);
             //printf("A:%x\n", splitters[i]);
             //printf("B:%x\n", splitters[i+1]);
             mergeFunction(array + splittersLengths[i], splittersLengths[i+1]-splittersLengths[i], array + splittersLengths[i+1], splittersLengths[i+2]-splittersLengths[i+1],C + splittersLengths[i], splittersLengths[i+2]-splittersLengths[i]);
@@ -863,7 +863,7 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
             for (int j = 0; j < array_length; j++) {
                 printf("C%i:%i\n", j, C[j]);
             }
-            printf("\n");*/
+            printf("\n");
         }
         if (numSubArrays % 2 == 1) {
             for (int i = splittersLengths[numSubArrays - 1]; i < splittersLengths[numSubArrays]; i++) {
@@ -881,7 +881,7 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         for (int j = 0; j < numSubArrays + 1; j++) {
             printf("Splitters%i:%i\n", j, splittersLengths[j]);
         }
-        printf("There are:%i sub arrays\n", numSubArrays);*/
+        printf("There are:%i sub arrays\n", numSubArrays);
         int count = 0;
         for (int i = 0; i < numSubArrays + 1; i += 2) {
             splittersLengths[count++] = splittersLengths[i];
@@ -894,9 +894,13 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         }
         /*for (int j = 0; j < numSubArrays + 1; j++) {
             printf("Splitters%i:%i\n", j, splittersLengths[j]);
-        }*/
+        }
 
         numSubArrays /= 2;
+        if ((numSubArrays * 2) % 2 == 1 && numSubArrays % 2 == 1) {
+            printf("\n\n\n\n\nYOOOOOOOO\n\n\n\n\n\n");
+            numSubArrays++;
+        }
         //copyArrayInRange(C, array, 0, array_length);
     }
     if (threads % 2 == 1) {
@@ -921,7 +925,7 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
         for (int j = 0; j < array_length; j++) {
             printf("C%i:%i\n", j, C[j]);
         }
-        printf("\n");*/
+        printf("\n");
     }
     copyArrayInRange(C, array, 0, array_length);
 
@@ -942,6 +946,21 @@ void parallelComboSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(
             copyArrayInRange(C, array + i*array_length/count, 0, array_length/count);
             free(C);
         }
-        count /= 2;*/
+        count /= 2;
     //}
+}*/
+
+#define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
+
+void iterativeComboMergeSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
+    vec_t* C = (vec_t*)xmalloc((array_length) * sizeof(vec_t));
+    for (int subArraySize = 1; subArraySize <= array_length - 1; subArraySize *= 2) {
+        for (int leftStart = 0; leftStart < array_length - 1; leftStart += 2*subArraySize) {
+            printf("Hello\n");
+            int middlePoint = leftStart + subArraySize - 1;
+            int rightEnd = min(leftStart + 2*subArraySize - 1, array_length - 1);
+            mergeFunction(array + leftStart, middlePoint - leftStart, array + middlePoint, rightEnd - middlePoint, C, rightEnd - leftStart);
+        }
+        printf("test\n");
+    }
 }
