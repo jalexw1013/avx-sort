@@ -1,0 +1,239 @@
+/*void serialMergeIntrinsic( vec_t* A, int32_t A_length,
+                                  vec_t* B, int32_t B_length,
+                                  vec_t* C, uint32_t C_length){
+    uint32_t ai = 0;
+    uint32_t bi = 0;
+    uint32_t ci = 0;
+
+    __m128i mione = _mm_cvtsi32_si128(1);
+    __m128i miand, miandnot;
+    __m128i miAi = _mm_cvtsi32_si128(0);//ai);
+    __m128i miBi = _mm_cvtsi32_si128(0);//bi);
+
+    while(ai < A_length && bi < B_length) {
+        __m128i miAelem = _mm_cvtsi32_si128(A[ai]);
+        __m128i miBelem = _mm_cvtsi32_si128(B[bi]);
+        __m128i micmp   = _mm_cmplt_epi32(miAelem,miBelem);
+        miand           = _mm_and_si128(micmp,mione);
+        miandnot        = _mm_andnot_si128(micmp,mione);
+        miAelem         = _mm_and_si128(micmp,miAelem);
+        miBelem         = _mm_andnot_si128(micmp,miBelem);
+        miAi            = _mm_add_epi32(miAi,miand);
+        miBi            = _mm_add_epi32(miBi,miandnot);
+        C[ci++]         = _mm_cvtsi128_si32(_mm_add_epi32(miAelem,miBelem));
+        ai              = _mm_cvtsi128_si32(miAi);
+        bi              = _mm_cvtsi128_si32(miBi);
+    }
+
+    while(ai < A_length) {
+        C[ci++] = A[ai++];
+    }
+    while(bi < B_length) {
+        C[ci++] = B[bi++];
+    }
+}*/
+
+/*void print256_num(__m256i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("Numerical: %i %i %i %i %i %i %i %i \n",
+           val[0], val[1], val[2], val[3], val[4], val[5],
+           val[6], val[7]);
+}
+
+void print512_num(char *text, __m512i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+
+void print16intarray(char *text, int *val) {
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+
+void printmmask16(char *text, __mmask16 mask) {
+    //uint16_t *val = (uint16_t*) &mask;
+    //printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+    uint16_t num = (uint16_t)mask;
+    printf("%s: %i\n", text, num);
+}*/
+
+/*#define PRINTEXTRA 0
+#define STORE_AND_PRINT(str,reg) {if (PRINTEXTRA){vec_t arr[4]; _mm_storeu_si128((__m128i*)&arr,reg);printf("%s : %d %d %d %d\n", str, arr[3],arr[2],arr[1],arr[0]); }}
+
+const uint8_t min1=(3<<6)| (3<<4)|(2<<2) |1;
+const uint8_t max1=(2<<6)| (1<<4);
+
+void mergeNetwork(vec_t* A, int32_t A_length,
+                  vec_t* B, int32_t B_length,
+                  vec_t* C, uint32_t C_length){
+  uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+
+  __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+  __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+  __m128i mifour = _mm_cvtsi32_si128(4);
+
+
+   while ((Aindex < (A_length-4)) || (Bindex < (B_length-4)))
+  {
+      //STORE_AND_PRINT("original ", sA);
+      //STORE_AND_PRINT("original ", sB);
+
+      __m128i smin1 = _mm_min_epu32(sA, sB);
+      __m128i smax1 = _mm_max_epu32(sA, sB);
+      //STORE_AND_PRINT("first min", smin1);
+      //STORE_AND_PRINT("first max", smax1);
+      __m128i smin1shift = _mm_shuffle_epi32(smin1, (3<<6)| (3<<4)|(2<<2) |1);
+      __m128i smax1shift = _mm_shuffle_epi32(smax1, (2<<6)| (1<<4));
+      //STORE_AND_PRINT("shift min", smin1shift);
+      //STORE_AND_PRINT("shift max", smax1shift);
+
+      __m128i smin2 = _mm_min_epu32(smin1, smax1shift);
+      __m128i smax2 = _mm_max_epu32(smax1, smin1shift);
+      //STORE_AND_PRINT("2nd   min",smin2);
+      //STORE_AND_PRINT("2nd   max",smax2);
+      __m128i smin2shift = _mm_shuffle_epi32(smin2, (3<<6)| (3<<4)|(3<<2) |2);
+      __m128i smax2shift = _mm_shuffle_epi32(smax2, (1<<6));
+      //STORE_AND_PRINT("shift min", smin2shift);
+      //STORE_AND_PRINT("shift max", smax2shift);
+
+      __m128i smin3 = _mm_min_epu32(smin2, smax2shift);
+      __m128i smax3 = _mm_max_epu32(smax2, smin2shift);
+      //STORE_AND_PRINT("3rd   min",smin3);
+      //STORE_AND_PRINT("3rd   max",smax3);
+      __m128i smin3shift = _mm_shuffle_epi32(smin3, (3<<6)| (3<<4)|(3<<2) | 3);
+      __m128i smax3shift = _mm_shuffle_epi32(smax3, 0);
+      //STORE_AND_PRINT("shift min", smin3shift);
+      //STORE_AND_PRINT("shift max", smax3shift);
+
+      __m128i smin4 = _mm_min_epu32(smin3, smax3shift);
+      __m128i smax4 = _mm_max_epu32(smax3, smin3shift);      //STORE_AND_PRINT("4th   min",smin4);
+      //STORE_AND_PRINT("4th   max",smax4);
+
+      #if (PRINTEXTRA==1)
+        printf("\n");
+      #endif
+      _mm_storeu_si128((__m128i*)&(C[Cindex]), smin4);
+      // calculate index for the next run
+      sB=smax4;
+      Cindex+=4;
+
+      __m128i tempA = _mm_loadu_si128((const __m128i*)&(A[Aindex+4]));
+      __m128i tempB = _mm_loadu_si128((const __m128i*)&(B[Bindex+4]));
+      // __m128i tempAS = _mm_shuffle_epi32(tempA,0);
+      // __m128i tempBS = _mm_shuffle_epi32(tempB,0);
+      // __m128i cmpAB = _mm_cmplt_epi32(tempAS,tempBS);
+
+      __m128i cmpAB = _mm_cmplt_epi32(_mm_shuffle_epi32(tempA,0),_mm_shuffle_epi32(tempB,0));
+
+      __m128i addA  = _mm_and_si128(cmpAB,mifour);
+      __m128i addB  = _mm_andnot_si128(cmpAB,mifour);
+      Aindex       += _mm_cvtsi128_si32(addA);
+      Bindex       += _mm_cvtsi128_si32(addB);
+
+      tempA         = _mm_and_si128(cmpAB,tempA);
+      tempB         = _mm_andnot_si128(cmpAB,tempB);
+      sA            = _mm_add_epi32(tempA,tempB);
+
+  //    printf("%d, %d, %d \n", Aindex, Bindex, Cindex);
+  //    printf("%d, %d, %d \n", Aindex, Bindex, Cindex);
+      // if (A[Aindex+4]<B[Bindex+4]) {
+      //   Aindex+=4;
+      //   sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+      // }
+      // else{
+      //   Bindex+=4;
+      //   sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+      // }
+    //    printf("INDICES are %d %d %d\n", Aindex,Bindex,Cindex);
+    }//end while loop
+
+ // printf("indices are %d %d %d\n", Aindex,Bindex,Cindex);
+    vec_t last4[4]; int countlast4=0;
+    _mm_storeu_si128((__m128i*)&(last4), sB);
+
+    while (countlast4<4 && Aindex < A_length && Bindex < B_length){
+      if (last4[countlast4] < A[Aindex] && A[Aindex] < B[Bindex]){
+        C[Cindex++] = A[Aindex++];
+        countlast4++;
+      }
+      else if (last4[countlast4] < B[Bindex] && B[Bindex] < A[Aindex]){
+        C[Cindex++] = B[Bindex];
+        countlast4++;
+      }
+      else{
+        C[Cindex++] = A[Aindex] < B[Bindex] ? A[Aindex++] : B[Bindex++];
+      }
+    }
+
+    while(Aindex < A_length && Bindex < B_length) {
+      C[Cindex++] = A[Aindex] < B[Bindex] ? A[Aindex++] : B[Bindex++];
+    }
+    while(Aindex < A_length) C[Cindex++] = A[Aindex++];
+    while(Bindex < B_length) C[Cindex++] = B[Bindex++];
+ // printf("indices are %d %d %d\n", Aindex,Bindex,Cindex);
+
+  //  float time_elapsed = tic_sincelast();
+  // check sanity of results
+    // for(int i = 0; i < C_length; ++i) {
+    //   //assert(C[i] == globalC[i]);
+    //   if(C[i]!=CSorted[i])
+    //   {
+    //     printf("\n %d,%d,%d \n", i,C[i],CSorted[i]);
+    //     return;
+    //   }
+    // }
+}*/
+
+/**
+ * this function is a recursive helper for the quick sort function
+ */
+/*void quickSortHelperRecursive(vec_t* arr, int a, int b) {
+    assert(arr != NULL);
+    if (a >= b) {
+        return;
+    }
+    int left = a + 1;
+    int right = b;
+    int pivotIndex = (rand() % (b - a)) + a;
+    uint32_t pivot = arr[pivotIndex];
+    uint32_t temp;
+    arr[pivotIndex] = arr[a];
+    arr[a] = pivot;
+    while (left <= right) {
+        while (left <= right && arr[left] < pivot) {
+            left++;
+        }
+        while (left <= right && arr[right] > pivot) {
+            right--;
+        }
+        if (left <= right) {
+            temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    temp = arr[right];
+    arr[right] = arr[a];
+    arr[a] = temp;
+    quickSortHelperRecursive(arr, a, right - 1);
+    quickSortHelperRecursive(arr, right + 1, b);
+}*/
+
+/**
+ * Implementation of quick sort.
+ * Uses the the recursive quick sort helper function
+ */
+/*void quickSortRecursive(vec_t* arr, uint32_t arr_length) {
+    srand(time(NULL));
+    assert(arr != NULL);
+    quickSortHelperRecursive(arr, 0, arr_length - 1);
+}*/
