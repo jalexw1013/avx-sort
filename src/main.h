@@ -1,6 +1,9 @@
 #ifndef HEADER_FILE_MAIN
 #define HEADER_FILE_MAIN
 
+#define min(a,b) (a <= b)? a : b
+#define max(a,b) (a <  b)? b : a
+
 typedef uint32_t vec_t;
 
 void MergePathSplitter(

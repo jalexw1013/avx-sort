@@ -65,9 +65,6 @@ uint32_t  h_ui_Ct_length               = 150; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
-#define min(a,b) (a <= b)? a : b
-#define max(a,b) (a <  b)? b : a
-
 // Host Functions
 ////////////////////////////
 int main(int argc, char** argv)
@@ -393,7 +390,7 @@ void tester(
         //parallelComboSort
         float* parallelCombo = (float*)xcalloc(1, sizeof(float));
         tic_reset();
-        iterativeComboMergeSort(*CUnsorted, Ct_length, serialMergeNoBranch, 75);
+        iterativeComboMergeSort(*CUnsorted, Ct_length);
         *parallelCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Combo Sort");
         clearArray((*CUnsorted), Ct_length);

@@ -950,17 +950,63 @@ void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t e
     //}
 }*/
 
-#define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
+//#define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 
-void iterativeComboMergeSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
+/*void iterativeComboMergeSort(vec_t* array, uint32_t array_length,void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t), int threads) {
     vec_t* C = (vec_t*)xmalloc((array_length) * sizeof(vec_t));
     for (int subArraySize = 1; subArraySize <= array_length - 1; subArraySize *= 2) {
         for (int leftStart = 0; leftStart < array_length - 1; leftStart += 2*subArraySize) {
             printf("Hello\n");
             int middlePoint = leftStart + subArraySize - 1;
             int rightEnd = min(leftStart + 2*subArraySize - 1, array_length - 1);
+            copyArrayInRange(array, C, 0, array_length);
             mergeFunction(array + leftStart, middlePoint - leftStart, array + middlePoint, rightEnd - middlePoint, C, rightEnd - leftStart);
+            copyArrayInRange(C, array, 0, array_length);
         }
         printf("test\n");
     }
+}*/
+
+// Utility function to find minimum of two integers
+//int min(int x, int y) { return (x<y)? x :y; }
+
+
+/* Iterative mergesort function to sort arr[0...n-1] */
+void iterativeComboMergeSort(vec_t* array, int32_t array_length)
+{
+    vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
+
+    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
+
+            serialMerge(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+    	}
+
+        currentSubArraySize = 2 * currentSubArraySize;
+        if (currentSubArraySize >= array_length) {
+            copyArrayInRange(C, array, 0, array_length);
+            break;
+        }
+
+        for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
+
+            serialMerge(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
+    	}
+    }
+    free(C);
 }
