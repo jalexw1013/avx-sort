@@ -481,20 +481,6 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
 		}
 	}*/
 
-/**
- * copies an array from input to dest only between the startIndex and endIndex
- * will fail if endIndex - startIndex > dest
- * not inclusive of the end index (ie to copy array of size 5 use index 0-5)
- */
-void copyArrayInRange(vec_t* input, vec_t* dest, uint32_t startIndex, uint32_t endIndex) {
-    assert(endIndex > startIndex);
-    int counter = 0;
-    for (int i = startIndex; i < endIndex; i++) {
-        dest[counter] = input[i];
-        counter++;
-    }
-}
-
 void iterativeComboMergeSort(vec_t* array, int32_t array_length)
 {
     vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
@@ -515,7 +501,7 @@ void iterativeComboMergeSort(vec_t* array, int32_t array_length)
 
         currentSubArraySize = 2 * currentSubArraySize;
         if (currentSubArraySize >= array_length) {
-            copyArrayInRange(C, array, 0, array_length);
+            memcpy(C, array, array_length * sizeof(vec_t));
             break;
         }
 
