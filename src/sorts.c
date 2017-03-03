@@ -481,7 +481,7 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
 		}
 	}*/
 
-void iterativeComboMergeSort(vec_t* array, int32_t array_length)
+void iterativeComboMergeSort(vec_t* array, uint32_t array_length, uint32_t numThreads)
 {
     vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
 
