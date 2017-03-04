@@ -515,7 +515,7 @@ inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length, uint32_
         //if done merging, copy elements from C back into Array
         currentSubArraySize = 2 * currentSubArraySize;
         if (currentSubArraySize >= array_length) {
-            memcpy(C, array, array_length * sizeof(vec_t));
+            memcpy(array, C, array_length * sizeof(vec_t));
             break;
         }
 
@@ -565,7 +565,7 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
         //if done merging, copy elements from C back into Array
         currentSubArraySize = 2 * currentSubArraySize;
         if (currentSubArraySize >= array_length) {
-            memcpy(C, array, array_length * sizeof(vec_t));
+            memcpy(array, C, array_length * sizeof(vec_t));
             break;
         }
 
