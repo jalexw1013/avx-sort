@@ -369,6 +369,7 @@ void tester(
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("Threads:%i\n", threads);
 
         //parallelComboSort
         float* parallelCombo = (float*)xcalloc(1, sizeof(float));
@@ -391,6 +392,17 @@ void tester(
         printf("Serial Combo Sort:    ");
         printf("%18.10f\n", 1e9*(*serialCombo / (float)(Ct_length)));
         free(serialCombo);
+
+        //qsort
+        float* qsortTime = (float*)xcalloc(1, sizeof(float));
+        tic_reset();
+        qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
+        *qsortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
+        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("qsort:                ");
+        printf("%18.10f\n", 1e9*(*qsortTime / (float)(Ct_length)));
+        free(qsortTime);
 
     #endif
 }
