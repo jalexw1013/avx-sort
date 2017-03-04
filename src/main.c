@@ -23,7 +23,7 @@
 #include "main.h"
 
 //Functionality parametters
-//#define MERGE //Coment this out to not test merging functionality
+#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -58,10 +58,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 12;
+uint32_t  h_ui_A_length                = 10000000;
 uint32_t  h_ui_B_length                = 0;
-uint32_t  h_ui_C_length                = 12; //array to put values in
-uint32_t  h_ui_Ct_length               = 12; //for unsorted and sorted
+uint32_t  h_ui_C_length                = 10000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -297,10 +297,10 @@ void tester(
     #ifdef MERGE
 
         clearArray((*C), C_length);
+        printf("Merging Results:\n");
 
         //Serial Merge
         float* serial = (float*)xcalloc(1, sizeof(float));
-        printf("Merging Results:\n");
         tic_reset();
         serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
         *serial = tic_sincelast();
@@ -364,6 +364,7 @@ void tester(
     //
     //---------------------------------------------------------------------
     #ifdef SORT
+        printf("\nSorting Results:\n");
 
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
@@ -392,143 +393,6 @@ void tester(
         free(serialCombo);
 
     #endif
-
-
-      /*tic_reset();
-      qsort(*CUnsorted, Ct_length, sizeof(uint32_t), uint32Compare);
-      qsortTime[j] +=tic_sincelast();*/
-      /*for(int i = 0; i < C_length; ++i) {
-          //assert((*CUnsorted)[i] == globalC[i]);
-          if((*CUnsorted)[i]!=(*CSorted)[i]) {
-              printf("\n %d,%d,%d \n", i,(*C)[i],(*CSorted)[i]);
-              //return;
-          }
-      }*/
-      //for(int ci=0; ci<Ct_length; ci++) {CUnsorted[ci]=0;}
-
-      /*tic_reset();
-      parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch);
-      singleCoreSort[j] +=tic_sincelast();
-      for(int i = 0; i < C_length; ++i) {
-          //assert((*CUnsorted)[i] == globalC[i]);
-          if((*CUnsorted)[i]!=(*CSorted)[i]) {
-              printf("\n %d,%d,%d \n", i,(*C)[i],(*CSorted)[i]);
-              //return;
-          }
-      }
-      for(int ci=0; ci<Ct_length; ci++) {CUnsorted[ci]=0;}
-
-      printf("Something\n");*/
-
-      /*tic_reset();
-      parallelComboSort(*CUnsorted, Ct_length, serialMergeNoBranch, cpus);
-      multiCoreMergeSort[j] +=tic_sincelast();*
-      for(int i = 0; i < C_length; ++i) {
-          //assert((*CUnsorted)[i] == globalC[i]);
-    //      if((*CUnsorted)[i]!=(*CSorted)[i]) {
-    //          printf("\n %d,%d,%d \n", i,(*C)[i],(*CSorted)[i]);
-        //       return;
-        //   }
-      }
-      for(int ci=0; ci<Ct_length; ci++) {CUnsorted[ci]=0;}
-
-  }
-
-  printf("Parameters\n");
-  printf("Entropy: %d\n", entropy);
-  printf("Runs: %i\n", RUNS);
-  printf("\n");
-  printf("Results:\n");
-  printf("\n");
-
-  printf("Algorithm              ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15i", lengths[i]*2);
-  }
-  printf("\nQsort:                 ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(qsortTime[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nSerial Combo Sort:     ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(singleCoreSort[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nParallel Combo Sort:   ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(multiCoreMergeSort[i] / (float)(RUNS*Ct_length)));
-  }
-  /*printf("\nSerial Merge:          ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(serial[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nSerial Merge no Branch:");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(serialNoBranch[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nBitonic Merge Real:    ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(bitonicReal[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nSerial Merge Intrinsic:");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(intrinsic[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nSerial Merge AVX2:     ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(avx2[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nSerial Merge AVX-512:  ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(avx512[i] / (float)(RUNS*Ct_length)));
-  }
-  printf("\nMerge Network:         ");
-  for (int i = 0; i < lengthOfLengths; i++) {
-      printf("%15.10f", 1e8*(mergenet[i] / (float)(RUNS*Ct_length)));
-  }*/
-
-
-    //free(serial);
-    //free(serialNoBranch);
-    //free(bitonicReal);
-    //free(intrinsic);
-    //free(avx2);
-    //free(avx512);
-    //free(mergenet);
-
-
-  /*printf("%7.1lf%11.0lf%10.3lf\n", 100.1, 1221.0, 9348.012);
-  printf("%7.1lf%11.0lf%10.3lf\n", 2.3, 211.0, 214.0);
-
-
-  printf("%d", entropy);
-  printf(",%.10f", 1e8*(serial / (float)(RUNS*Ct_length)));
-  printf(",%.10f", 1e8*(serialNoBranch / (float)(RUNS*Ct_length)));
-  printf(",%.10f", 1e8*(bitonicReal / (float)(RUNS*Ct_length)));
-  printf(",%.10f", 1e8*(intrinsic / (float)(RUNS*Ct_length)));
-  printf(",%.10f", 1e8*(mergenet / (float)(RUNS*Ct_length)));*/
-
-
-  //printf("\n");
-  /*int32_t swapped,missed;
-
-
-  vec_t Astam[20]={1,1,1,3,4,4,7,7,8,9,100000,100000,100000,100000,100000,100000,100000,100000,100000,100000};
-  vec_t Bstam[20]={2,2,3,3,4,5,6,7,8,9,100000,100000,100000,100000,100000,100000,100000,100000,100000,100000};
-  vec_t Cstam[30];
-
-// mergeNetwork(Astam,10,Bstam,10, Cstam,20);
-//  mergeNetwork(*A, A_length, *B, B_length, *Ct, Ct_length);
-
-  // for (int ci=0; ci<20; ci++)
-  //   printf("%d, ", Cstam[ci]);
-  //   // printf("%d, ", (*Ct)[ci]);
-  // printf("\n");
-
-//  return;
-
-  return;*/
-
-
 }
 
 
