@@ -58,10 +58,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 150;
+uint32_t  h_ui_A_length                = 12;
 uint32_t  h_ui_B_length                = 0;
-uint32_t  h_ui_C_length                = 150; //array to put values in
-uint32_t  h_ui_Ct_length               = 150; //for unsorted and sorted
+uint32_t  h_ui_C_length                = 12; //array to put values in
+uint32_t  h_ui_Ct_length               = 12; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -390,7 +390,7 @@ void tester(
         //parallelComboSort
         float* parallelCombo = (float*)xcalloc(1, sizeof(float));
         tic_reset();
-        iterativeComboMergeSort(*CUnsorted, Ct_length, 16);
+        iterativeComboMergeSort(*CUnsorted, Ct_length, 4);
         *parallelCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Combo Sort");
         clearArray((*CUnsorted), Ct_length);

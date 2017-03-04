@@ -485,7 +485,17 @@ void iterativeComboMergeSort(vec_t* array, uint32_t array_length, uint32_t numTh
 {
     vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
 
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    uint32_t initialSubArraySize = array_length / numThreads;
+    if (array_length % numThreads != 0) initialSubArraySize++;
+
+    for (int i = 0; i < array_length; i += initialSubArraySize) {
+        qsort(
+            array + i,
+            (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
+            sizeof(vec_t), hostBasicCompare);
+    }
+
+    for (uint32_t currentSubArraySize = initialSubArraySize; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
