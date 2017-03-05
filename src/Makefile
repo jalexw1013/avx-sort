@@ -10,7 +10,7 @@ OS = $(shell uname)
 TARGETS_NTHD = main util xmalloc
 
 merge: main.c sorts.c util.c xmalloc.c
-	$(ICC) -O1 -o $@ $(GCFLAGS) $^
+	$(GCC) -O1 -o $@ $(GCFLAGS) $^
 
 run:
 	make merge
