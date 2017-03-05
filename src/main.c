@@ -18,6 +18,7 @@
 #include <x86intrin.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <immintrin.h>
 
 #include "sorts.h"
 #include "main.h"
