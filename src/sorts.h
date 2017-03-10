@@ -27,7 +27,6 @@ void serialMergeAVX512(
 void iterativeComboMergeSort(
     vec_t* array,
     uint32_t array_length,
-    uint32_t numThreads,
     void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t));
 
 void iterativeNonParallelComboMergeSort(
