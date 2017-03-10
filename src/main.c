@@ -367,7 +367,7 @@ void tester(
     #ifdef SORT
         printf("\nSorting Results:\n");
 
-        int threads = sysconf(_SC_NPROCESSORS_ONLN);
+        int threads = sysconf(_SC_NPROCESSORS_ONLN) / 2;
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("Threads:%i\n", threads);

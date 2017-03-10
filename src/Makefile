@@ -3,7 +3,7 @@ GCC = gcc
 GCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -mavx512f -Wall -pedantic
 
 ICC = icc
-ICCFLAGS += -fopenmp -std=c99 -axMIC-AVX512 funroll-loops -Wall -pedantic
+ICCFLAGS += -openmp -std=c99 -axMIC-AVX512 funroll-loops -Wall -pedantic
 
 OS = $(shell uname)
 
