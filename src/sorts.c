@@ -707,58 +707,61 @@ static ssize_t knightMergeOutPlace(uint32_t* input, uint32_t*output, int left, i
 }
 #endif
 
-inline void parallelComboMergeSortParallelHelper(vec_t* array, uint32_t array_length, uint32_t numThreads, uint32_t threadNum, uint32_t initialSubArraySize, vec_t* C, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)) {
-    uint32_t i = threadNum*initialSubArraySize;
-    qsort(
-        array + i,
-        (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
-        sizeof(vec_t), hostBasicCompare);
-    #pragma omp barrier
-    uint32_t currentSubArraySize = initialSubArraySize;
-    while (currentSubArraySize < array_length) {
-        //merge one
-        uint32_t A_start = threadNum * 2 * currentSubArraySize;
-        if (A_start < array_length - 1) {
-            uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-            uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-            mergeFunction(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
-        }
-        currentSubArraySize = 2 * currentSubArraySize;
-        #pragma omp barrier
-        #pragma omp single
-        {
-            if (currentSubArraySize >= array_length) {
-                memcpy(array, C, array_length * sizeof(vec_t));
-            }
-        }
-        #pragma omp barrier
-        if (currentSubArraySize >= array_length) {
-            break;
-        }
-        A_start = threadNum * 2 * currentSubArraySize;
-        if (A_start < array_length - 1) {
-            uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-            uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-            mergeFunction(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
-        }
-        currentSubArraySize = 2 * currentSubArraySize;
-        #pragma omp barrier
-    }
+inline void parallelComboMergeSortParallelHelper(vec_t* array, uint32_t array_length, uint32_t numThreads, uint32_t threadNum, uint32_t initialSubArraySize, vec_t* C/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/) {
+
 }
 
 
 
-inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t))
+inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/)
 {
         vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
-
+        uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
         #pragma omp parallel
         {
-            parallelComboMergeSortParallelHelper(array, array_length, omp_get_num_threads(), omp_get_thread_num(), (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads()), C, mergeFunction);
+            //parallelComboMergeSortParallelHelper(array, array_length, omp_get_num_threads(), , , C/*, mergeFunction*/);
+            uint32_t threadNum = omp_get_thread_num();
+            uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+            uint32_t i = threadNum*initialSubArraySize;
+            qsort(
+                array + i,
+                (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
+                sizeof(vec_t), hostBasicCompare);
+            #pragma omp barrier
+            uint32_t currentSubArraySize = initialSubArraySize;
+            while (currentSubArraySize < array_length) {
+                //merge one
+                uint32_t A_start = threadNum * 2 * currentSubArraySize;
+                if (A_start < array_length - 1) {
+                    uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+                    uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+                    uint32_t A_length = B_start - A_start + 1;
+                    uint32_t B_length = B_end - B_start;
+                    serialMergeNoBranch(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+                }
+                currentSubArraySize = 2 * currentSubArraySize;
+                #pragma omp barrier
+                #pragma omp single
+                {
+                    if (currentSubArraySize >= array_length) {
+                        memcpy(array, C, array_length * sizeof(vec_t));
+                    }
+                }
+                #pragma omp barrier
+                if (currentSubArraySize >= array_length) {
+                    break;
+                }
+                A_start = threadNum * 2 * currentSubArraySize;
+                if (A_start < array_length - 1) {
+                    uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+                    uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+                    uint32_t A_length = B_start - A_start + 1;
+                    uint32_t B_length = B_end - B_start;
+                    serialMergeNoBranch(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
+                }
+                currentSubArraySize = 2 * currentSubArraySize;
+                #pragma omp barrier
+            }
         }
 
         free(C);
