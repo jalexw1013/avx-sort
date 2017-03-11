@@ -709,10 +709,6 @@ static ssize_t knightMergeOutPlace(uint32_t* input, uint32_t*output, int left, i
 }
 #endif
 
-inline void parallelComboMergeSortParallelHelper(vec_t* array, uint32_t array_length, uint32_t numThreads, uint32_t threadNum, uint32_t initialSubArraySize, vec_t* C/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/) {
-
-}
-
 
 
 inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/)
@@ -833,7 +829,7 @@ uint32_t partition(uint32_t * a, uint32_t p, uint32_t r)
     uint32_t lt_n = 0;
     uint32_t gt_n = 0;
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(i = p; i < r; i++){
         if(a[i] < a[r]){
             lt[lt_n++] = a[i];

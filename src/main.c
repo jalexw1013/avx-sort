@@ -398,18 +398,17 @@ void tester(
         float qsortTime = 0.0;
         tic_reset();
         qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
-        qsortTime += tic_sincelast();
+        qsortTime = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("qsort:                ");
-        printf("%d\n", qsortTime);
         printf("%18.10f\n", 1e9*(qsortTime / (float)(Ct_length)));
         //free(qsortTime);
 
         //paralel quick sort
         float parallelQuickSortTime = 0.0;
         tic_reset();
-        quicksort(*CUnsorted, 0, Ct_length);
+        quicksort(*CUnsorted, 0, Ct_length - 1);
         parallelQuickSortTime = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Quick Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
