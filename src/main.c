@@ -333,6 +333,7 @@ void tester(
         printf("%18.10f\n", 1e9*(*bitonicReal / (float)(Ct_length)));
         free(bitonicReal);
 
+        #ifdef __INTEL_COMPILER
         //AVX512 Merge (our algorithm)
         if ( can_use_intel_knl_features() ) {
             float* avx512 = (float*)xcalloc(1, sizeof(float));
@@ -355,6 +356,7 @@ void tester(
             free(avx512);
             free(mergePath);
         }
+        #endif
     #endif
 
     //---------------------------------------------------------------------

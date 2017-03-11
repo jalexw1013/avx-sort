@@ -181,6 +181,7 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     return;
 }
 
+#ifdef __INTEL_COMPILER
 void serialMergeAVX512(vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length,
@@ -272,6 +273,7 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
 
         }
 }
+#endif
 
 /**
  * This function source Youngchao Liu http://lightpcc.sourceforge.net/homepage.htm#introduction
