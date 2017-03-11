@@ -1,5 +1,5 @@
 
-GCC = gcc
+GCC = gcc-6
 GCFLAGS += -g -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -mavx512f -Wall -pedantic
 
 ICC = icc

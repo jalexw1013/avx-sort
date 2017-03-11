@@ -716,7 +716,7 @@ inline void parallelComboMergeSortParallelHelper(vec_t* array, uint32_t array_le
 inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/)
 {
         vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
-        uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+        //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
         #pragma omp parallel
         {
             //parallelComboMergeSortParallelHelper(array, array_length, omp_get_num_threads(), , , C/*, mergeFunction*/);
