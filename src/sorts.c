@@ -815,3 +815,57 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
     }
     free(C);
 }
+
+/**
+ * Parallel Quicksort taken from here:
+ * http://stackoverflow.com/questions/16007640/openmp-parallel-quicksort
+ * Used for comparison
+ */
+uint32_t partition(uint32_t * a, uint32_t p, uint32_t r)
+{
+    uint32_t lt[r-p];
+    uint32_t gt[r-p];
+    uint32_t i;
+    uint32_t j;
+    uint32_t key = a[r];
+    uint32_t lt_n = 0;
+    uint32_t gt_n = 0;
+
+    #pragma omp parallel for
+    for(i = p; i < r; i++){
+        if(a[i] < a[r]){
+            lt[lt_n++] = a[i];
+        }else{
+            gt[gt_n++] = a[i];
+        }
+    }
+
+    for(i = 0; i < lt_n; i++){
+        a[p + i] = lt[i];
+    }
+
+    a[p + lt_n] = key;
+
+    for(j = 0; j < gt_n; j++){
+        a[p + lt_n + j + 1] = gt[j];
+    }
+
+    return p + lt_n;
+}
+
+void quicksort(uint32_t * a, uint32_t p, uint32_t r)
+{
+    uint32_t div;
+
+    if(p < r){
+        div = partition(a, p, r);
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            quicksort(a, p, div - 1);
+            #pragma omp section
+            quicksort(a, div + 1, r);
+
+        }
+    }
+}

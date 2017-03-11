@@ -367,43 +367,53 @@ void tester(
     #ifdef SORT
         printf("\nSorting Results:\n");
 
-        int threads = sysconf(_SC_NPROCESSORS_ONLN) / 2;
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Threads:%i\n", threads);
 
         //parallelComboSort
-        float* parallelCombo = (float*)xcalloc(1, sizeof(float));
+        float parallelCombo = 0.0;
         tic_reset();
         iterativeComboMergeSort(unsortedCopy, Ct_length/*, serialMergeNoBranch*/);
-        *parallelCombo = tic_sincelast();
+        parallelCombo = tic_sincelast();
         verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("Parallel Combo Sort:    ");
-        printf("%18.10f\n", 1e9*(*parallelCombo / (float)(Ct_length)));
-        free(parallelCombo);
+        printf("%18.10f\n", 1e9*(parallelCombo / (float)(Ct_length)));
+        //free(parallelCombo);
 
         //serialComboSort
-        float* serialCombo = (float*)xcalloc(1, sizeof(float));
+        float serialCombo = 0.0;
         tic_reset();
-        iterativeNonParallelComboMergeSort(*CUnsorted, Ct_length, threads, serialMergeNoBranch);
-        *serialCombo = tic_sincelast();
+        iterativeNonParallelComboMergeSort(*CUnsorted, Ct_length, 72, serialMergeNoBranch);
+        serialCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Serial Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("Serial Combo Sort:    ");
-        printf("%18.10f\n", 1e9*(*serialCombo / (float)(Ct_length)));
-        free(serialCombo);
+        printf("%18.10f\n", 1e9*(serialCombo / (float)(Ct_length)));
+        //free(serialCombo);
 
         //qsort
-        float* qsortTime = (float*)xcalloc(1, sizeof(float));
+        float qsortTime = 0.0;
         tic_reset();
         qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
-        *qsortTime = tic_sincelast();
+        qsortTime += tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("qsort:                ");
-        printf("%18.10f\n", 1e9*(*qsortTime / (float)(Ct_length)));
-        free(qsortTime);
+        printf("%d\n", qsortTime);
+        printf("%18.10f\n", 1e9*(qsortTime / (float)(Ct_length)));
+        //free(qsortTime);
+
+        //paralel quick sort
+        float parallelQuickSortTime = 0.0;
+        tic_reset();
+        quicksort(*CUnsorted, 0, Ct_length);
+        parallelQuickSortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Quick Sort");
+        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("Parallel quicksort:   ");
+        printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
+        //free(parallelQuickSortTime);
 
     #endif
 }

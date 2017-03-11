@@ -35,4 +35,6 @@ void iterativeNonParallelComboMergeSort(
     uint32_t numThreads,
     void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t));
 
+void quicksort(uint32_t * a, uint32_t p, uint32_t r);
+
 #endif
