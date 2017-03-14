@@ -1,0 +1,29 @@
+Parameters
+Entropy: 28
+A Size: 10000000
+B Size: 10000000
+C Size: 20000000
+
+Merging Results:
+Serial Merge:                8.5876461497
+Serial Merge no Branch:      8.9450482577
+
+Algorithm Failed To Produce Correct Results: Bitonic
+Index:19999993, Given Value:134217676, Correct Value:134217690 
+Bitonic Merge Real:          7.6227548718
+
+Algorithm Failed To Produce Correct Results: AVX512 Merge
+Index:19999984, Given Value:134217621, Correct Value:134217610 
+Serial Merge AVX-512:        3.1283498014
+    Merge Path Only:         0.0012993813
+
+Algorithm Failed To Produce Correct Results: Bitonic AVX512 Merge
+Index:19999984, Given Value:134217621, Correct Value:134217610 
+Bitonic Merge AVX-512:       13.5464546247
+
+Sorting Results:
+Number of Threads:272
+Serial Combo Sort:        594.1774361418
+Parallel Combo Sort:        345.6654553702
+Parallel Combo Sort AVX512:    345.6295587512
+qsort:                    344.4845617651
