@@ -24,6 +24,11 @@ void serialMergeAVX512(
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length,
     uint32_t* ASplitters, uint32_t* BSplitters);
+
+void knightMergeOutPlace(
+    uint32_t* input, uint32_t*output, int left, int mid, int right);
+
+
 #endif
 
 void iterativeComboMergeSort(

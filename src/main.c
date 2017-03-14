@@ -24,7 +24,7 @@
 #include "main.h"
 
 //Functionality parametters
-//#define MERGE //Coment this out to not test merging functionality
+#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -92,7 +92,8 @@ int main(int argc, char** argv)
         &CUnsorted);
 
     freeGlobalData();
-    #if defined(__MIC__) && defined(SIMD_AVX512)
+    #if defined(SIMD_AVX512)
+    printf("TESTTEST\n");
     #endif
 }
 
@@ -243,7 +244,7 @@ void insertData(vec_t** A, uint32_t A_length,
 
 void freeGlobalData() {
       free(globalA);
-      free(globalB);
+      //free(globalB);
       free(globalC);
       free(CSorted);
       free(CUnsorted);
@@ -357,6 +358,23 @@ void tester(
             free(mergePath);
         }
         #endif
+
+        #ifdef __INTEL_COMPILER
+        //AVX512 Bitonic Merge (Youngchaos code)
+        if ( can_use_intel_knl_features() ) {
+            float bitonic512 = 0.0;
+            tic_reset();
+            uint32_t * tmpArray = (uint32_t*)xmalloc(A_length * sizeof(uint32_t) + B_length * sizeof(uint32_t));
+            memcpy((void*)tmpArray, (void*)(*A), A_length*sizeof(uint32_t));
+            memcpy((void*)(tmpArray + A_length), (void*)(*B), B_length*sizeof(uint32_t));
+            knightMergeOutPlace(tmpArray, (*C), 0, A_length, A_length+B_length);
+            bitonic512 = tic_sincelast();
+            verifyOutput((*C), (*CSorted), C_length, "Bitonic AVX512 Merge");
+            clearArray((*C), C_length);
+            printf("Bitonic Merge AVX-512:  ");
+            printf("%18.10f\n", 1e9*(*bitonic512 / (float)(Ct_length)));
+        }
+        #endif
     #endif
 
     //---------------------------------------------------------------------
@@ -405,7 +423,7 @@ void tester(
         printf("%18.10f\n", 1e9*(qsortTime / (float)(Ct_length)));
         //free(qsortTime);
 
-        //paralel quick sort
+        /*//paralel quick sort
         float parallelQuickSortTime = 0.0;
         tic_reset();
         quicksort(*CUnsorted, 0, Ct_length - 1);
@@ -414,7 +432,7 @@ void tester(
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
         printf("Parallel quicksort:   ");
         printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
-        //free(parallelQuickSortTime);
+        //free(parallelQuickSortTime);*/
 
     #endif
 }

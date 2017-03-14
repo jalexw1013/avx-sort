@@ -482,8 +482,9 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
 			memcpy(C + p, B + r, (B - r) * sizeof(uint32_t));
 		}
 	}*/
+
 #ifdef __INTEL_COMPILER
-static ssize_t knightMergeOutPlace(uint32_t* input, uint32_t*output, int left, int mid, int right){
+void knightMergeOutPlace(uint32_t* input, uint32_t*output, int left, int mid, int right){
     int l, r, p = left;
     ssize_t numDiscordantPairs = 0;
 
@@ -819,17 +820,15 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
  * http://stackoverflow.com/questions/16007640/openmp-parallel-quicksort
  * Used for comparison
  */
-uint32_t partition(uint32_t * a, uint32_t p, uint32_t r)
+uint32_t partition(uint32_t * lt, uint32_t * gt, uint32_t * a, uint32_t p, uint32_t r)
 {
-    uint32_t lt[r-p];
-    uint32_t gt[r-p];
-    uint32_t i;
+    uint32_t i = 0;
     uint32_t j;
     uint32_t key = a[r];
     uint32_t lt_n = 0;
     uint32_t gt_n = 0;
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(i = p; i < r; i++){
         if(a[i] < a[r]){
             lt[lt_n++] = a[i];
@@ -854,9 +853,12 @@ uint32_t partition(uint32_t * a, uint32_t p, uint32_t r)
 void quicksort(uint32_t * a, uint32_t p, uint32_t r)
 {
     uint32_t div;
-
     if(p < r){
-        div = partition(a, p, r);
+        uint32_t * lt = (uint32_t*)xcalloc(r-p, sizeof(uint32_t));
+        uint32_t * gt = (uint32_t*)xcalloc(r-p, sizeof(uint32_t));
+        div = partition(lt, gt, a, p, r);
+        free(lt);
+        free(gt);
         #pragma omp parallel sections
         {
             #pragma omp section
