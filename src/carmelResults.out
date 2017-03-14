@@ -13,3 +13,19 @@ Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
 Serial Combo Sort:        2525.048096         126.252402         7920641.500000
 Parallel Combo Sort:       432.507050          21.625352        46242024.000000
 qsort:                     729.321960          36.466098        46242024.000000
+
+Parameters
+Entropy: 28
+A Size: 1000000000
+B Size: 1000000000
+C Size: 2000000000
+
+Merging Results:
+Serial Merge:                    5.0245727579
+Serial Merge no Branch:          3.6706755413
+Bitonic Merge Real:              1.7899365323
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+Serial Combo Sort:      354187.093750         177.093554         5646733.000000
+Parallel Combo Sort:     53855.039062          26.927518        37136732.000000
+qsort:                   97073.304688          48.536652        37136732.000000
