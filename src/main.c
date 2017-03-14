@@ -392,6 +392,7 @@ void tester(
 
         #include <unistd.h>
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
+        printf("Number of Threads:%i\n", threads);
 
         //free(parallelCombo);
 
