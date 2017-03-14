@@ -712,7 +712,7 @@ void knightMergeOutPlace(uint32_t* input, uint32_t*output, int left, int mid, in
 
 inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/)
 {
-        vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
+        vec_t* C = (vec_t*)xcalloc((array_length), sizeof(vec_t));
         //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
         #pragma omp parallel
         {
@@ -767,7 +767,7 @@ inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(
 #ifdef __INTEL_COMPILER
 inline void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length/*, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/)
 {
-        vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
+        vec_t* C = (vec_t*)xcalloc((array_length), sizeof(vec_t));
         //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
         #pragma omp parallel
         {
@@ -814,6 +814,8 @@ inline void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length/*,
                     uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
                     uint32_t A_length = B_start - A_start + 1;
                     uint32_t B_length = B_end - B_start;
+                    uint32_t ASplitters[17];
+                    uint32_t BSplitters[17];
                     MergePathSplitter(C + A_start, A_length, C + B_start + 1, B_length, array + A_start,
                         A_length + B_length, 16, ASplitters, BSplitters);
                     serialMergeAVX512(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length,
@@ -827,10 +829,10 @@ inline void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length/*,
 }
 #endif
 
-inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_length, uint32_t numThreads, void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t))
+inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_length, uint32_t numThreads)
 {
     assert(numThreads != 0);
-    vec_t* C = (int*)xcalloc((array_length), sizeof(vec_t));
+    vec_t* C = (vec_t*)xcalloc((array_length), sizeof(vec_t));
 
     uint32_t initialSubArraySize = array_length / numThreads;
     if (array_length % numThreads != 0) initialSubArraySize++;
@@ -853,7 +855,7 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-            mergeFunction(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+            serialMergeNoBranch(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
 
         //if done merging, copy elements from C back into Array
@@ -870,7 +872,7 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-            mergeFunction(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
+            serialMergeNoBranch(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
     	}
     }
     free(C);

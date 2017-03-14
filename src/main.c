@@ -372,7 +372,7 @@ void tester(
             verifyOutput((*C), (*CSorted), C_length, "Bitonic AVX512 Merge");
             clearArray((*C), C_length);
             printf("Bitonic Merge AVX-512:  ");
-            printf("%18.10f\n", 1e9*(*bitonic512 / (float)(Ct_length)));
+            printf("%18.10f\n", 1e9*(bitonic512 / (float)(Ct_length)));
         }
         #endif
     #endif
@@ -390,12 +390,15 @@ void tester(
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
+        #include <unistd.h>
+        int threads = sysconf(_SC_NPROCESSORS_ONLN);
+
         //free(parallelCombo);
 
         //serialComboSort
         float serialCombo = 0.0;
         tic_reset();
-        iterativeNonParallelComboMergeSort(*CUnsorted, Ct_length, 72, serialMergeNoBranch);
+        iterativeNonParallelComboMergeSort(*CUnsorted, Ct_length, threads);
         serialCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Serial Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
