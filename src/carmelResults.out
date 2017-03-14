@@ -7,8 +7,6 @@ C Size: 20000000
 Merging Results:
 Serial Merge:                    3.5263538756
 Serial Merge no Branch:          3.0609965673
-Error: Bitonic Failed To Produce Correct Results.
-Index:19999992, Given Value:134217636, Correct Value:134217661
 Bitonic Merge Real:              1.4160513873
 
 Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
