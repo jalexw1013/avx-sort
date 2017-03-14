@@ -11,7 +11,7 @@
 #SBATCH -o merge.%j.out          # Specify stdout output file (%j expands to jobId)
 #SBATCH -p development           # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
-#SBATCH -n 68                    # Total number of tasks
+#SBATCH -n 272                   # Total number of tasks
 #SBATCH -t 00:00:30              # Run time (hh:mm:ss) - 1.5 hours
 #SBATCH --mail-user=jwatkins45@gatech.edu
 #SBATCH --mail-type=begin  # email me when the job starts

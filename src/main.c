@@ -244,7 +244,7 @@ void insertData(vec_t** A, uint32_t A_length,
 
 void freeGlobalData() {
       free(globalA);
-      //free(globalB);
+      free(globalB);
       free(globalC);
       free(CSorted);
       free(CUnsorted);
@@ -253,9 +253,9 @@ void freeGlobalData() {
 int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
     for(int i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
-            printf("\nAlgorithm Failed To Produce Correct Results: %s\n", name);
+            printf("Error: %s Failed To Produce Correct Results.\n", name);
             printf("Index:%d, Given Value:%d, Correct "
-            "Value:%d \n", i, output[i], sortedData[i]);
+            "Value:%d\n", i, output[i], sortedData[i]);
             return 0;
         }
     }
@@ -308,7 +308,7 @@ void tester(
         *serial = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Serial Merge");
         clearArray((*C), C_length);
-        printf("Serial Merge:          ");
+        printf("Serial Merge:              ");
         printf("%18.10f\n", 1e9*(*serial / (float)(Ct_length)));
         free(serial);
 
@@ -319,7 +319,7 @@ void tester(
         *serialNoBranch = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Serial Merge Branchless");
         clearArray((*C), C_length);
-        printf("Serial Merge no Branch:");
+        printf("Serial Merge no Branch:    ");
         printf("%18.10f\n", 1e9*(*serialNoBranch / (float)(Ct_length)));
         free(serialNoBranch);
 
@@ -330,7 +330,7 @@ void tester(
         *bitonicReal = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Bitonic");
         clearArray((*C), C_length);
-        printf("Bitonic Merge Real:    ");
+        printf("Bitonic Merge Real:        ");
         printf("%18.10f\n", 1e9*(*bitonicReal / (float)(Ct_length)));
         free(bitonicReal);
 
@@ -338,13 +338,11 @@ void tester(
         //AVX512 Merge (our algorithm)
         if ( can_use_intel_knl_features() ) {
             float* avx512 = (float*)xcalloc(1, sizeof(float));
-            float* mergePath = (float*)xcalloc(1, sizeof(float));
             tic_reset();
             uint32_t ASplitters[17];
             uint32_t BSplitters[17];
             MergePathSplitter((*A), A_length, (*B), B_length, (*C),
                 Ct_length, 16, ASplitters, BSplitters);
-            *mergePath = tic_sincelast();
             serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length,
                 ASplitters, BSplitters);
             *avx512 = tic_sincelast();
@@ -352,10 +350,7 @@ void tester(
             clearArray((*C), C_length);
             printf("Serial Merge AVX-512:  ");
             printf("%18.10f\n", 1e9*(*avx512 / (float)(Ct_length)));
-            printf("    Merge Path Only:   ");
-            printf("%18.10f\n", 1e9*(*mergePath / (float)(Ct_length)));
             free(avx512);
-            free(mergePath);
         }
         #endif
 
@@ -371,7 +366,7 @@ void tester(
             bitonic512 = tic_sincelast();
             verifyOutput((*C), (*CSorted), C_length, "Bitonic AVX512 Merge");
             clearArray((*C), C_length);
-            printf("Bitonic Merge AVX-512:  ");
+            printf("Bitonic Merge AVX-512: ");
             printf("%18.10f\n", 1e9*(bitonic512 / (float)(Ct_length)));
         }
         #endif
@@ -385,14 +380,14 @@ void tester(
     //
     //---------------------------------------------------------------------
     #ifdef SORT
-        printf("\nSorting Results:\n");
+        printf("\nSorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
         #include <unistd.h>
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
-        printf("Number of Threads:%i\n", threads);
+        //printf("Number of Threads:%i\n", threads);
 
         //free(parallelCombo);
 
@@ -403,9 +398,11 @@ void tester(
         serialCombo = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Serial Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Serial Combo Sort:    ");
-        printf("%18.10f\n", 1e9*(serialCombo / (float)(Ct_length)));
-        //free(serialCombo);
+        printf("Serial Combo Sort:  ");
+        printf("   %14.6f", 1000*serialCombo);
+        printf("   %16.6f", 1e9*(serialCombo / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/serialCombo);
+        printf("\n");
 
         //parallelComboSort
         float parallelCombo = 0.0;
@@ -414,18 +411,28 @@ void tester(
         parallelCombo = tic_sincelast();
         verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Parallel Combo Sort:    ");
-        printf("%18.10f\n", 1e9*(parallelCombo / (float)(Ct_length)));
+        printf("Parallel Combo Sort:");
+        printf("   %14.6f", 1000*parallelCombo);
+        printf("   %16.6f", 1e9*(parallelCombo / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/parallelCombo);
+        printf("\n");
 
-        //parallelComboSort
-        float parallelCombo512 = 0.0;
-        tic_reset();
-        iterativeComboMergeSortAVX512(unsortedCopy, Ct_length);
-        parallelCombo512 = tic_sincelast();
-        verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort AVX512");
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Parallel Combo Sort AVX512:");
-        printf("%18.10f\n", 1e9*(parallelCombo512 / (float)(Ct_length)));
+        #ifdef __INTEL_COMPILER
+        if ( can_use_intel_knl_features() ) {
+            //parallelComboSort
+            float parallelCombo512 = 0.0;
+            tic_reset();
+            iterativeComboMergeSortAVX512(unsortedCopy, Ct_length);
+            parallelCombo512 = tic_sincelast();
+            verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort AVX512");
+            memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+            printf("Parallel AVX512:    ");
+            printf("   %14.6f", 1000*parallelCombo512);
+            printf("   %16.6f", 1e9*(parallelCombo512 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/parallelCombo512);
+            printf("\n");
+        }
+        #endif
 
         //qsort
         float qsortTime = 0.0;
@@ -434,8 +441,11 @@ void tester(
         qsortTime = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("qsort:                ");
-        printf("%18.10f\n", 1e9*(qsortTime / (float)(Ct_length)));
+        printf("qsort:              ");
+        printf("   %14.6f", 1000*qsortTime);
+        printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/parallelCombo);
+        printf("\n");
         //free(qsortTime);
 
         /*//paralel quick sort
