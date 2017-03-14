@@ -7,15 +7,9 @@ C Size: 20000000
 Merging Results:
 Serial Merge:                    9.0263965191
 Serial Merge no Branch:          8.9007023973
-Error: Bitonic Failed To Produce Correct Results.
-Index:19999990, Given Value:134217612, Correct Value:134217615
 Bitonic Merge Real:              7.9377535656
-Error: AVX512 Merge Failed To Produce Correct Results.
-Index:19999987, Given Value:134217607, Correct Value:134217598
-Serial Merge AVX-512:        3.4958957951
-Error: Bitonic AVX512 Merge Failed To Produce Correct Results.
-Index:19999987, Given Value:134217607, Correct Value:134217598
-Bitonic Merge AVX-512:      13.4860043133
+Serial Merge AVX-512:            3.4958957951
+Bitonic Merge AVX-512:          13.4860043133
 
 Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
 Serial Combo Sort:       11658.664062         582.933183         1715462.500000
