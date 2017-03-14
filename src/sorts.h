@@ -28,6 +28,7 @@ void serialMergeAVX512(
 void knightMergeOutPlace(
     uint32_t* input, uint32_t*output, int left, int mid, int right);
 
+void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length);
 
 #endif
 

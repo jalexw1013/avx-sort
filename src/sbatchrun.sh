@@ -15,6 +15,6 @@
 #SBATCH -t 00:00:30              # Run time (hh:mm:ss) - 1.5 hours
 
 # Launch merge of different sizes.
-./merge -A 10000 -B 10000
-./merge -A 1000000 -B 1000000
+#./merge -A 10000 -B 10000
 ./merge -A 10000000 -B 10000000
+#./merge -A 1000000000 -B 1000000000

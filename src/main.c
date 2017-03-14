@@ -390,15 +390,6 @@ void tester(
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
-        //parallelComboSort
-        float parallelCombo = 0.0;
-        tic_reset();
-        iterativeComboMergeSort(unsortedCopy, Ct_length/*, serialMergeNoBranch*/);
-        parallelCombo = tic_sincelast();
-        verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort");
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Parallel Combo Sort:    ");
-        printf("%18.10f\n", 1e9*(parallelCombo / (float)(Ct_length)));
         //free(parallelCombo);
 
         //serialComboSort
@@ -411,6 +402,26 @@ void tester(
         printf("Serial Combo Sort:    ");
         printf("%18.10f\n", 1e9*(serialCombo / (float)(Ct_length)));
         //free(serialCombo);
+
+        //parallelComboSort
+        float parallelCombo = 0.0;
+        tic_reset();
+        iterativeComboMergeSort(unsortedCopy, Ct_length/*, serialMergeNoBranch*/);
+        parallelCombo = tic_sincelast();
+        verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort");
+        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("Parallel Combo Sort:    ");
+        printf("%18.10f\n", 1e9*(parallelCombo / (float)(Ct_length)));
+
+        //parallelComboSort
+        float parallelCombo512 = 0.0;
+        tic_reset();
+        iterativeComboMergeSortAVX512(unsortedCopy, Ct_length);
+        parallelCombo512 = tic_sincelast();
+        verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort AVX512");
+        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("Parallel Combo Sort AVX512:");
+        printf("%18.10f\n", 1e9*(parallelCombo512 / (float)(Ct_length)));
 
         //qsort
         float qsortTime = 0.0;
