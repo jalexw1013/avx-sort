@@ -59,10 +59,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 10000000;
-uint32_t  h_ui_B_length                = 10000000;
-uint32_t  h_ui_C_length                = 10000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 1000000000;
+uint32_t  h_ui_B_length                = 1000000000;
+uint32_t  h_ui_C_length                = 1000000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 1000000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
