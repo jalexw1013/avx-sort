@@ -1,0 +1,17 @@
+Parameters
+Entropy: 28
+A Size: 10000000
+B Size: 10000000
+C Size: 20000000
+
+Merging Results:
+Serial Merge:                    3.5263538756
+Serial Merge no Branch:          3.0609965673
+Error: Bitonic Failed To Produce Correct Results.
+Index:19999992, Given Value:134217636, Correct Value:134217661
+Bitonic Merge Real:              1.4160513873
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+Serial Combo Sort:        2525.048096         126.252402         7920641.500000
+Parallel Combo Sort:       432.507050          21.625352        46242024.000000
+qsort:                     729.321960          36.466098        46242024.000000
