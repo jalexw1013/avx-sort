@@ -24,7 +24,7 @@
 #include "main.h"
 
 //Functionality parametters
-#define MERGE //Coment this out to not test merging functionality
+//#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -59,10 +59,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 1000000000;
-uint32_t  h_ui_B_length                = 1000000000;
-uint32_t  h_ui_C_length                = 1000000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 1000000;
+uint32_t  h_ui_B_length                = 1000000;
+uint32_t  h_ui_C_length                = 2000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 2000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -444,7 +444,7 @@ void tester(
         printf("qsort:              ");
         printf("   %14.6f", 1000*qsortTime);
         printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/parallelCombo);
+        printf("   %20.6f", (float)(Ct_length)/qsortTime);
         printf("\n");
         //free(qsortTime);
 
@@ -458,6 +458,19 @@ void tester(
         printf("Parallel quicksort:   ");
         printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
         //free(parallelQuickSortTime);*/
+
+        //simpleIterativeMergeSort
+        float simpleIterativeMergeSortTime = 0.0;
+        tic_reset();
+        simpleIterativeMergeSort(CUnsorted, Ct_length);
+        simpleIterativeMergeSortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
+        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        printf("Iterative Mergesort:");
+        printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
+        printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
+        printf("\n");
 
     #endif
 }

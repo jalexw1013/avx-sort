@@ -719,14 +719,20 @@ inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(
             //parallelComboMergeSortParallelHelper(array, array_length, omp_get_num_threads(), , , C/*, mergeFunction*/);
             uint32_t threadNum = omp_get_thread_num();
             uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+            uint32_t start,stop;
             uint32_t i = threadNum*initialSubArraySize;
-            qsort(
-                array + i,
-                (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
-                sizeof(vec_t), hostBasicCompare);
+            start=i;
+            stop=start+(i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i);
+            // printf("%d %d %d %d\n",threadNum,start, stop, initialSubArraySize);
+            //return;
+
+            qsort(array + start,   stop, sizeof(vec_t), hostBasicCompare);
+
             #pragma omp barrier
             uint32_t currentSubArraySize = initialSubArraySize;
             while (currentSubArraySize < array_length) {
+                if(threadNum==0)
+                    printf("*");
                 //merge one
                 uint32_t A_start = threadNum * 2 * currentSubArraySize;
                 if (A_start < array_length - 1) {
@@ -734,7 +740,7 @@ inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(
                     uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
                     uint32_t A_length = B_start - A_start + 1;
                     uint32_t B_length = B_end - B_start;
-                    serialMergeNoBranch(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+                    bitonicMergeReal(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
                 }
                 currentSubArraySize = 2 * currentSubArraySize;
                 #pragma omp barrier
@@ -754,7 +760,7 @@ inline void iterativeComboMergeSort(vec_t* array, uint32_t array_length/*, void(
                     uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
                     uint32_t A_length = B_start - A_start + 1;
                     uint32_t B_length = B_end - B_start;
-                    serialMergeNoBranch(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
+                    bitonicMergeReal(C + A_start, A_length, C + B_start + 1, B_length, array + A_start, A_length + B_length);
                 }
                 currentSubArraySize = 2 * currentSubArraySize;
                 #pragma omp barrier
@@ -883,7 +889,7 @@ inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_leng
  * http://stackoverflow.com/questions/16007640/openmp-parallel-quicksort
  * Used for comparison
  */
-uint32_t partition(uint32_t * lt, uint32_t * gt, uint32_t * a, uint32_t p, uint32_t r)
+uint32_t Parallelpartition(uint32_t * lt, uint32_t * gt, uint32_t * a, uint32_t p, uint32_t r)
 {
     uint32_t i = 0;
     uint32_t j;
@@ -913,22 +919,52 @@ uint32_t partition(uint32_t * lt, uint32_t * gt, uint32_t * a, uint32_t p, uint3
     return p + lt_n;
 }
 
-void quicksort(uint32_t * a, uint32_t p, uint32_t r)
+void Paralelquicksort(uint32_t * a, uint32_t p, uint32_t r)
 {
     uint32_t div;
     if(p < r){
         uint32_t * lt = (uint32_t*)xcalloc(r-p, sizeof(uint32_t));
         uint32_t * gt = (uint32_t*)xcalloc(r-p, sizeof(uint32_t));
-        div = partition(lt, gt, a, p, r);
+        div = Parallelpartition(lt, gt, a, p, r);
         free(lt);
         free(gt);
         #pragma omp parallel sections
         {
             #pragma omp section
-            quicksort(a, p, div - 1);
+            Paralelquicksort(a, p, div - 1);
             #pragma omp section
-            quicksort(a, div + 1, r);
+            Paralelquicksort(a, div + 1, r);
 
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// New section for single core sorting algorithms
+//
+////////////////////////////////////////////////////////////////////////////////
+
+void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
+    vec_t* C = (vec_t*)xcalloc((array_length), sizeof(vec_t));
+
+    //Now merge up the sorted arrays
+    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+        //Merge from array into C
+    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
+            serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+    	}
+
+        //pointer swap for C
+        vec_t* tmp = *array;
+        *array = C;
+        C = tmp;
+    }
+    free(C);
 }
