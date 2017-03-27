@@ -354,22 +354,6 @@ void tester(
         }
         #endif
 
-        #ifdef __INTEL_COMPILER
-        //AVX512 Bitonic Merge (Youngchaos code)
-        if ( can_use_intel_knl_features() ) {
-            float bitonic512 = 0.0;
-            tic_reset();
-            uint32_t * tmpArray = (uint32_t*)xmalloc(A_length * sizeof(uint32_t) + B_length * sizeof(uint32_t));
-            memcpy((void*)tmpArray, (void*)(*A), A_length*sizeof(uint32_t));
-            memcpy((void*)(tmpArray + A_length), (void*)(*B), B_length*sizeof(uint32_t));
-            knightMergeOutPlace(tmpArray, (*C), 0, A_length, A_length+B_length);
-            bitonic512 = tic_sincelast();
-            verifyOutput((*C), (*CSorted), C_length, "Bitonic AVX512 Merge");
-            clearArray((*C), C_length);
-            printf("Bitonic Merge AVX-512: ");
-            printf("%18.10f\n", 1e9*(bitonic512 / (float)(Ct_length)));
-        }
-        #endif
     #endif
 
     //---------------------------------------------------------------------
@@ -459,18 +443,22 @@ void tester(
         printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
         //free(parallelQuickSortTime);*/
 
-        //simpleIterativeMergeSort
-        float simpleIterativeMergeSortTime = 0.0;
-        tic_reset();
-        simpleIterativeMergeSort(CUnsorted, Ct_length);
-        simpleIterativeMergeSortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Iterative Mergesort:");
-        printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
-        printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
-        printf("\n");
+        #ifdef __INTEL_COMPILER
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float simpleIterativeMergeSortTime = 0.0;
+            tic_reset();
+            simpleIterativeMergeSort(CUnsorted, Ct_length);
+            simpleIterativeMergeSortTime = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
+            memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+            printf("Iterative Mergesort:");
+            printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
+            printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
+            printf("\n");
+        }
+        #endif
 
     #endif
 }

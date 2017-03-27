@@ -18,19 +18,20 @@ void bitonicMergeReal(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 
-#ifdef __INTEL_COMPILER
+    #ifdef __INTEL_COMPILER
+
 void serialMergeAVX512(
     vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length,
     uint32_t* ASplitters, uint32_t* BSplitters);
 
-void knightMergeOutPlace(
-    uint32_t* input, uint32_t*output, int left, int mid, int right);
+/*void knightMergeOutPlace(
+    uint32_t* input, uint32_t*output, int left, int mid, int right);*/
 
 void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length);
-
 #endif
+
 
 void iterativeComboMergeSort(
     vec_t* array,
@@ -44,6 +45,8 @@ void iterativeNonParallelComboMergeSort(
 
 void Paralellquicksort(uint32_t * a, uint32_t p, uint32_t r);
 
+#ifdef __INTEL_COMPILER
 void simpleIterativeMergeSort(vec_t** array, uint32_t array_length);
+#endif
 
 #endif
