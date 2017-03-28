@@ -24,7 +24,7 @@
 #include "main.h"
 
 //Functionality parametters
-//#define MERGE //Coment this out to not test merging functionality
+#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -301,7 +301,7 @@ void tester(
         clearArray((*C), C_length);
         printf("Merging Results:\n");
 
-        //Serial Merge
+        /*//Serial Merge
         float* serial = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
@@ -332,9 +332,9 @@ void tester(
         clearArray((*C), C_length);
         printf("Bitonic Merge Real:        ");
         printf("%18.10f\n", 1e9*(*bitonicReal / (float)(Ct_length)));
-        free(bitonicReal);
+        free(bitonicReal);*/
 
-        #ifdef __INTEL_COMPILER
+        //#ifdef __INTEL_COMPILER
         //AVX512 Merge (our algorithm)
         if ( can_use_intel_knl_features() ) {
             float* avx512 = (float*)xcalloc(1, sizeof(float));
@@ -352,7 +352,7 @@ void tester(
             printf("%18.10f\n", 1e9*(*avx512 / (float)(Ct_length)));
             free(avx512);
         }
-        #endif
+        //#endif
 
     #endif
 
@@ -369,7 +369,7 @@ void tester(
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
-        #include <unistd.h>
+        /*#include <unistd.h>
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
         //printf("Number of Threads:%i\n", threads);
 
@@ -391,7 +391,7 @@ void tester(
         //parallelComboSort
         float parallelCombo = 0.0;
         tic_reset();
-        iterativeComboMergeSort(unsortedCopy, Ct_length/*, serialMergeNoBranch*/);
+        iterativeComboMergeSort(unsortedCopy, Ct_length);
         parallelCombo = tic_sincelast();
         verifyOutput(unsortedCopy, (*CSorted), Ct_length, "Parallel Combo Sort");
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
@@ -416,7 +416,7 @@ void tester(
             printf("   %20.6f", (float)(Ct_length)/parallelCombo512);
             printf("\n");
         }
-        #endif
+        #endif*/
 
         //qsort
         float qsortTime = 0.0;
@@ -443,7 +443,7 @@ void tester(
         printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
         //free(parallelQuickSortTime);*/
 
-        #ifdef __INTEL_COMPILER
+        //#ifdef __INTEL_COMPILER
         if ( can_use_intel_knl_features() ) {
             //simpleIterativeMergeSort
             float simpleIterativeMergeSortTime = 0.0;
@@ -458,7 +458,7 @@ void tester(
             printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
             printf("\n");
         }
-        #endif
+        //#endif
 
     #endif
 }
@@ -486,8 +486,11 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
       if(current_x > A_length - 1 || current_y < 1) {
         Ai = 1;Bi = 0;
       } else {
+        //printf("current_x: %i\n", current_x);
+        //printf("current_y: %i\n", current_y);
         Ai = A[current_x];Bi = B[current_y - 1];
       }
+      //printf("One\n");
       if(Ai > Bi) {
         if(current_y > B_length - 1 || current_x < 1) {
           Ai = 0;Bi = 1;
@@ -521,6 +524,7 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
     // while(current_y < bstop) {
     //   C[ci++] = B[current_y++];
     // }
+    //printf("Done With Thread %i\n", thread);
   }
 }
 

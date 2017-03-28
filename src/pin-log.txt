@@ -1,0 +1,2 @@
+Pin 3.1 kit 78170
+E:  Attach to pid 18016 failed: Operation not permitted
