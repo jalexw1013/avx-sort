@@ -59,10 +59,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 1000000;
-uint32_t  h_ui_B_length                = 1000000;
-uint32_t  h_ui_C_length                = 2000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 2000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 100;
+uint32_t  h_ui_B_length                = 100;
+uint32_t  h_ui_C_length                = 200; //array to put values in
+uint32_t  h_ui_Ct_length               = 200; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -369,6 +369,7 @@ void tester(
         vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
+
         /*#include <unistd.h>
         int threads = sysconf(_SC_NPROCESSORS_ONLN);
         //printf("Number of Threads:%i\n", threads);
@@ -424,7 +425,7 @@ void tester(
         qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
         qsortTime = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
         printf("qsort:              ");
         printf("   %14.6f", 1000*qsortTime);
         printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
@@ -451,7 +452,7 @@ void tester(
             simpleIterativeMergeSort(CUnsorted, Ct_length);
             simpleIterativeMergeSortTime = tic_sincelast();
             verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
-            memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
             printf("Iterative Mergesort:");
             printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
             printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
@@ -480,6 +481,7 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
 
     vec_t Ai, Bi;
     while(1) {
+        // printf("test\n");
       offset = (x_top - x_bottom) / 2;
       current_y = y_top + offset;
       current_x = x_top - offset;
@@ -509,6 +511,7 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
         x_bottom = current_x + 1;
       }
     }
+    //printf("Out\n");
 //    #pragma omp barrier
 
     // uint32_t astop = uip_diagonal_intersections[thread*2+2];
@@ -526,6 +529,9 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
     // }
     //printf("Done With Thread %i\n", thread);
   }
+
+
+
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
