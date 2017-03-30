@@ -740,7 +740,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
             if (currentSubArraySize < 32) {
                 serialMergeNoBranch((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
             } else {
-                /*printf("ASplitters[]%i\n", ASplitters[2]);
+                printf("ASplitters[]%i\n", ASplitters[2]);
                 printf("begin\n");
                 printf("array: %x\n", array);
                 printf("arrayLength: %i\n", array_length);
@@ -748,16 +748,24 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
                 printf("A_start: %i\n", A_start);
                 printf("B_Start: %i\n", B_start);
                 printf("A_length: %i\n", A_length);
-                printf("B_length: %i\n", B_length);*/
+                printf("B_length: %i\n", B_length);
 
                 int swapped = 0;
 
-                printf("3\n");
-                if (A_length < B_length) {
-                    printf("4\n");
+                //printf("3\n");
+                if (1/*A_length != B_length*/) {
+                    //printf("6\n");
+                    for (int i = 0; i < 17; i++) {
+                        ASplitters[i] = 0;
+                        BSplitters[i] = 0;
+                    }
+                    ASplitters[16] = A_length;
+                    BSplitters[16] = B_length;
+                } else if (A_length < B_length) {
+                    //printf("4\n");
                     MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                }else{
-                    printf("5\n");
+                } else{
+                    //printf("5\n");
                     MergePathSplitter((*array) + B_start + 1, B_length, (*array) + A_start, A_length, C + A_start, A_length + B_length, 16, BSplitters, ASplitters);
                 }
 
