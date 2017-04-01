@@ -181,10 +181,70 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
     return;
 }
 
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
+#define BYTE_TO_BINARY(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0')
+
+void print256_num(__m256i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("Numerical: %i %i %i %i %i %i %i %i \n",
+           val[0], val[1], val[2], val[3], val[4], val[5],
+           val[6], val[7]);
+}
+void print512_num(char *text, __m512i var)
+{
+    uint32_t *val = (uint32_t*) &var;
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+void print16intarray(char *text, int *val) {
+    printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+}
+void printmmask16(char *text, __mmask16 mask) {
+    //uint16_t *val = (uint16_t*) &mask;
+    //printf("%s: %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n", text,
+           //val[0], val[1], val[2], val[3], val[4], val[5], val[6], val[7],
+           //val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
+    //uint16_t num = (uint16_t)mask;
+    printf("%s: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n",text, BYTE_TO_BINARY(mask>>8), BYTE_TO_BINARY(mask));
+    //printf("%s: %i\n", text, num);
+}
+
 void serialMergeAVX512(vec_t* A, int32_t A_length,
     vec_t* B, int32_t B_length,
     vec_t* C, uint32_t C_length,
     uint32_t* ASplitters, uint32_t* BSplitters) {
+
+        for (int i = 0; i < A_length; i++) {
+            printf("A[%i]:%i\n", i, A[i]);
+        }
+
+        for (int i = 0; i < B_length; i++) {
+            printf("B[%i]:%i\n", i, B[i]);
+        }
+
+        for (int i = 0; i < 17; i++) {
+            printf("ASplitters[%i]:%i\n", i, ASplitters[i]);
+        }
+
+        for (int i = 0; i < 17; i++) {
+            printf("BSplitters[%i]:%i\n", i, BSplitters[i]);
+        }
+
+        for (int i = 0; i < C_length; i++) {
+            printf("C[%i]:%i\n", i, C[i]);
+        }
 
         //start indexes
         __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
@@ -229,47 +289,70 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
         __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
         __m512i minegone = _mm512_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-        __m512i miand, miandnot;
-        __m512i miAi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-        __m512i miBi = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-        int cmp[16] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
-        //temprary debugging Variables
-        int a = 0;
-        uint32_t *val = (uint32_t*) &vindexC;
+        __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+        __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
-        __mmask16 exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
-        __mmask16 exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
+        __m512i miPreviousCelems = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
-        while ((exceededAStop & exceededBStop) != 0) {
-            //code goes here
+        printmmask16("A Stop", exceededAStop);
+        printmmask16("B Stop", exceededBStop);
 
+        while ((exceededAStop | exceededBStop) != 0) {
             //get the current elements
             __m512i miAelems = _mm512_i32gather_epi32(vindexA, A, 4);
             __m512i miBelems = _mm512_i32gather_epi32(vindexB, B, 4);
+
+            printf("Test\n");
+
+            print512_num("A Elements", miAelems);
+            print512_num("B Elements", miBelems);
 
             //compare the elements
             __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
             micmp = (micmp & exceededAStop);
             micmp = (~exceededBStop | micmp);
 
+            printmmask16("compare", micmp);
+
             //copy the elements to the final elements
             __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
+            miCelems = _mm512_mask_add_epi32(miCelems, (~exceededAStop) & (~exceededBStop), miPreviousCelems, mizero);
+            miPreviousCelems = miCelems;
+
+            print512_num("C Elements", miCelems);
+            print512_num("V index C", vindexC);
+
 
             _mm512_i32scatter_epi32(C, vindexC, miCelems, 4);
 
-            vindexA = _mm512_mask_add_epi32(vindexA, micmp, vindexA, mione);
-            vindexB = _mm512_mask_add_epi32(vindexB, ~micmp, vindexB, mione);
-            vindexC = _mm512_add_epi32(vindexC, mione);
+            for (int i = 0; i < C_length; i++) {
+                printf("C[%i]:%i\n", i, C[i]);
+            }
 
-            exceededAStop = _mm512_cmpge_epi32_mask(vindexAStop, vindexA);
-            exceededBStop = _mm512_cmpge_epi32_mask(vindexBStop, vindexB);
+            exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+            exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
-            vindexA = _mm512_mask_add_epi32(vindexA, (~exceededAStop & micmp), vindexA, minegone);
-            vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
-            vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
+            vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
+            vindexB = _mm512_mask_add_epi32(vindexB, exceededBStop & ~micmp, vindexB, mione);
+            vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop & exceededBStop, vindexC, mione);
+            //vindexC = _mm512_add_epi32(vindexC, mione);
 
+            print512_num("V Index A", vindexA);
+            print512_num("V Index B", vindexB);
+            print512_num("V Index A Stop", vindexAStop);
+            print512_num("V Index B Stop", vindexBStop);
 
+            //vindexA = _mm512_mask_add_epi32(vindexA, (~exceededAStop & micmp), vindexA, minegone);
+            //vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
+            //vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
+
+            printmmask16("A Stop", exceededAStop);
+            printmmask16("B Stop", exceededBStop);
+        }
+
+        for (int i = 0; i < C_length; i++) {
+            printf("C[%i]:%i\n", i, C[i]);
         }
 }
 
@@ -717,9 +800,9 @@ void Paralelquicksort(uint32_t * a, uint32_t p, uint32_t r)
 ////////////////////////////////////////////////////////////////////////////////
 
 void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
-    for (int i = 0; i < array_length; i++) {
+    /*for (int i = 0; i < array_length; i++) {
         printf("Array[%i]: %i\n", i, (*array)[i]);
-    }
+    }*/
     vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
     uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
     uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
@@ -727,9 +810,9 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
     //Now merge up the sorted arrays
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
-        for (int i = 0; i < array_length; i++) {
+        /*for (int i = 0; i < array_length; i++) {
             printf("Array[%i]: %i\n", i, (*array)[i]);
-        }
+        }*/
         //Merge from array into C
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
@@ -740,7 +823,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
             if (currentSubArraySize < 32) {
                 serialMergeNoBranch((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
             } else {
-                printf("ASplitters[]%i\n", ASplitters[2]);
+                /*printf("ASplitters[]%i\n", ASplitters[2]);
                 printf("begin\n");
                 printf("array: %x\n", array);
                 printf("arrayLength: %i\n", array_length);
@@ -748,7 +831,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
                 printf("A_start: %i\n", A_start);
                 printf("B_Start: %i\n", B_start);
                 printf("A_length: %i\n", A_length);
-                printf("B_length: %i\n", B_length);
+                printf("B_length: %i\n", B_length);*/
 
                 int swapped = 0;
 
@@ -769,7 +852,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
                     MergePathSplitter((*array) + B_start + 1, B_length, (*array) + A_start, A_length, C + A_start, A_length + B_length, 16, BSplitters, ASplitters);
                 }
 
-                for (int i = 0; i < A_length; i++) {
+                /*for (int i = 0; i < A_length; i++) {
                     printf("A[%i]: %i\n", i, ((*array) + A_start)[i]);
                 }
 
@@ -782,12 +865,12 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
                 }
                 for (int i = 0; i < 17; i++) {
                     printf("BSplitters[%i] = %i\n", i, BSplitters[i]);
-                }
+                }*/
 
 
-                printf("1\n");
+                //printf("1\n");
                 serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-                printf("2\n");
+                //printf("2\n");
             }
     	}
 
@@ -796,6 +879,6 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
         *array = C;
         C = tmp;
     }
-                    printf("Hello\n");
+                    //printf("Hello\n");
     free(C);
 }

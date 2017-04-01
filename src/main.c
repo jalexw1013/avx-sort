@@ -25,7 +25,7 @@
 
 //Functionality parametters
 #define MERGE //Coment this out to not test merging functionality
-#define SORT //Comment this out to not test sorting functionality
+//#define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
 //////////////////////////////
@@ -492,10 +492,10 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
     y_top = combinedIndex > (A_length) ? combinedIndex - (A_length) : 0;
     x_bottom = y_top;
 
-    printf("combinedIndex: %i\n", combinedIndex);
-    printf("xtop: %i\n", x_top);
-    printf("ytop: %i\n", y_top);
-    printf("x_bottom: %i\n", x_bottom);
+    //printf("combinedIndex: %i\n", combinedIndex);
+    //printf("xtop: %i\n", x_top);
+    //printf("ytop: %i\n", y_top);
+    //printf("x_bottom: %i\n", x_bottom);
 
     vec_t Ai, Bi;
     while(1) {
@@ -506,8 +506,8 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
       if(current_x > A_length - 1 || current_y < 1) {
         Ai = 1;Bi = 0;
       } else {
-        printf("current_x: %i\n", current_x);
-        printf("current_y: %i\n", current_y);
+        //printf("current_x: %i\n", current_x);
+        //printf("current_y: %i\n", current_y);
         Ai = A[current_x];Bi = B[current_y - 1];
       }
       //printf("One\n");
@@ -545,7 +545,7 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
     // while(current_y < bstop) {
     //   C[ci++] = B[current_y++];
     // }
-    printf("Done With Thread %i\n", thread);
+    //printf("Done With Thread %i\n", thread);
   }
 
 
