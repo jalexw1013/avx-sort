@@ -330,13 +330,20 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
                 printf("C[%i]:%i\n", i, C[i]);
             }
 
-            exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
-            exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+            //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+            //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
             vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
             vindexB = _mm512_mask_add_epi32(vindexB, exceededBStop & ~micmp, vindexB, mione);
-            vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop & exceededBStop, vindexC, mione);
+
+            exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+            exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+
+            vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
             //vindexC = _mm512_add_epi32(vindexC, mione);
+
+            //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+            //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
             print512_num("V Index A", vindexA);
             print512_num("V Index B", vindexB);
@@ -820,7 +827,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-            if (currentSubArraySize < 32) {
+            if (0/*currentSubArraySize < -1*/) {
                 serialMergeNoBranch((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
             } else {
                 /*printf("ASplitters[]%i\n", ASplitters[2]);

@@ -24,8 +24,8 @@
 #include "main.h"
 
 //Functionality parametters
-#define MERGE //Coment this out to not test merging functionality
-//#define SORT //Comment this out to not test sorting functionality
+//#define MERGE //Coment this out to not test merging functionality
+#define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
 //////////////////////////////
@@ -341,8 +341,12 @@ void tester(
             tic_reset();
             uint32_t ASplitters[17];
             uint32_t BSplitters[17];
+            for (int i = 0; i < 17; i++) {
+                ASplitters[i] = 100;
+                BSplitters[i] = 100;
+            }
             MergePathSplitter((*A), A_length, (*B), B_length, (*C),
-                Ct_length, 16, ASplitters, BSplitters);
+                Ct_length, 8, ASplitters, BSplitters);
             serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length,
                 ASplitters, BSplitters);
             *avx512 = tic_sincelast();
