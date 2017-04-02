@@ -493,21 +493,28 @@ void tester(
 
 void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters) {
-  ASplitters[threads] = A_length;
-  BSplitters[threads] = B_length;
 
   for (int i = 0; i < threads; i++) {
       ASplitters[i] = 0;
       BSplitters[i] = 0;
   }
 
-  if (A_length == 0) {
-      for (int i = 0; i < threads; i++) {
-          ASplitters[i] = 0;
-          BSplitters[i] = 0;
-      }
-      return;
+  if (A_length > B_length) {
+      //swap arrays
+      vec_t * tmp = A;
+      A = B;
+      B = tmp;
+      //swap lengths
+      uint32_t tmpLength = A_length;
+      A_length = B_length;
+      B_length = tmpLength;
+      //swap splitters
+      uint32_t* tmpSplitters = ASplitters;
+      ASplitters = BSplitters;
+      BSplitters = tmpSplitters;
   }
+  ASplitters[threads] = A_length;
+  BSplitters[threads] = B_length;
 
   for (int thread=0; thread<threads;thread++)
   {
