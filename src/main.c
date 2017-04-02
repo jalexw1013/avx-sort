@@ -24,8 +24,8 @@
 #include "main.h"
 
 //Functionality parametters
-//#define MERGE //Coment this out to not test merging functionality
-#define SORT //Comment this out to not test sorting functionality
+#define MERGE //Coment this out to not test merging functionality
+//#define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
 //////////////////////////////
@@ -301,13 +301,29 @@ void tester(
         clearArray((*C), C_length);
         printf("Merging Results:\n");
 
-        /*//Serial Merge
+        vec_t* ACopy = xmalloc((A_length + 8) * sizeof(vec_t));
+        memcpy(ACopy, (*A), A_length * sizeof(vec_t));
+
+        vec_t* BCopy = xmalloc((B_length + 8) * sizeof(vec_t));
+        memcpy(BCopy, (*B), B_length * sizeof(vec_t));
+
+        // for (int i = 0; i < A_length; i++) {
+        //     printf("A[%i]: %i\n", i, (*A)[i]);
+        // }
+        //
+        // for (int i = 1; i < B_length; i++) {
+        //     printf("B[%i]: %i\n", i, (*B)[i]);
+        // }
+
+        //Serial Merge
         float* serial = (float*)xcalloc(1, sizeof(float));
         tic_reset();
         serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
         *serial = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Serial Merge");
         clearArray((*C), C_length);
+        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
         printf("Serial Merge:              ");
         printf("%18.10f\n", 1e9*(*serial / (float)(Ct_length)));
         free(serial);
@@ -319,6 +335,8 @@ void tester(
         *serialNoBranch = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Serial Merge Branchless");
         clearArray((*C), C_length);
+        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
         printf("Serial Merge no Branch:    ");
         printf("%18.10f\n", 1e9*(*serialNoBranch / (float)(Ct_length)));
         free(serialNoBranch);
@@ -330,9 +348,11 @@ void tester(
         *bitonicReal = tic_sincelast();
         verifyOutput((*C), (*CSorted), C_length, "Bitonic");
         clearArray((*C), C_length);
+        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
         printf("Bitonic Merge Real:        ");
         printf("%18.10f\n", 1e9*(*bitonicReal / (float)(Ct_length)));
-        free(bitonicReal);*/
+        free(bitonicReal);
 
         //#ifdef __INTEL_COMPILER
         //AVX512 Merge (our algorithm)
@@ -346,12 +366,14 @@ void tester(
                 BSplitters[i] = 100;
             }
             MergePathSplitter((*A), A_length, (*B), B_length, (*C),
-                Ct_length, 8, ASplitters, BSplitters);
+                Ct_length, 16, ASplitters, BSplitters);
             serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length,
                 ASplitters, BSplitters);
             *avx512 = tic_sincelast();
             verifyOutput((*C), (*CSorted), C_length, "AVX512 Merge");
             clearArray((*C), C_length);
+            memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+            memcpy( (*B), BCopy, B_length * sizeof(vec_t));
             printf("Serial Merge AVX-512:  ");
             printf("%18.10f\n", 1e9*(*avx512 / (float)(Ct_length)));
             free(avx512);
