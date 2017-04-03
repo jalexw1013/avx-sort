@@ -52,13 +52,6 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length);
 
 void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length);
 
-void iterativeMergeSortAVX512Modified1(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified4(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified5(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified6(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified7(vec_t** array, uint32_t array_length);
-void iterativeMergeSortAVX512Modified8(vec_t** array, uint32_t array_length);
+void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length);
 
 #endif

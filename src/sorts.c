@@ -814,6 +814,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
 
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
+        tic_reset();
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
     		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
@@ -823,6 +824,8 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
 
             serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
+        float tmpF = tic_sincelast();
+        printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
 
         //pointer swap for C
         vec_t* tmp = *array;
@@ -841,6 +844,7 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
 
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
+        tic_reset();
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
     		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
@@ -851,6 +855,8 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
             MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
             serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
     	}
+        float tmpF = tic_sincelast();
+        printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
 
         //pointer swap for C
         vec_t* tmp = *array;
@@ -862,200 +868,7 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
     free(BSplitters);
 }
 
-void iterativeMergeSortAVX512Modified1(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 1) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 2) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 4) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified4(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 8) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified5(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 16) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified6(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 32) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-
-void iterativeMergeSortAVX512Modified7(vec_t** array, uint32_t array_length) {
+void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length) {
     vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
     uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
     uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
@@ -1070,38 +883,6 @@ void iterativeMergeSortAVX512Modified7(vec_t** array, uint32_t array_length) {
             uint32_t B_length = B_end - B_start;
 
             if (currentSubArraySize > 64) {
-                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-            } else {
-                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            }
-    	}
-
-        //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-    free(C);
-    free(ASplitters);
-    free(BSplitters);
-}
-
-void iterativeMergeSortAVX512Modified8(vec_t** array, uint32_t array_length) {
-    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
-    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
-
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
-    {
-    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
-    	{
-    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-            uint32_t A_length = B_start - A_start + 1;
-            uint32_t B_length = B_end - B_start;
-
-            if (currentSubArraySize > 128) {
                 MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
                 serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
             } else {
