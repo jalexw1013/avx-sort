@@ -32,7 +32,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 //Functionality parametters
-//#define MERGE //Coment this out to not test merging functionality
+#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
@@ -67,10 +67,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 100;
-uint32_t  h_ui_B_length                = 100;
-uint32_t  h_ui_C_length                = 200; //array to put values in
-uint32_t  h_ui_Ct_length               = 200; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 100000;
+uint32_t  h_ui_B_length                = 100000;
+uint32_t  h_ui_C_length                = 200000; //array to put values in
+uint32_t  h_ui_Ct_length               = 200000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
