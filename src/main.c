@@ -32,7 +32,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 //Functionality parametters
-#define MERGE //Coment this out to not test merging functionality
+//#define MERGE //Coment this out to not test merging functionality
 #define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
