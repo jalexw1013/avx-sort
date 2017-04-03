@@ -23,9 +23,17 @@
 #include "sorts.h"
 #include "main.h"
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 //Functionality parametters
 #define MERGE //Coment this out to not test merging functionality
-//#define SORT //Comment this out to not test sorting functionality
+#define SORT //Comment this out to not test sorting functionality
 
 // Random Tuning Parameters
 //////////////////////////////
@@ -253,9 +261,9 @@ void freeGlobalData() {
 int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
     for(int i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
-            printf("Error: %s Failed To Produce Correct Results.\n", name);
-            printf("Index:%d, Given Value:%d, Correct "
-            "Value:%d\n", i, output[i], sortedData[i]);
+            printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
+            printf("    Index:%d, Given Value:%d, Correct "
+            "Value:%d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i]);
             return 0;
         }
     }
@@ -491,59 +499,236 @@ void tester(
 }
 
 
+// void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
+//     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters) {
+//
+//   for (int i = 0; i <= threads; i++) {
+//       ASplitters[i] = A_length;
+//       BSplitters[i] = B_length;
+//   }
+//
+//   /*if (A_length > B_length) {
+//       //swap arrays
+//       vec_t * tmp = A;
+//       A = B;
+//       B = tmp;
+//       //swap lengths
+//       uint32_t tmpLength = A_length;
+//       A_length = B_length;
+//       B_length = tmpLength;
+//       //swap splitters
+//       uint32_t* tmpSplitters = ASplitters;
+//       ASplitters = BSplitters;
+//       BSplitters = tmpSplitters;
+//   }*/
+//   //ASplitters[threads] = A_length;
+//   //BSplitters[threads] = B_length;
+//
+//   for (int thread=0; thread<threads;thread++)
+//   {
+//     // uint32_t thread = omp_get_thread_num();
+//     /*int32_t combinedIndex = thread * (A_length + B_length) / threads;
+//     int32_t x_top, y_top, x_bottom, y_bottom, current_x, current_y, offsetx, offsety, oldx, oldy;
+//
+//     x_top = combinedIndex > A_length ? A_length : combinedIndex;
+//     x_bottom = combinedIndex > (A_length) ? combinedIndex - (A_length) : 0;
+//     y_top = combinedIndex > (B_length) ? combinedIndex - (B_length) : 0;
+//     y_bottom = combinedIndex > (B_length) ? combinedIndex - (B_length) : 0;
+//
+//     oldx = -1;
+//     oldy = -1;
+//
+//     //printf("combinedIndex: %i\n", combinedIndex);
+//     //printf("xtop: %i\n", x_top);
+//     //printf("ytop: %i\n", y_top);
+//     //printf("x_bottom: %i\n", x_bottom);
+//
+//     vec_t Ai, Bi;
+//     while(1) {
+//         // printf("test\n");
+//       offsetx = (x_top - x_bottom) / 2;
+//       offsety = (y_top - y_bottom) / 2;
+//       current_y = y_top + offsety;
+//       current_x = x_top - offsetx;
+//       printf("Thread:%i\n", thread);
+//       printf("xtop: %i\n", x_top);
+//       printf("xbottom: %i\n", x_bottom);
+//       printf("ytop: %i\n", y_top);
+//       printf("ybottom: %i\n", y_bottom);
+//       printf("current_x: %i\n", current_x);
+//       printf("current_y: %i\n", current_y);
+//
+//       if (current_x == oldx && current_y == oldy) {
+//           printf("\n\n\n\nbreaking\n\n\n\n\n");
+//           ASplitters[thread]   = current_x;
+//           BSplitters[thread] = current_y;
+//           break;
+//       }
+//
+//       oldx = current_x;
+//       oldy = current_y;
+//
+//       if(current_x > A_length - 1 || current_y < 1) {
+//         Ai = 1;Bi = 0;
+//       } else {
+//         Ai = A[current_x];Bi = B[current_y - 1];
+//         printf("Ai: %i\n", Ai);
+//         printf("Bi: %i\n", Bi);
+//       }
+//       //printf("One\n");
+//       if(Ai > Bi) {
+//         if(current_y > B_length - 1 || current_x < 1) {
+//           Ai = 0;Bi = 1;
+//         } else {
+//           Ai = A[current_x - 1];Bi = B[current_y];
+//         }
+//
+//         if(Ai <= Bi) {//Found it
+//           ASplitters[thread]   = current_x;
+//           BSplitters[thread] = current_y;
+//           break;
+//         } else {//Both zeros
+//           x_top = current_x - 1;y_top = current_y + 1;
+//         }
+//       } else {// Both ones
+//         x_bottom = current_x + 1;
+//       }
+//     }
+//     //printf("Out\n");
+// //    #pragma omp barrier
+//
+//     // uint32_t astop = uip_diagonal_intersections[thread*2+2];
+//     // uint32_t bstop = uip_diagonal_intersections[thread*2+3];
+//     // uint32_t ci = current_x + current_y;
+//
+//     // while(current_x < astop && current_y < bstop) {
+//     //   C[ci++] = A[current_x] < B[current_y] ? A[current_x++] : B[current_y++];
+//     // }
+//     // while(current_x < astop) {
+//     //   C[ci++] = A[current_x++];
+//     // }
+//     // while(current_y < bstop) {
+//     //   C[ci++] = B[current_y++];
+//     // }
+//     //printf("Done With Thread %i\n", thread);
+// }*/
+//
+//     uint32_t diagonal_path_intersections[threads + threads];
+//
+//     // Calculate combined index around the MergePath "matrix"
+//     int32_t combinedIndex = thread * (A_length + B_length) / threads;
+//     int32_t x_top, y_top, x_bottom, y_bottom,  found;
+//     int32_t oneorzero[32];
+//
+//     // Figure out the coordinates of our diagonal
+//     if (A_length < B_length) {
+//         x_top = combinedIndex > A_length ? A_length : combinedIndex;
+//         y_top = combinedIndex > (A_length) ? combinedIndex - (A_length) : 0;
+//         x_bottom = y_top;
+//         y_bottom = x_top;
+//     } else {
+//         x_top = combinedIndex > B_length ? B_length : combinedIndex;
+//         y_top = combinedIndex > (B_length) ? combinedIndex - (B_length) : 0;
+//         x_bottom = y_top;
+//         y_bottom = x_top;
+//     }
+//
+//     int threadOffset = (x_top - x_bottom) / 2;
+//
+//     found = 0;
+//
+//     printf("in\n");
+//     // Search the diagonal
+//     while(!found) {
+//         // Update our coordinates within the 32-wide section of the diagonal
+//         int32_t current_x = x_top - ((x_top - x_bottom) >> 1) - threadOffset;
+//         int32_t current_y = y_top + ((y_bottom - y_top) >> 1) + threadOffset;
+//
+//         // Are we a '1' or '0' with respect to A[x] <= B[x]
+//         if(current_x >= A_length || current_y < 0) {
+//           oneorzero[thread] = 0;
+//         } else if(current_y >= B_length || current_x < 1) {
+//           oneorzero[thread] = 1;
+//         } else {
+//           oneorzero[thread] = (A[current_x-1] <= B[current_y]) ? 1 : 0;
+//         }
+//
+//         // If we find the meeting of the '1's and '0's, we found the
+//         // intersection of the path and diagonal
+//         if(thread > 0 && (oneorzero[thread] != oneorzero[thread-1])) {
+//           found = 1;
+//           diagonal_path_intersections[thread] = current_x;
+//           diagonal_path_intersections[thread + threads + 1] = current_y;
+//         }
+//
+//         // Adjust the search window on the diagonal
+//         if(thread == 16) {
+//           if(oneorzero[31] != 0) {
+//     	x_bottom = current_x;
+//     	y_bottom = current_y;
+//           } else {
+//     	x_top = current_x;
+//     	y_top = current_y;
+//           }
+//         }
+//     }
+//     printf("otu]]ut\n");
+//
+//   // Set the boundary diagonals (through 0,0 and A_length,B_length)
+//   if(thread == 0 && thread == 0) {
+//     diagonal_path_intersections[0] = 0;
+//     diagonal_path_intersections[threads + 1] = 0;
+//     diagonal_path_intersections[threads] = A_length;
+//     diagonal_path_intersections[threads + threads + 1] = B_length;
+//   }
+//
+//   for (int i = 0; i <= threads; i++) {
+//       ASplitters[i] = diagonal_path_intersections[i];
+//       BSplitters[i + threads] = diagonal_path_intersections[i + threads];
+//   }
+// }
+// }
+
 void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_length, vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters) {
 
-  for (int i = 0; i < threads; i++) {
-      ASplitters[i] = 0;
-      BSplitters[i] = 0;
+  for (int i = 0; i <= threads; i++) {
+      ASplitters[i] = A_length;
+      BSplitters[i] = B_length;
   }
 
-  if (A_length > B_length) {
-      //swap arrays
-      vec_t * tmp = A;
-      A = B;
-      B = tmp;
-      //swap lengths
-      uint32_t tmpLength = A_length;
-      A_length = B_length;
-      B_length = tmpLength;
-      //swap splitters
-      uint32_t* tmpSplitters = ASplitters;
-      ASplitters = BSplitters;
-      BSplitters = tmpSplitters;
-  }
-  ASplitters[threads] = A_length;
-  BSplitters[threads] = B_length;
+  int minLength = A_length > B_length ? B_length : A_length;
 
   for (int thread=0; thread<threads;thread++)
   {
     // uint32_t thread = omp_get_thread_num();
-    int32_t combinedIndex = thread * (A_length + B_length) / threads;
-    int32_t x_top, y_top, x_bottom, current_x, current_y, offset;
-    x_top = combinedIndex > A_length ? A_length : combinedIndex;
-    y_top = combinedIndex > (A_length) ? combinedIndex - (A_length) : 0;
+    int32_t combinedIndex = thread * (minLength * 2) / threads;
+    int32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+    x_top = combinedIndex > minLength ? minLength : combinedIndex;
+    y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
     x_bottom = y_top;
 
-    //printf("combinedIndex: %i\n", combinedIndex);
-    //printf("xtop: %i\n", x_top);
-    //printf("ytop: %i\n", y_top);
-    //printf("x_bottom: %i\n", x_bottom);
+    oldx = -1;
+    oldy = -1;
 
     vec_t Ai, Bi;
     while(1) {
-        // printf("test\n");
       offset = (x_top - x_bottom) / 2;
       current_y = y_top + offset;
       current_x = x_top - offset;
+
+      if (current_x == oldx || current_y == oldy) {
+          return;
+      }
+
+      oldx = current_x;
+      oldy = current_y;
+
       if(current_x > A_length - 1 || current_y < 1) {
         Ai = 1;Bi = 0;
       } else {
-        //printf("current_x: %i\n", current_x);
-        //printf("current_y: %i\n", current_y);
         Ai = A[current_x];Bi = B[current_y - 1];
       }
-      //printf("One\n");
       if(Ai > Bi) {
         if(current_y > B_length - 1 || current_x < 1) {
           Ai = 0;Bi = 1;
@@ -562,7 +747,6 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
         x_bottom = current_x + 1;
       }
     }
-    //printf("Out\n");
 //    #pragma omp barrier
 
     // uint32_t astop = uip_diagonal_intersections[thread*2+2];
@@ -578,11 +762,7 @@ void MergePathSplitter( vec_t * A, uint32_t A_length, vec_t * B, uint32_t B_leng
     // while(current_y < bstop) {
     //   C[ci++] = B[current_y++];
     // }
-    //printf("Done With Thread %i\n", thread);
   }
-
-
-
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
