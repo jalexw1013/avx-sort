@@ -1,0 +1,24 @@
+Parameters
+Entropy: 28
+A Size: 1000000
+B Size: 1000000
+C Size: 2000000
+
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       1313.251953         656.626014         1522937.000000
+Iterative Mergesort:          497.546906         248.773460         4019721.500000
+AVX512 Mergesort:            2232.189941        1116.094950          895981.125000
+AVX512 Combo Mergesort:       428.514008         214.257000         4667292.000000
+Parameters
+Entropy: 28
+A Size: 10000000
+B Size: 10000000
+C Size: 20000000
+
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                      14534.474609         726.723727         1376038.750000
+Iterative Mergesort:         5675.947266         283.797362         3523641.000000
+AVX512 Mergesort:           23382.546875        1169.127358          855338.812500
+AVX512 Combo Mergesort:      5596.485352         279.824263         3573671.500000

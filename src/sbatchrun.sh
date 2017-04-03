@@ -18,23 +18,23 @@
 #SBATCH --mail-type=end    # email me when the job finishes
 
 # Launch merge of different sizes.
-./merge -A 1 -B 1
-./merge -A 1 -B 1
-./merge -A 1 -B 1
-./merge -A 5 -B 5
-./merge -A 5 -B 5
-./merge -A 5 -B 5
-./merge -A 20 -B 20
-./merge -A 20 -B 20
-./merge -A 30 -B 30
-./merge -A 32 -B 32
-./merge -A 40 -B 40
-./merge -A 50 -B 50
-./merge -A 100 -B 100
-./merge -A 100 -B 100
-./merge -A 128 -B 128
-./merge -A 128 -B 128
-./merge -A 200 -B 200
-./merge -A 500 -B 500
-./merge -A 500 -B 500
-./merge -A 1000 -B 1000
+#./merge -A 1 -B 1
+#./merge -A 1 -B 1
+#./merge -A 1 -B 1
+#./merge -A 5 -B 5
+#./merge -A 5 -B 5
+#./merge -A 5 -B 5
+#./merge -A 20 -B 20
+#./merge -A 20 -B 20
+#./merge -A 30 -B 30
+#./merge -A 32 -B 32
+#./merge -A 40 -B 40
+#./merge -A 50 -B 50
+#./merge -A 100 -B 100
+#./merge -A 100 -B 100
+#./merge -A 128 -B 128
+#./merge -A 128 -B 128
+#./merge -A 200 -B 200
+#./merge -A 500 -B 500
+./merge -A 1000000 -B 1000000
+./merge -A 10000000 -B 10000000

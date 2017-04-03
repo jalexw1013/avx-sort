@@ -1,0 +1,38 @@
+Parameters
+Entropy: 28
+A Size: 1000000
+B Size: 1000000
+C Size: 2000000
+
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       1312.908936         656.454461         1523335.000000
+Iterative Mergesort:          494.210968         247.105476         4046854.750000
+AVX512 Mergesort:            2229.659912        1114.829843          896997.812500
+AVX512 ComboMergesort1:       412.504913         206.252452         4848427.000000
+AVX512 ComboMergesort2:       420.619019         210.309508         4754897.000000
+AVX512 ComboMergesort3:       433.558929         216.779469         4612983.000000
+AVX512 ComboMergesort4:       451.805817         225.902909         4426680.500000
+AVX512 ComboMergesort5:       486.217010         243.108502         4113389.500000
+AVX512 ComboMergesort6:       484.497070         242.248547         4127992.000000
+AVX512 ComboMergesort7:       486.988068         243.494043         4106876.750000
+AVX512 ComboMergesort8:       500.867859         250.433914         3993069.250000
+Parameters
+Entropy: 28
+A Size: 10000000
+B Size: 10000000
+C Size: 20000000
+
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                      14495.891602         724.794575         1379701.250000
+Iterative Mergesort:         5659.153809         282.957700         3534097.250000
+AVX512 Mergesort:           23447.189453        1172.359475          852980.687500
+AVX512 ComboMergesort1:      5527.207031         276.360339         3618464.250000
+AVX512 ComboMergesort2:      5667.000000         283.350005         3529204.250000
+AVX512 ComboMergesort3:      5727.796875         286.389849         3491743.750000
+AVX512 ComboMergesort4:      5943.247070         297.162330         3365164.000000
+AVX512 ComboMergesort5:      6262.918945         313.145961         3193399.250000
+AVX512 ComboMergesort6:      6330.934082         316.546704         3159091.500000
+AVX512 ComboMergesort7:      6318.380859         315.919038         3165368.000000
+AVX512 ComboMergesort8:      6332.251953         316.612613         3158434.000000
