@@ -808,77 +808,75 @@ void Paralelquicksort(uint32_t * a, uint32_t p, uint32_t r)
 ////////////////////////////////////////////////////////////////////////////////
 
 void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
-    /*for (int i = 0; i < array_length; i++) {
-        printf("Array[%i]: %i\n", i, (*array)[i]);
-    }*/
     vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
     uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
     uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
 
-    //Now merge up the sorted arrays
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
-        /*for (int i = 0; i < array_length; i++) {
-            printf("Array[%i]: %i\n", i, (*array)[i]);
-        }*/
-        //Merge from array into C
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
     		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-            if (0/*currentSubArraySize < -1*/) {
-                serialMergeNoBranch((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-            } else {
-                /*printf("ASplitters[]%i\n", ASplitters[2]);
-                printf("begin\n");
-                printf("array: %x\n", array);
-                printf("arrayLength: %i\n", array_length);
-                printf("currentSubArraySize: %i\n", currentSubArraySize);
-                printf("A_start: %i\n", A_start);
-                printf("B_Start: %i\n", B_start);
-                printf("A_length: %i\n", A_length);
-                printf("B_length: %i\n", B_length);*/
 
-                //int swapped = 0;
+            serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+    	}
 
-                //printf("3\n");
-                // if (1/*A_length != B_length*/) {
-                //     //printf("6\n");
-                //     for (int i = 0; i < 17; i++) {
-                //         ASplitters[i] = 0;
-                //         BSplitters[i] = 0;
-                //     }
-                //     ASplitters[16] = A_length;
-                //     BSplitters[16] = B_length;
-                // } else if (A_length < B_length) {
-                //     //printf("4\n");
-                //     MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                // } else{
-                //     //printf("5\n");
-                //     MergePathSplitter((*array) + B_start + 1, B_length, (*array) + A_start, A_length, C + A_start, A_length + B_length, 16, BSplitters, ASplitters);
-                // }
+        //pointer swap for C
+        vec_t* tmp = *array;
+        *array = C;
+        C = tmp;
+    }
+    free(C);
+}
 
-                /*for (int i = 0; i < A_length; i++) {
-                    printf("A[%i]: %i\n", i, ((*array) + A_start)[i]);
-                }
+void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
+    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
+    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
+    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
 
-                for (int i = 1; i < B_length; i++) {
-                    printf("B[%i]: %i\n", i, ((*array) + B_start)[i]);
-                }
+    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
 
-                for (int i = 0; i < 17; i++) {
-                    printf("ASplitters[%i] = %i\n", i, ASplitters[i]);
-                }
-                for (int i = 0; i < 17; i++) {
-                    printf("BSplitters[%i] = %i\n", i, BSplitters[i]);
-                }*/
+            MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
+            serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
+    	}
 
+        //pointer swap for C
+        vec_t* tmp = *array;
+        *array = C;
+        C = tmp;
+    }
+    free(C);
+}
+
+void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length) {
+    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
+    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
+    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
+
+    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
+
+            if (currentSubArraySize > 1000) {
                 MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
-                //printf("1\n");
                 serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
-                //printf("2\n");
+            } else {
+                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
             }
     	}
 
@@ -887,6 +885,5 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
         *array = C;
         C = tmp;
     }
-                    //printf("Hello\n");
     free(C);
 }

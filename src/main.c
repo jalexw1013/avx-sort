@@ -460,7 +460,7 @@ void tester(
         qsortTime = tic_sincelast();
         verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
         memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-        printf("qsort:              ");
+        printf("qsort:                 ");
         printf("   %14.6f", 1000*qsortTime);
         printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
         printf("   %20.6f", (float)(Ct_length)/qsortTime);
@@ -487,10 +487,40 @@ void tester(
             simpleIterativeMergeSortTime = tic_sincelast();
             verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
             memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("Iterative Mergesort:");
+            printf("Iterative Mergesort:   ");
             printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
             printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
             printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
+            printf("\n");
+        }
+
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float iterativeMergeSortAVX512Time = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512(CUnsorted, Ct_length);
+            iterativeMergeSortAVX512Time = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort using AVX512");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 Mergesort:      ");
+            printf("   %14.6f", 1000*iterativeMergeSortAVX512Time);
+            printf("   %16.6f", 1e9*(iterativeMergeSortAVX512Time / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortAVX512Time);
+            printf("\n");
+        }
+
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float iterativeMergeSortAVX512ModifiedTime = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified(CUnsorted, Ct_length);
+            iterativeMergeSortAVX512ModifiedTime = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 Combo Mergesort:");
+            printf("   %14.6f", 1000*iterativeMergeSortAVX512ModifiedTime);
+            printf("   %16.6f", 1e9*(iterativeMergeSortAVX512ModifiedTime / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortAVX512ModifiedTime);
             printf("\n");
         }
         //#endif
