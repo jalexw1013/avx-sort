@@ -1,0 +1,35 @@
+Parameters
+Entropy: 28
+A Size: 10000
+B Size: 10000
+C Size: 20000
+
+Merging Results:
+Serial Merge:                  124.4545018153
+Serial Merge no Branch:         14.2455096608
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:19994, Given Value:134193441, Correct Value:134196138[0m
+Bitonic Merge Real:              8.0943109992
+Serial Merge AVX-512:        3.0517577354
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       9.380102         469.005101         2132173.000000
+Iterative Mergesort:        23.077011        1153.850576          866663.375000
+Parameters
+Entropy: 28
+A Size: 100
+B Size: 100
+C Size: 200
+
+Merging Results:
+Serial Merge:                  424.3850639796
+Serial Merge no Branch:        230.0739225802
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:190, Given Value:128650386, Correct Value:128838231[0m
+Bitonic Merge Real:             10.7288364859
+Serial Merge AVX-512:       14.3051144263
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.055075         275.373452         3631432.000000
+Iterative Mergesort:         0.269890        1349.449121          741043.125000
+slurmstepd: *** JOB 88281 ON c561-002 CANCELLED AT 2017-04-02T19:38:19 DUE TO TIME LIMIT ***
