@@ -814,7 +814,7 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
 
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
-        tic_reset();
+        //tic_reset();
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
     		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
@@ -824,8 +824,8 @@ void simpleIterativeMergeSort(vec_t** array, uint32_t array_length) {
 
             serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
-        float tmpF = tic_sincelast();
-        printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
+        //float tmpF = tic_sincelast();
+        //printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
 
         //pointer swap for C
         vec_t* tmp = *array;
@@ -844,7 +844,7 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
 
     for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
-        tic_reset();
+        //tic_reset();
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
     		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
@@ -855,8 +855,8 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length) {
             MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
             serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
     	}
-        float tmpF = tic_sincelast();
-        printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
+        //float tmpF = tic_sincelast();
+        //printf("Time at Size %i : %i\n", currentSubArraySize, tmpF);
 
         //pointer swap for C
         vec_t* tmp = *array;
