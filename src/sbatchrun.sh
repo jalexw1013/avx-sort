@@ -12,12 +12,29 @@
 #SBATCH -p development           # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 68                   # Total number of tasks
-#SBATCH -t 00:05:00              # Run time (hh:mm:ss) - 1.5 hours
+#SBATCH -t 00:15:00              # Run time (hh:mm:ss) - 1.5 hours
 #SBATCH --mail-user=jwatkins45@gatech.edu
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
 
 # Launch merge of different sizes.
-./merge -A 10000 -B 10000
-./merge
-./merge -A 100000000 -B 100000000
+./merge -A 1 -B 1
+./merge -A 1 -B 1
+./merge -A 1 -B 1
+./merge -A 5 -B 5
+./merge -A 5 -B 5
+./merge -A 5 -B 5
+./merge -A 20 -B 20
+./merge -A 20 -B 20
+./merge -A 30 -B 30
+./merge -A 32 -B 32
+./merge -A 40 -B 40
+./merge -A 50 -B 50
+./merge -A 100 -B 100
+./merge -A 100 -B 100
+./merge -A 128 -B 128
+./merge -A 128 -B 128
+./merge -A 200 -B 200
+./merge -A 500 -B 500
+./merge -A 500 -B 500
+./merge -A 1000 -B 1000

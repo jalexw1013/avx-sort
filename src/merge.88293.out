@@ -1,0 +1,292 @@
+/tmp/slurmd/job88293/slurm_script: line 21: 236692 Segmentation fault      ./merge -A 1 -B 1
+/tmp/slurmd/job88293/slurm_script: line 22: 236693 Segmentation fault      ./merge -A 1 -B 1
+/tmp/slurmd/job88293/slurm_script: line 23: 236694 Segmentation fault      ./merge -A 1 -B 1
+Parameters
+Entropy: 28
+A Size: 5
+B Size: 5
+C Size: 10
+
+Merging Results:
+Serial Merge:                 4410.7437133789
+Serial Merge no Branch:       4506.1110540701
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:9, Given Value:116698799, Correct Value:124414645[0m
+Bitonic Merge Real:            119.2092895508
+Serial Merge AVX-512:      214.5767155071
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.002861         286.102306         3495253.250000
+Iterative Mergesort:         0.069857        6985.664186          143150.312500
+Parameters
+Entropy: 28
+A Size: 5
+B Size: 5
+C Size: 10
+
+Merging Results:
+Serial Merge:                 4315.3763726878
+Serial Merge no Branch:       4386.9017645193
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:9, Given Value:116698799, Correct Value:124414645[0m
+Bitonic Merge Real:            119.2092895508
+Serial Merge AVX-512:      214.5767155071
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.001907         190.734866         5242880.000000
+Iterative Mergesort:         0.059843        5984.306426          167103.750000
+Parameters
+Entropy: 28
+A Size: 5
+B Size: 5
+C Size: 10
+
+Merging Results:
+Serial Merge:                 4386.9017645193
+Serial Merge no Branch:       6699.5621637034
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:9, Given Value:116698799, Correct Value:124414645[0m
+Bitonic Merge Real:             95.3674330617
+Serial Merge AVX-512:       95.3674330617
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.002146         214.576716         4660338.000000
+Iterative Mergesort:         0.059843        5984.306426          167103.750000
+Parameters
+Entropy: 28
+A Size: 20
+B Size: 20
+C Size: 40
+
+Merging Results:
+Serial Merge:                 1072.8836059570
+Serial Merge no Branch:       1120.5672763026
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:32, Given Value:103049528, Correct Value:111097821[0m
+Bitonic Merge Real:             53.6441788768
+Serial Merge AVX-512:       71.5255765726
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.009060         226.497647         4415057.000000
+Iterative Mergesort:         0.092983        2324.581146          430185.031250
+Parameters
+Entropy: 28
+A Size: 20
+B Size: 20
+C Size: 40
+
+Merging Results:
+Serial Merge:                 1102.6859283447
+Serial Merge no Branch:       1096.7254411298
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:32, Given Value:103049528, Correct Value:111097821[0m
+Bitonic Merge Real:             53.6441788768
+Serial Merge AVX-512:       47.6837165309
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.008821         220.537189         4534382.500000
+Iterative Mergesort:         0.092983        2324.581146          430185.031250
+Parameters
+Entropy: 28
+A Size: 30
+B Size: 30
+C Size: 60
+
+Merging Results:
+Serial Merge:                  735.1239332820
+Serial Merge no Branch:        751.0185469073
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:57, Given Value:119628760, Correct Value:124414645[0m
+Bitonic Merge Real:             19.8682155172
+Serial Merge AVX-512:       35.7627882863
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.013828         230.471286         4338935.000000
+Iterative Mergesort:         0.113010        1883.506798          530924.562500
+Parameters
+Entropy: 28
+A Size: 32
+B Size: 32
+C Size: 64
+
+Merging Results:
+Serial Merge:                  685.4534149170
+Serial Merge no Branch:        685.4534149170
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:58, Given Value:119063306, Correct Value:119092258[0m
+Bitonic Merge Real:             18.6264514923
+Serial Merge AVX-512:       33.5276126862
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.015020         234.693289         4260880.500000
+Iterative Mergesort:         0.117064        1829.117537          546711.750000
+Parameters
+Entropy: 28
+A Size: 40
+B Size: 40
+C Size: 80
+
+Merging Results:
+Serial Merge:                  548.3627205649
+Serial Merge no Branch:        575.1847993452
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:75, Given Value:119628760, Correct Value:123928312[0m
+Bitonic Merge Real:             11.9209291327
+Serial Merge AVX-512:       35.7627882863
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.019073         238.418579         4194304.000000
+Iterative Mergesort:         0.139952        1749.396347          571625.750000
+Parameters
+Entropy: 28
+A Size: 50
+B Size: 50
+C Size: 100
+
+Merging Results:
+Serial Merge:                  438.6901935050
+Serial Merge no Branch:        460.1478451605
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:96, Given Value:123928312, Correct Value:124414645[0m
+Bitonic Merge Real:             19.0734859018
+Serial Merge AVX-512:       19.0734859018
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.024080         240.802763         4152776.250000
+Iterative Mergesort:         0.161886        1618.862143          617717.812500
+Parameters
+Entropy: 28
+A Size: 100
+B Size: 100
+C Size: 200
+
+Merging Results:
+Serial Merge:                  225.3055555457
+Serial Merge no Branch:        234.8423038256
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:189, Given Value:123572542, Correct Value:123928312[0m
+Bitonic Merge Real:             15.4972070732
+Serial Merge AVX-512:       14.3051144263
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.052929         264.644626         3778652.250000
+Iterative Mergesort:         0.272036        1360.177976          735197.875000
+Parameters
+Entropy: 28
+A Size: 100
+B Size: 100
+C Size: 200
+
+Merging Results:
+Serial Merge:                  225.3055555457
+Serial Merge no Branch:        236.0343955843
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:189, Given Value:123572542, Correct Value:123928312[0m
+Bitonic Merge Real:              9.5367429509
+Serial Merge AVX-512:       14.3051144263
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.052929         264.644626         3778652.250000
+Iterative Mergesort:         0.272036        1360.177976          735197.875000
+Parameters
+Entropy: 28
+A Size: 128
+B Size: 128
+C Size: 256
+
+Merging Results:
+Serial Merge:                  175.0886440277
+Serial Merge no Branch:        179.7452569008
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:241, Given Value:123731882, Correct Value:123928312[0m
+Bitonic Merge Real:             12.1071934700
+Serial Merge AVX-512:       15.8324837685
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       1.386881        5417.503417          184586.875000
+Iterative Mergesort:         0.461102        1801.177859          555192.250000
+Parameters
+Entropy: 28
+A Size: 128
+B Size: 128
+C Size: 256
+
+Merging Results:
+Serial Merge:                  176.0199666023
+Serial Merge no Branch:        183.4705471992
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:241, Given Value:123731882, Correct Value:123928312[0m
+Bitonic Merge Real:             12.1071934700
+Serial Merge AVX-512:       11.1758708954
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       1.431942        5593.523383          178778.187500
+Iterative Mergesort:         0.428915        1675.449312          596854.812500
+Parameters
+Entropy: 28
+A Size: 200
+B Size: 200
+C Size: 400
+
+Merging Results:
+Serial Merge:                  117.4211519128
+Serial Merge no Branch:        119.8053354301
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:390, Given Value:130753134, Correct Value:131356965[0m
+Bitonic Merge Real:             82.8504553851
+Serial Merge AVX-512:       10.1327897184
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       1.419783        3549.456551          281733.281250
+Iterative Mergesort:         0.633955        1584.887514          630959.625000
+Parameters
+Entropy: 28
+A Size: 500
+B Size: 500
+C Size: 1000
+
+Merging Results:
+Serial Merge:                   54.8362741881
+Serial Merge no Branch:         56.9820386431
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:989, Given Value:132141744, Correct Value:132493045[0m
+Bitonic Merge Real:              8.8214875404
+Serial Merge AVX-512:        5.9604645664
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.381947         381.946563         2618167.250000
+Iterative Mergesort:         1.245975        1245.975454          802584.000000
+Parameters
+Entropy: 28
+A Size: 500
+B Size: 500
+C Size: 1000
+
+Merging Results:
+Serial Merge:                   51.9752489936
+Serial Merge no Branch:         52.9289252427
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:989, Given Value:132141744, Correct Value:132493045[0m
+Bitonic Merge Real:              8.8214875404
+Serial Merge AVX-512:        6.1988831845
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.330925         330.924991         3021832.750000
+Iterative Mergesort:         1.154900        1154.899564          865876.125000
+Parameters
+Entropy: 28
+A Size: 1000
+B Size: 1000
+C Size: 2000
+
+Merging Results:
+Serial Merge:                   30.5175795745
+Serial Merge no Branch:         31.4712522709
+[31m    Error: Bitonic Failed To Produce Correct Results.
+    Index:1989, Given Value:133260437, Correct Value:133263184[0m
+Bitonic Merge Real:              8.5830684782
+Serial Merge AVX-512:        4.5299528573
+
+Sorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second
+qsort:                       0.742912         371.456139         2692107.750000
+Iterative Mergesort:         2.222061        1111.030542          900065.250000
