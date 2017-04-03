@@ -538,6 +538,21 @@ void tester(
             printf("   %20.6f", (float)(Ct_length)/ComboMergesort2);
             printf("\n");
         }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort3 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified3(CUnsorted, Ct_length);
+            ComboMergesort3 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort3:");
+            printf("   %14.6f", 1000*ComboMergesort3);
+            printf("   %16.6f", 1e9*(ComboMergesort3 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort3);
+            printf("\n");
+        }
+        //#en
         //#endif
 
     #endif

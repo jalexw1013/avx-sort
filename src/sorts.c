@@ -927,6 +927,51 @@ void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length) {
         *array = C;
         C = tmp;
     }
+
+    free(C);
+    free(ASplitters);
+    free(BSplitters);
+}
+
+void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length) {
+    vec_t* C = (vec_t*)xcalloc((array_length + 8), sizeof(vec_t));
+    uint32_t * ASplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
+    uint32_t * BSplitters = (vec_t*)xcalloc((17), sizeof(vec_t));
+
+    uint32_t initialSubArraySize = 128;//array_length / numThreads;
+    //if (array_length % 128 != 0) initialSubArraySize++;
+
+    //sort one array per thread
+    for (int i = 0; i < array_length; i += initialSubArraySize) {
+        qsort(
+            (*array) + i,
+            (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
+            sizeof(vec_t), hostBasicCompare);
+    }
+
+    for (uint32_t currentSubArraySize = initialSubArraySize; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+    	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
+    	{
+    		uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+    		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+            uint32_t A_length = B_start - A_start + 1;
+            uint32_t B_length = B_end - B_start;
+
+            if (currentSubArraySize > 64 && A_length == B_length) {
+                MergePathSplitter((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, 16, ASplitters, BSplitters);
+                serialMergeAVX512((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length, ASplitters, BSplitters);
+            } else {
+                serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+            }
+    	}
+
+        //pointer swap for C
+        vec_t* tmp = *array;
+        *array = C;
+        C = tmp;
+    }
+
     free(C);
     free(ASplitters);
     free(BSplitters);
