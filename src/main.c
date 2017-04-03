@@ -511,16 +511,114 @@ void tester(
 
         if ( can_use_intel_knl_features() ) {
             //simpleIterativeMergeSort
-            float iterativeMergeSortAVX512ModifiedTime = 0.0;
+            float ComboMergesort1 = 0.0;
             tic_reset();
-            iterativeMergeSortAVX512Modified(CUnsorted, Ct_length);
-            iterativeMergeSortAVX512ModifiedTime = tic_sincelast();
+            iterativeMergeSortAVX512Modified1(CUnsorted, Ct_length);
+            ComboMergesort1 = tic_sincelast();
             verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
             memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("AVX512 Combo Mergesort:");
-            printf("   %14.6f", 1000*iterativeMergeSortAVX512ModifiedTime);
-            printf("   %16.6f", 1e9*(iterativeMergeSortAVX512ModifiedTime / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortAVX512ModifiedTime);
+            printf("AVX512 ComboMergesort1:");
+            printf("   %14.6f", 1000*ComboMergesort1);
+            printf("   %16.6f", 1e9*(ComboMergesort1 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort1);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort2 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified2(CUnsorted, Ct_length);
+            ComboMergesort2 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort2:");
+            printf("   %14.6f", 1000*ComboMergesort2);
+            printf("   %16.6f", 1e9*(ComboMergesort2 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort2);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort3 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified3(CUnsorted, Ct_length);
+            ComboMergesort3 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort3:");
+            printf("   %14.6f", 1000*ComboMergesort3);
+            printf("   %16.6f", 1e9*(ComboMergesort3 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort3);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort4 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified4(CUnsorted, Ct_length);
+            ComboMergesort4 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort4:");
+            printf("   %14.6f", 1000*ComboMergesort4);
+            printf("   %16.6f", 1e9*(ComboMergesort4 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort4);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort5 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified5(CUnsorted, Ct_length);
+            ComboMergesort5 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort5:");
+            printf("   %14.6f", 1000*ComboMergesort5);
+            printf("   %16.6f", 1e9*(ComboMergesort5 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort5);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort6 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified6(CUnsorted, Ct_length);
+            ComboMergesort6 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort6:");
+            printf("   %14.6f", 1000*ComboMergesort6);
+            printf("   %16.6f", 1e9*(ComboMergesort6 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort6);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort7 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified7(CUnsorted, Ct_length);
+            ComboMergesort7 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort7:");
+            printf("   %14.6f", 1000*ComboMergesort7);
+            printf("   %16.6f", 1e9*(ComboMergesort7 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort7);
+            printf("\n");
+        }
+        if ( can_use_intel_knl_features() ) {
+            //simpleIterativeMergeSort
+            float ComboMergesort8 = 0.0;
+            tic_reset();
+            iterativeMergeSortAVX512Modified8(CUnsorted, Ct_length);
+            ComboMergesort8 = tic_sincelast();
+            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+            printf("AVX512 ComboMergesort8:");
+            printf("   %14.6f", 1000*ComboMergesort8);
+            printf("   %16.6f", 1e9*(ComboMergesort8 / (float)(Ct_length)));
+            printf("   %20.6f", (float)(Ct_length)/ComboMergesort8);
             printf("\n");
         }
         //#endif
