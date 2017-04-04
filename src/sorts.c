@@ -247,117 +247,117 @@ void serialMergeAVX512(vec_t* A, int32_t A_length,
         // }
 
         //start indexes
-        __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
-                                           ASplitters[13], ASplitters[12],
-                                           ASplitters[11], ASplitters[10],
-                                           ASplitters[9], ASplitters[8],
-                                           ASplitters[7], ASplitters[6],
-                                           ASplitters[5], ASplitters[4],
-                                           ASplitters[3], ASplitters[2],
-                                           ASplitters[1], ASplitters[0]);
-        __m512i vindexB = _mm512_set_epi32(BSplitters[15], BSplitters[14],
-                                           BSplitters[13], BSplitters[12],
-                                           BSplitters[11], BSplitters[10],
-                                           BSplitters[9], BSplitters[8],
-                                           BSplitters[7], BSplitters[6],
-                                           BSplitters[5], BSplitters[4],
-                                           BSplitters[3], BSplitters[2],
-                                           BSplitters[1], BSplitters[0]);
-        //stop indexes
-        __m512i vindexAStop = _mm512_set_epi32(ASplitters[16],
-                                           ASplitters[15], ASplitters[14],
-                                           ASplitters[13], ASplitters[12],
-                                           ASplitters[11], ASplitters[10],
-                                           ASplitters[9], ASplitters[8],
-                                           ASplitters[7], ASplitters[6],
-                                           ASplitters[5], ASplitters[4],
-                                           ASplitters[3], ASplitters[2],
-                                           ASplitters[1]);
-        __m512i vindexBStop = _mm512_set_epi32(BSplitters[16],
-                                           BSplitters[15], BSplitters[14],
-                                           BSplitters[13], BSplitters[12],
-                                           BSplitters[11], BSplitters[10],
-                                           BSplitters[9], BSplitters[8],
-                                           BSplitters[7], BSplitters[6],
-                                           BSplitters[5], BSplitters[4],
-                                           BSplitters[3], BSplitters[2],
-                                           BSplitters[1]);
-        //vindex start
-        __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
-
-        //other Variables
-        __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-        __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-        __m512i minegone = _mm512_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-
-        __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
-        __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
-
-        __m512i miPreviousCelems = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-
-        // printmmask16("A Stop", exceededAStop);
-        // printmmask16("B Stop", exceededBStop);
-
-        while ((exceededAStop | exceededBStop) != 0) {
-            //get the current elements
-            __m512i miAelems = _mm512_mask_i32gather_epi32(miPreviousCelems, exceededAStop, vindexA, A, 4);
-            __m512i miBelems = _mm512_mask_i32gather_epi32(miPreviousCelems, exceededBStop, vindexB, B, 4);
-
-            // printf("Test\n");
-            //
-            // print512_num("A Elements", miAelems);
-            // print512_num("B Elements", miBelems);
-
-            //compare the elements
-            __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
-            micmp = (micmp & exceededAStop);
-            micmp = (~exceededBStop | micmp);
-
-            //printmmask16("compare", micmp);
-
-            //copy the elements to the final elements
-            __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
-            miCelems = _mm512_mask_add_epi32(miCelems, (~exceededAStop) & (~exceededBStop), miPreviousCelems, mizero);
-            miPreviousCelems = miCelems;
-
-            // print512_num("C Elements", miCelems);
-            // print512_num("V index C", vindexC);
-
-
-            _mm512_mask_i32scatter_epi32(C, exceededAStop | exceededBStop, vindexC, miCelems, 4);
-            //_mm512_i32scatter_epi32(C, vindexC, miCelems, 4);
-
-            // for (int i = 0; i < C_length; i++) {
-            //     printf("C[%i]:%i\n", i, C[i]);
-            // }
-
-            //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
-            //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
-
-            vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
-            vindexB = _mm512_mask_add_epi32(vindexB, exceededBStop & ~micmp, vindexB, mione);
-
-            exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
-            exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
-
-            vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
-            //vindexC = _mm512_add_epi32(vindexC, mione);
-
-            //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
-            //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
-
-            // print512_num("V Index A", vindexA);
-            // print512_num("V Index B", vindexB);
-            // print512_num("V Index A Stop", vindexAStop);
-            // print512_num("V Index B Stop", vindexBStop);
-
-            //vindexA = _mm512_mask_add_epi32(vindexA, (~exceededAStop & micmp), vindexA, minegone);
-            //vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
-            //vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
-
-            // printmmask16("A Stop", exceededAStop);
-            // printmmask16("B Stop", exceededBStop);
-        }
+        // __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
+        //                                    ASplitters[13], ASplitters[12],
+        //                                    ASplitters[11], ASplitters[10],
+        //                                    ASplitters[9], ASplitters[8],
+        //                                    ASplitters[7], ASplitters[6],
+        //                                    ASplitters[5], ASplitters[4],
+        //                                    ASplitters[3], ASplitters[2],
+        //                                    ASplitters[1], ASplitters[0]);
+        // __m512i vindexB = _mm512_set_epi32(BSplitters[15], BSplitters[14],
+        //                                    BSplitters[13], BSplitters[12],
+        //                                    BSplitters[11], BSplitters[10],
+        //                                    BSplitters[9], BSplitters[8],
+        //                                    BSplitters[7], BSplitters[6],
+        //                                    BSplitters[5], BSplitters[4],
+        //                                    BSplitters[3], BSplitters[2],
+        //                                    BSplitters[1], BSplitters[0]);
+        // //stop indexes
+        // __m512i vindexAStop = _mm512_set_epi32(ASplitters[16],
+        //                                    ASplitters[15], ASplitters[14],
+        //                                    ASplitters[13], ASplitters[12],
+        //                                    ASplitters[11], ASplitters[10],
+        //                                    ASplitters[9], ASplitters[8],
+        //                                    ASplitters[7], ASplitters[6],
+        //                                    ASplitters[5], ASplitters[4],
+        //                                    ASplitters[3], ASplitters[2],
+        //                                    ASplitters[1]);
+        // __m512i vindexBStop = _mm512_set_epi32(BSplitters[16],
+        //                                    BSplitters[15], BSplitters[14],
+        //                                    BSplitters[13], BSplitters[12],
+        //                                    BSplitters[11], BSplitters[10],
+        //                                    BSplitters[9], BSplitters[8],
+        //                                    BSplitters[7], BSplitters[6],
+        //                                    BSplitters[5], BSplitters[4],
+        //                                    BSplitters[3], BSplitters[2],
+        //                                    BSplitters[1]);
+        // //vindex start
+        // __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
+        //
+        // //other Variables
+        // __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        // __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+        // __m512i minegone = _mm512_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
+        //
+        // __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+        // __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+        //
+        // __m512i miPreviousCelems = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        //
+        // // printmmask16("A Stop", exceededAStop);
+        // // printmmask16("B Stop", exceededBStop);
+        //
+        // while ((exceededAStop | exceededBStop) != 0) {
+        //     //get the current elements
+        //     __m512i miAelems = _mm512_mask_i32gather_epi32(miPreviousCelems, exceededAStop, vindexA, A, 4);
+        //     __m512i miBelems = _mm512_mask_i32gather_epi32(miPreviousCelems, exceededBStop, vindexB, B, 4);
+        //
+        //     // printf("Test\n");
+        //     //
+        //     // print512_num("A Elements", miAelems);
+        //     // print512_num("B Elements", miBelems);
+        //
+        //     //compare the elements
+        //     __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
+        //     micmp = (micmp & exceededAStop);
+        //     micmp = (~exceededBStop | micmp);
+        //
+        //     //printmmask16("compare", micmp);
+        //
+        //     //copy the elements to the final elements
+        //     __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
+        //     miCelems = _mm512_mask_add_epi32(miCelems, (~exceededAStop) & (~exceededBStop), miPreviousCelems, mizero);
+        //     miPreviousCelems = miCelems;
+        //
+        //     // print512_num("C Elements", miCelems);
+        //     // print512_num("V index C", vindexC);
+        //
+        //
+        //     _mm512_mask_i32scatter_epi32(C, exceededAStop | exceededBStop, vindexC, miCelems, 4);
+        //     //_mm512_i32scatter_epi32(C, vindexC, miCelems, 4);
+        //
+        //     // for (int i = 0; i < C_length; i++) {
+        //     //     printf("C[%i]:%i\n", i, C[i]);
+        //     // }
+        //
+        //     //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+        //     //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+        //
+        //     vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
+        //     vindexB = _mm512_mask_add_epi32(vindexB, exceededBStop & ~micmp, vindexB, mione);
+        //
+        //     exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+        //     exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+        //
+        //     vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
+        //     //vindexC = _mm512_add_epi32(vindexC, mione);
+        //
+        //     //exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
+        //     //exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
+        //
+        //     // print512_num("V Index A", vindexA);
+        //     // print512_num("V Index B", vindexB);
+        //     // print512_num("V Index A Stop", vindexAStop);
+        //     // print512_num("V Index B Stop", vindexBStop);
+        //
+        //     //vindexA = _mm512_mask_add_epi32(vindexA, (~exceededAStop & micmp), vindexA, minegone);
+        //     //vindexB = _mm512_mask_add_epi32(vindexB, (~exceededBStop & micmp), vindexB, minegone);
+        //     //vindexC = _mm512_mask_add_epi32(vindexC, (~(exceededAStop | exceededBStop) & micmp), vindexC, minegone);
+        //
+        //     // printmmask16("A Stop", exceededAStop);
+        //     // printmmask16("B Stop", exceededBStop);
+        // }
 
         // for (int i = 0; i < C_length; i++) {
         //     printf("C[%i]:%i\n", i, C[i]);
