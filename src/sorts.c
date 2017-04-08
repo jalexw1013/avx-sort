@@ -21,20 +21,20 @@
 // an implcit reverse happens during the store, and
 // thus we reverse here to avoid the need to reverse
 // after we get the results.
-const uint8_t m0110 =          (1<<4) | (1<<2);
-const uint8_t m1010 = (1<<6) |          (1<<2);
-const uint8_t m1100 = (1<<6) | (1<<4);
-const uint8_t m1221 = (1<<6) | (2<<4) | (2<<2) | 1;
-const uint8_t m2121 = (2<<6) | (1<<4) | (2<<2) | 1;
-const uint8_t m2332 = (2<<6) | (3<<4) | (3<<2) | 2;
-const uint8_t m3120 = (3<<6) | (1<<4) | (2<<2) | 0;
-const uint8_t m3232 = (3<<6) | (2<<4) | (3<<2) | 2;
-
-const uint8_t m0123 = (0<<6) | (1<<4) | (2<<2) | 3;
-const uint8_t m0321 = (0<<6) | (3<<4) | (2<<2) | 1;
-const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
-const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
-const uint8_t m1001 = (1<<6)                   | 1;
+// const uint8_t m0110 =          (1<<4) | (1<<2);
+// const uint8_t m1010 = (1<<6) |          (1<<2);
+// const uint8_t m1100 = (1<<6) | (1<<4);
+// const uint8_t m1221 = (1<<6) | (2<<4) | (2<<2) | 1;
+// const uint8_t m2121 = (2<<6) | (1<<4) | (2<<2) | 1;
+// const uint8_t m2332 = (2<<6) | (3<<4) | (3<<2) | 2;
+// const uint8_t m3120 = (3<<6) | (1<<4) | (2<<2) | 0;
+// const uint8_t m3232 = (3<<6) | (2<<4) | (3<<2) | 2;
+//
+// const uint8_t m0123 = (0<<6) | (1<<4) | (2<<2) | 3;
+// const uint8_t m0321 = (0<<6) | (3<<4) | (2<<2) | 1;
+// const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
+// const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
+// const uint8_t m1001 = (1<<6)                   | 1;
 
 void serialMerge(
     vec_t* A, uint32_t A_length,
@@ -75,12 +75,40 @@ void serialMergeNoBranch(
     while(Bindex < B_length) C[Cindex++] = B[Bindex++];
 }
 
+/*
+ * See Merge Sort From Srinivas's code
+ * https://github.com/psombe/sorting
+ */
+
+const uint8_t m0110 =          (1<<4) | (1<<2);
+const uint8_t m1010 = (1<<6) |          (1<<2);
+const uint8_t m1100 = (1<<6) | (1<<4);
+const uint8_t m1221 = (1<<6) | (2<<4) | (2<<2) | 1;
+const uint8_t m2121 = (2<<6) | (1<<4) | (2<<2) | 1;
+const uint8_t m2332 = (2<<6) | (3<<4) | (3<<2) | 2;
+const uint8_t m3120 = (3<<6) | (1<<4) | (2<<2) | 0;
+const uint8_t m3232 = (3<<6) | (2<<4) | (3<<2) | 2;
+
+const uint8_t m0123 = (0<<6) | (1<<4) | (2<<2) | 3;
+const uint8_t m0321 = (0<<6) | (3<<4) | (2<<2) | 1;
+const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
+const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
+const uint8_t m1001 = (1<<6)                   | 1;
+
+#define min(a,b) (a <= b)? a : b
+#define max(a,b) (a <  b)? b : a
+
+void quickSort (uint32_t N, vec_t* A)
+{
+    qsort (A, N, sizeof(vec_t), hostBasicCompare);
+}
 
 void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length){
-    uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+    long Aindex = 0,Bindex = 0, Cindex = 0;
     int isA, isB;
+
     __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
     __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
     while ((Aindex < (A_length-4)) && (Bindex < (B_length-4)))
@@ -113,6 +141,9 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
         // calculate index for the next run
         sB=sH3p;
         Cindex+=4;
+        #if PRINTCMP
+        global_count += 24;
+        #endif
         if (A[Aindex+4]<B[Bindex+4]){
             Aindex+=4;
             isA = 1;
@@ -122,64 +153,269 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
             Bindex+=4;
             isB = 1;
             sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
-         }
-      }
-     if( isA ) Bindex += 4;
+        }
+    }
+
+    if( isA ) Bindex += 4;
     else Aindex += 4;
 
     int tempindex = 0;
     int temp_length = 4;
     vec_t temp[4];
     _mm_storeu_si128((__m128i*)temp, sB);
+
+    #if PRINTCMP
+    global_count++;
+    #endif
     if (temp[3] <= A[Aindex])
     {
         Aindex -= 4;
-        for(int ii=0; ii < 4; ii++)
-        {
-            A[Aindex + ii] = temp[ii];
-        }
+        _mm_storeu_si128((__m128i*)&(A[Aindex]), sB);
     }
     else
     {
         Bindex -= 4;
-        for(int ii=0; ii < 4; ii++)
-        {
-            B[Bindex + ii] = temp[ii];
-        }
+        _mm_storeu_si128((__m128i*)&(B[Bindex]), sB);
     }
-    for (Cindex; Cindex < C_length; Cindex++)
+
+    while (Cindex < C_length)
     {
         if (Aindex < A_length && Bindex < B_length)
         {
+            #if PRINTCMP
+            global_count++;
+            #endif
             if (A[Aindex] < B[Bindex])
             {
-                C[Cindex] = A[Aindex];
-                Aindex++;
+                C[Cindex++] = A[Aindex++];
             }
             else
             {
-                C[Cindex] = B[Bindex];
-                Aindex++;
+                C[Cindex++] = B[Bindex++];
             }
         }
         else
         {
             while (Aindex < A_length)
             {
-                C[Cindex] = A[Aindex];
-                Aindex++;
-                Cindex++;
+                C[Cindex++] = A[Aindex++];
             }
             while (Bindex < B_length)
             {
-                C[Cindex] = B[Bindex];
-                Bindex++;
-                Cindex++;
+                C[Cindex++] = B[Bindex++];
             }
         }
     }
+
     return;
 }
+
+// Removing unnecessary copy of output to input
+int ossemergesort(uint32_t N, vec_t* A, vec_t* O)
+{
+    if(N < 64)
+    {
+        quickSort(N,A);
+        return 0; // 0 - A contains the sorted lists 1 - O contains the sorted list
+    }
+
+    long d = N >> 1 ;
+
+    // Recursively sort them
+    int first_ret, last_ret;
+    first_ret = ossemergesort(d, A, O);
+    last_ret = ossemergesort(N - d, A + d, O + d);
+
+    vec_t *ip1,*ip2;
+
+    ip1 = (first_ret == 0)? A : O;
+    ip2 = (last_ret == 0)? A : O;
+
+    long i,i1,i2;
+    i = 0;
+    i1 = 0;
+    i2 = d;
+
+    vec_t* op;
+    op = (first_ret == 0)? O : A;
+
+    // SSE Merge
+    bitonicMergeReal(ip1, d, ip2 + d, N - d, op, N);
+
+    return (first_ret + 1)%2;
+}
+
+void sseMergeSortO(uint32_t N, vec_t* A)
+{
+    int ret;
+
+    vec_t* Aaux = (vec_t *) malloc(sizeof(vec_t)*N);
+
+    ret = ossemergesort(N,A,Aaux);
+
+    if(ret == 1)
+    {
+        for(long i=0; i < N; i++)
+        {
+            A[i] = Aaux[i];
+        }
+    }
+
+    free(Aaux);
+
+    return;
+}
+
+void sseMergeSort(uint32_t N, vec_t* A)
+{
+    sseMergeSortO(N,A);
+}
+
+// void bitonicMergeReal(vec_t* A, uint32_t A_length,
+//                       vec_t* B, uint32_t B_length,
+//                       vec_t* C, uint32_t C_length){
+//     /*uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+//     int isA, isB;
+//     __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+//     __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+//     while ((Aindex < (A_length-4)) && (Bindex < (B_length-4)))
+//     {
+//         // load SIMD registers from A and B
+//         isA = 0;
+//         isB = 0;
+//         // reverse B
+//         sB = _mm_shuffle_epi32(sB, m0123);
+//         // level 1
+//         __m128i sL1 = _mm_min_epu32(sA, sB);
+//         __m128i sH1 = _mm_max_epu32(sA, sB);
+//         __m128i sL1p = _mm_unpackhi_epi64(sH1, sL1);
+//         __m128i sH1p = _mm_unpacklo_epi64(sH1, sL1);
+//         // level 2
+//         __m128i sL2 = _mm_min_epu32(sH1p, sL1p);
+//         __m128i sH2 = _mm_max_epu32(sH1p, sL1p);
+//         __m128i c1010 = _mm_set_epi32(-1, 0, -1, 0);
+//         __m128i c0101 = _mm_set_epi32(0, -1, 0, -1);
+//         // use blend
+//         __m128i sL2p = _mm_or_si128(_mm_and_si128(sL2, c1010), _mm_and_si128(_mm_shuffle_epi32(sH2, m0321), c0101));
+//         __m128i sH2p = _mm_or_si128(_mm_and_si128(_mm_shuffle_epi32(sL2, m2103), c1010), _mm_and_si128(sH2, c0101));
+//         // level 3
+//         __m128i sL3 = _mm_min_epu32(sL2p, sH2p);
+//         __m128i sH3 = _mm_max_epu32(sL2p, sH2p);
+//         __m128i sL3p = _mm_shuffle_epi32(_mm_unpackhi_epi64(sH3, sL3), m0213);
+//         __m128i sH3p = _mm_shuffle_epi32(_mm_unpacklo_epi64(sH3, sL3), m0213);
+//         // store back data into C from SIMD registers
+//         _mm_storeu_si128((__m128i*)&(C[Cindex]), sL3p);
+//         // calculate index for the next run
+//         sB=sH3p;
+//         Cindex+=4;
+//         if (A[Aindex+4]<B[Bindex+4]){
+//             Aindex+=4;
+//             isA = 1;
+//             sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+//         }
+//         else {
+//             Bindex+=4;
+//             isB = 1;
+//             sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+//          }
+//       }
+//      if( isA ) Bindex += 4;
+//     else Aindex += 4;
+//
+//     int tempindex = 0;
+//     int temp_length = 4;
+//     vec_t temp[4];
+//     _mm_storeu_si128((__m128i*)temp, sB);
+//     if (temp[3] <= A[Aindex])
+//     {
+//         Aindex -= 4;
+//         for(int ii=0; ii < 4; ii++)
+//         {
+//             A[Aindex + ii] = temp[ii];
+//         }
+//     }
+//     else
+//     {
+//         Bindex -= 4;
+//         for(int ii=0; ii < 4; ii++)
+//         {
+//             B[Bindex + ii] = temp[ii];
+//         }
+//     }
+//     for (Cindex; Cindex < C_length; Cindex++)
+//     {
+//         if (Aindex < A_length && Bindex < B_length)
+//         {
+//             if (A[Aindex] < B[Bindex])
+//             {
+//                 C[Cindex] = A[Aindex];
+//                 Aindex++;
+//             }
+//             else
+//             {
+//                 C[Cindex] = B[Bindex];
+//                 Aindex++;
+//             }
+//         }
+//         else
+//         {
+//             while (Aindex < A_length)
+//             {
+//                 C[Cindex] = A[Aindex];
+//                 Aindex++;
+//                 Cindex++;
+//             }
+//             while (Bindex < B_length)
+//             {
+//                 C[Cindex] = B[Bindex];
+//                 Bindex++;
+//                 Cindex++;
+//             }
+//         }
+//     }
+//     return;*/
+//       uint32_t Aindex = 0,Bindex = 0, Cindex = 0;
+//
+//       __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+//       __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+//       while ((Aindex < (A_length-4)) || (Bindex < (B_length-4)))
+//       {
+//         // load SIMD registers from A and B
+//        // reverse B
+//         sB = _mm_shuffle_epi32(sB, m0123);
+//         // level 1
+//         __m128i sL1 = _mm_min_epu32(sA, sB);
+//         __m128i sH1 = _mm_max_epu32(sA, sB);
+//         __m128i sL1p = _mm_unpackhi_epi64(sH1, sL1);
+//         __m128i sH1p = _mm_unpacklo_epi64(sH1, sL1);
+//         // level 2
+//         __m128i sL2 = _mm_min_epu32(sH1p, sL1p);
+//         __m128i sH2 = _mm_max_epu32(sH1p, sL1p);
+//         __m128i c1010 = _mm_set_epi32(-1, 0, -1, 0);
+//         __m128i c0101 = _mm_set_epi32(0, -1, 0, -1);
+//         // use blend
+//         __m128i sL2p = _mm_or_si128(_mm_and_si128(sL2, c1010), _mm_and_si128(_mm_shuffle_epi32(sH2, m0321), c0101));
+//         __m128i sH2p = _mm_or_si128(_mm_and_si128(_mm_shuffle_epi32(sL2, m2103), c1010), _mm_and_si128(sH2, c0101));
+//         // level 3
+//         __m128i sL3 = _mm_min_epu32(sL2p, sH2p);
+//         __m128i sH3 = _mm_max_epu32(sL2p, sH2p);
+//         __m128i sL3p = _mm_shuffle_epi32(_mm_unpackhi_epi64(sH3, sL3), m0213);
+//         __m128i sH3p = _mm_shuffle_epi32(_mm_unpacklo_epi64(sH3, sL3), m0213);
+//         // store back data into C from SIMD registers
+//         _mm_storeu_si128((__m128i*)&(C[Cindex]), sL3p);
+//         // calculate index for the next run
+//         sB=sH3p;
+//         Cindex+=4;
+//         if (A[Aindex+4]<B[Bindex+4]){
+//         	Aindex+=4;
+//         	sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
+//         }
+//         else {
+//         	Bindex+=4;
+//         	sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
+//         }
+//      }
+// }
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
@@ -696,6 +932,64 @@ inline void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length/*,
         free(C);
 }
 #endif
+
+inline void iterativeComboMergeSortTemp(vec_t* array, uint32_t array_length)
+{
+        vec_t* C = (vec_t*)xcalloc((array_length), sizeof(vec_t));
+        //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+        #pragma omp parallel
+        {
+            //parallelComboMergeSortParallelHelper(array, array_length, omp_get_num_threads(), , , C/*, mergeFunction*/);
+            uint32_t threadNum = omp_get_thread_num();
+            uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+            uint32_t i = threadNum*initialSubArraySize;
+            qsort(
+                array + i,
+                (i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i),
+                sizeof(vec_t), hostBasicCompare);
+            #pragma omp barrier
+            uint32_t currentSubArraySize = initialSubArraySize;
+            while (currentSubArraySize < array_length) {
+                //merge one
+                uint32_t A_start = threadNum * 2 * currentSubArraySize;
+                if (A_start < array_length - 1) {
+                    uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+                    uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+                    uint32_t A_length = B_start - A_start + 1;
+                    uint32_t B_length = B_end - B_start;
+                    uint32_t ASplitters[17];
+                    uint32_t BSplitters[17];
+                    serialMerge(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+                }
+                currentSubArraySize = 2 * currentSubArraySize;
+                #pragma omp barrier
+                #pragma omp single
+                {
+                    if (currentSubArraySize >= array_length) {
+                        memcpy(array, C, array_length * sizeof(vec_t));
+                    }
+                }
+                #pragma omp barrier
+                if (currentSubArraySize >= array_length) {
+                    break;
+                }
+                A_start = threadNum * 2 * currentSubArraySize;
+                if (A_start < array_length - 1) {
+                    uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+                    uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+                    uint32_t A_length = B_start - A_start + 1;
+                    uint32_t B_length = B_end - B_start;
+                    uint32_t ASplitters[17];
+                    uint32_t BSplitters[17];
+                    serialMerge(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
+                                    }
+                currentSubArraySize = 2 * currentSubArraySize;
+                #pragma omp barrier
+            }
+        }
+
+        free(C);
+}
 
 inline void iterativeNonParallelComboMergeSort(vec_t* array, uint32_t array_length, uint32_t numThreads)
 {

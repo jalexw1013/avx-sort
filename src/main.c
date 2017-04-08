@@ -67,10 +67,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 500000;
-uint32_t  h_ui_B_length                = 500000;
-uint32_t  h_ui_C_length                = 1000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 5000000;
+uint32_t  h_ui_B_length                = 5000000;
+uint32_t  h_ui_C_length                = 10000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -467,6 +467,19 @@ void tester(
         printf("\n");
         //free(qsortTime);
 
+        //qsort
+        float sseMergeSortTime = 0.0;
+        tic_reset();
+        sseMergeSort(Ct_length, *CUnsorted);
+        sseMergeSortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "SSE Merge Sort");
+        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        printf("SSE:                 ");
+        printf("   %14.6f", 1000*sseMergeSortTime);
+        printf("   %16.6f", 1e9*(sseMergeSortTime / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/sseMergeSortTime);
+        printf("\n");
+
         /*//paralel quick sort
         float parallelQuickSortTime = 0.0;
         tic_reset();
@@ -554,6 +567,18 @@ void tester(
         }
         //#en
         //#endif
+
+        // float iterativeComboMergeSortTempTime = 0.0;
+        // tic_reset();
+        // iterativeComboMergeSortTemp((*CUnsorted), Ct_length);
+        // iterativeComboMergeSortTempTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Combo Mergesort Temp");
+        // memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        // printf("Combo Merge Temp:");
+        // printf("   %14.6f", 1000*iterativeComboMergeSortTempTime);
+        // printf("   %16.6f", 1e9*(iterativeComboMergeSortTempTime / (float)(Ct_length)));
+        // printf("   %20.6f", (float)(Ct_length)/iterativeComboMergeSortTempTime);
+        // printf("\n");
 
     #endif
 }

@@ -34,6 +34,7 @@ void serialMergeAVX512(
 void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length);
 #endif
 
+void iterativeComboMergeSortTemp(vec_t* array, uint32_t array_length);
 
 void iterativeComboMergeSort(
     vec_t* array,
@@ -55,6 +56,7 @@ void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length);
+void sseMergeSort(uint32_t N, vec_t* A);
 
 
 #endif
