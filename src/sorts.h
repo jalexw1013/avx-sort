@@ -57,6 +57,7 @@ void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length);
 void sseMergeSort(uint32_t N, vec_t* A);
+void mergeSort(uint32_t N, vec_t* A);
 
 
 #endif

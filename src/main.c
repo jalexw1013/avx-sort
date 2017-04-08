@@ -467,7 +467,30 @@ void tester(
         printf("\n");
         //free(qsortTime);
 
-        //qsort
+        float mergeSortTime = 0.0;
+        tic_reset();
+        mergeSort(Ct_length, *CUnsorted);
+        mergeSortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Merge Sort");
+        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        printf("Merge Sort:            ");
+        printf("   %14.6f", 1000*mergeSortTime);
+        printf("   %16.6f", 1e9*(mergeSortTime / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/mergeSortTime);
+        printf("\n");
+
+        float iterativeMergeSortTime = 0.0;
+        tic_reset();
+        simpleIterativeMergeSort(CUnsorted, Ct_length);
+        iterativeMergeSortTime = tic_sincelast();
+        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort");
+        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        printf("IMerge Sort:            ");
+        printf("   %14.6f", 1000*iterativeMergeSortTime);
+        printf("   %16.6f", 1e9*(iterativeMergeSortTime / (float)(Ct_length)));
+        printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortTime);
+        printf("\n");
+
         float sseMergeSortTime = 0.0;
         tic_reset();
         sseMergeSort(Ct_length, *CUnsorted);

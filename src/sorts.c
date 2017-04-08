@@ -271,6 +271,123 @@ void sseMergeSort(uint32_t N, vec_t* A)
     sseMergeSortO(N,A);
 }
 
+int compare (const void* a, const void* b)
+{
+    vec_t ka = *(const vec_t *)a;
+    vec_t kb = *(const vec_t *)b;
+    if (ka < kb)
+        return -1;
+    else if (ka == kb)
+        return 0;
+    else
+        return 1;
+}
+
+// Removing unnecessary copy of output to input
+int omergesort(uint32_t N, vec_t* A, vec_t* O)
+{
+    if(N < 64)
+    {
+        quickSort(N,A);
+        return 0; // 0 - A contains the sorted lists 1 - O contains the sorted list
+    }
+
+    uint32_t d = N >> 1 ;
+
+    // Recursively sort them
+    int first_ret, last_ret;
+    first_ret = omergesort(d, A, O);
+    last_ret = omergesort(N - d, A + d, O + d);
+
+    vec_t *ip1,*ip2;
+
+    ip1 = (first_ret == 0)? A : O;
+    ip2 = (last_ret == 0)? A : O;
+
+    uint32_t i,i1,i2;
+    i = 0;
+    i1 = 0;
+    i2 = d;
+
+    vec_t* op;
+    op = (first_ret == 0)? O : A;
+
+    // Merge them
+    for( i = 0; i < N; i++)
+    {
+        if( i1 < d && i2 < N)
+        {
+            if(compare((void*)&(ip1[i1]),(void*)&(ip2[i2])) > 0)
+            {
+                op[i] = ip2[i2];
+                i2++;
+            }
+            else
+            {
+                op[i] = ip1[i1];
+                i1++;
+            }
+        }
+        else if( i1 >= d)
+        {
+            while(i2 < N)
+            {
+                op[i] = ip2[i2];
+                i2++;
+                i++;
+            }
+        }
+        else
+        {
+            while( i1 < d)
+            {
+                op[i] = ip1[i1];
+                i1++;
+                i++;
+            }
+        }
+    }
+
+    return (first_ret + 1)%2;
+}
+
+void mergeSortO(uint32_t N, vec_t* A)
+{
+    int ret;
+
+    vec_t* Aaux = (vec_t *) malloc(sizeof(vec_t)*N);
+
+    ret = omergesort(N,A,Aaux);
+
+    if(ret == 1)
+    {
+        for(long i=0; i < N; i++)
+        {
+            A[i] = Aaux[i];
+        }
+    }
+
+    free(Aaux);
+
+    return;
+}
+
+void mergeSortP(uint32_t N, vec_t* A)
+{
+    int ret;
+
+    vec_t* Aaux = (vec_t *) malloc(sizeof(vec_t)*N);
+    omergesort(N,A,Aaux);
+    free(Aaux);
+
+    return;
+}
+
+void mergeSort(uint32_t N, vec_t* A)
+{
+    mergeSortO(N,A);
+}
+
 // void bitonicMergeReal(vec_t* A, uint32_t A_length,
 //                       vec_t* B, uint32_t B_length,
 //                       vec_t* C, uint32_t C_length){
