@@ -1147,9 +1147,12 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
             //     }
             // }
 
-            printf("Thread: %i\n", omp_get_thread_num());
-            for (int i = omp_get_thread_num() * initialSubArraySize; i < omp_get_thread_num() * initialSubArraySize + 20; i++) {
-                printf("INNNArray%i:%i\n", i, (*array)[i]);
+            #pragma omp critical
+            {
+                printf("Thread: %i\n", omp_get_thread_num());
+                for (int i = omp_get_thread_num() * initialSubArraySize; i < omp_get_thread_num() * initialSubArraySize + 20; i++) {
+                    printf("INNNArray%i:%i\n", i, (*array)[i]);
+                }
             }
 
             //begin merging
