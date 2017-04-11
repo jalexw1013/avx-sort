@@ -1140,11 +1140,16 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
             qsort((*array) + start, stop, sizeof(vec_t), hostBasicCompare);
 
             #pragma omp barrier
-            #pragma omp single
-            {
-                for (int i = 0; i < 100; i++) {
-                    printf("INNNArray%i:%i\n", i, (*array)[i]);
-                }
+            // #pragma omp single
+            // {
+            //     for (int i = 0; i < 100; i++) {
+            //         printf("INNNArray%i:%i\n", i, (*array)[i]);
+            //     }
+            // }
+
+            printf("Thread: %i\n", omp_get_thread_num());
+            for (int i = omp_get_thread_num() * initialSubArraySize; i < omp_get_thread_num() * initialSubArraySize + 20; i++) {
+                printf("INNNArray%i:%i\n", i, (*array)[i]);
             }
 
             //begin merging
@@ -1167,9 +1172,9 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
                     vec_t* tmp = *array;
                     *array = C;
                     C = tmp;
-                    for (int i = 0; i < 100; i++) {
-                        printf("INNNArray%i:%i\n", i, (*array)[i]);
-                    }
+                    // for (int i = 0; i < 100; i++) {
+                    //     printf("INNNArray%i:%i\n", i, (*array)[i]);
+                    // }
                     //memcpy(array, C, array_length * sizeof(vec_t));
                 }
             }
