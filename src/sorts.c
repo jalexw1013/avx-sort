@@ -1167,6 +1167,9 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
                     vec_t* tmp = *array;
                     *array = C;
                     C = tmp;
+                    for (int i = 0; i < 100; i++) {
+                        printf("INNNArray%i:%i\n", i, (*array)[i]);
+                    }
                     //memcpy(array, C, array_length * sizeof(vec_t));
                 }
             }
