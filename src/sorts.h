@@ -24,7 +24,7 @@ void serialMergeAVX512(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 #endif
-    #ifdef __INTEL_COMPILER
+#ifdef __INTEL_COMPILER
 
 
 /*void knightMergeOutPlace(
@@ -35,10 +35,10 @@ void iterativeComboMergeSortAVX512(vec_t* array, uint32_t array_length);
 
 void iterativeComboMergeSortTemp(vec_t* array, uint32_t array_length);
 
-void iterativeComboMergeSort(
-    vec_t* array,
-    uint32_t array_length/*,
-    void(*mergeFunction)(vec_t*,int32_t,vec_t*,int32_t,vec_t*,uint32_t)*/);
+void parallelIMergeSort(
+    vec_t** array,
+    uint32_t array_length);
+
 
 void iterativeNonParallelComboMergeSort(
     vec_t* array,
@@ -49,6 +49,8 @@ void iterativeNonParallelComboMergeSort(
 void Paralellquicksort(uint32_t * a, uint32_t p, uint32_t r);
 
 void simpleIterativeMergeSort(vec_t** array, uint32_t array_length);
+//void parallelIMergeSort(vec_t** array, uint32_t array_length);
+
 
 #ifdef AVX512
 void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length);

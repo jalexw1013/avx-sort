@@ -38,6 +38,7 @@ else
 endif
 
 merge:
+	make clean
 	$(CC) -O3 -o $@ $(CCFLAGS) $(FILES)
 
 run:

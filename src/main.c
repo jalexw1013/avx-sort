@@ -479,6 +479,13 @@ void tester(
             CSorted, Ct_length,
             10, 0, "Iterative Merge Sort");
 
+        testSort<parallelIMergeSort>(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            10, 0, "Parallel Iterative Merge Sort");
+
+        parallelIMergeSort(CUnsorted,C_length);
+
         float mergeSortTime = 0.0;
         tic_reset();
         mergeSort(Ct_length, *CUnsorted);
