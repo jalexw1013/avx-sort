@@ -67,10 +67,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 20;
-uint32_t  h_ui_B_length                = 20;
-uint32_t  h_ui_C_length                = 40; //array to put values in
-uint32_t  h_ui_Ct_length               = 40; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 50;
+uint32_t  h_ui_B_length                = 50;
+uint32_t  h_ui_C_length                = 100; //array to put values in
+uint32_t  h_ui_Ct_length               = 100; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -100,9 +100,6 @@ int main(int argc, char** argv)
         &CUnsorted);
 
     freeGlobalData();
-    #ifdef AVX512
-    printf("TESTTEST\n");
-    #endif
 }
 
 //---------------------------------------------------------------------
@@ -340,11 +337,18 @@ void testSort(
         //reset timer
         tic_reset();
 
-        //perform actual merge
+        //perform actual sort
         T(CUnsorted, C_length);
 
         //get timing
         time += tic_sincelast();
+
+        for (int i = 0; i < 100; i++) {
+            printf("UArray%i:%i\n", i, (*CUnsorted)[i]);
+        }
+        for (int i = 0; i < 100; i++) {
+            printf("SArray%i:%i\n", i, (*CSorted)[i]);
+        }
 
         //verify output is valid
         verifyOutput((*CUnsorted), (*CSorted), C_length, algoName);
@@ -373,6 +377,10 @@ void tester(
     printf("B Size: %" PRIu32 "\n", B_length);
     printf("C Size: %" PRIu32 "\n", C_length);
     printf("\n");
+
+    for (int i = 0; i < 100; i++) {
+        printf("SArray%i:%i\n", i, (*CSorted)[i]);
+    }
 
     //---------------------------------------------------------------------
     //
@@ -407,8 +415,8 @@ void tester(
     #ifdef SORT
         printf("\nSorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
-        vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        // vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
+        // memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
 
         /*#include <unistd.h>
@@ -460,155 +468,155 @@ void tester(
         }
         #endif*/
 
-        //qsort
-        float qsortTime = 0.0;
-        tic_reset();
-        qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
-        qsortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
-        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-        printf("qsort:                 ");
-        printf("   %14.6f", 1000*qsortTime);
-        printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/qsortTime);
-        printf("\n");
+        // //qsort
+        // float qsortTime = 0.0;
+        // tic_reset();
+        // qsort(*CUnsorted, Ct_length, sizeof(vec_t), hostBasicCompare);
+        // qsortTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "qsort");
+        // memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        // printf("qsort:                 ");
+        // printf("   %14.6f", 1000*qsortTime);
+        // printf("   %16.6f", 1e9*(qsortTime / (float)(Ct_length)));
+        // printf("   %20.6f", (float)(Ct_length)/qsortTime);
+        // printf("\n");
         //free(qsortTime);
 
-        testSort<simpleIterativeMergeSort>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            10, 0, "Iterative Merge Sort");
+        // testSort<simpleIterativeMergeSort>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     10, 0, "Iterative Merge Sort");
 
         testSort<parallelIMergeSort>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            10, 0, "Parallel Iterative Merge Sort");
+            1, 0, "Parallel Iterative Merge Sort");
 
-        parallelIMergeSort(CUnsorted,C_length);
-
-        float mergeSortTime = 0.0;
-        tic_reset();
-        mergeSort(Ct_length, *CUnsorted);
-        mergeSortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Merge Sort");
-        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-        printf("Merge Sort:            ");
-        printf("   %14.6f", 1000*mergeSortTime);
-        printf("   %16.6f", 1e9*(mergeSortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/mergeSortTime);
-        printf("\n");
-
-        float iterativeMergeSortTime = 0.0;
-        tic_reset();
-        simpleIterativeMergeSort(CUnsorted, Ct_length);
-        iterativeMergeSortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort");
-        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-        printf("IMerge Sort:            ");
-        printf("   %14.6f", 1000*iterativeMergeSortTime);
-        printf("   %16.6f", 1e9*(iterativeMergeSortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortTime);
-        printf("\n");
-
-        float sseMergeSortTime = 0.0;
-        tic_reset();
-        sseMergeSort(Ct_length, *CUnsorted);
-        sseMergeSortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "SSE Merge Sort");
-        memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-        printf("SSE:                 ");
-        printf("   %14.6f", 1000*sseMergeSortTime);
-        printf("   %16.6f", 1e9*(sseMergeSortTime / (float)(Ct_length)));
-        printf("   %20.6f", (float)(Ct_length)/sseMergeSortTime);
-        printf("\n");
-
-        /*//paralel quick sort
-        float parallelQuickSortTime = 0.0;
-        tic_reset();
-        quicksort(*CUnsorted, 0, Ct_length - 1);
-        parallelQuickSortTime = tic_sincelast();
-        verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Quick Sort");
-        memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-        printf("Parallel quicksort:   ");
-        printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
-        //free(parallelQuickSortTime);*/
-
-        #ifdef __INTEL_COMPILER
-        if ( can_use_intel_knl_features() ) {
-            //simpleIterativeMergeSort
-            float simpleIterativeMergeSortTime = 0.0;
-            tic_reset();
-            simpleIterativeMergeSort(CUnsorted, Ct_length);
-            simpleIterativeMergeSortTime = tic_sincelast();
-            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
-            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("Iterative Mergesort:   ");
-            printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
-            printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
-            printf("\n");
-        }
-
-        if ( can_use_intel_knl_features() ) {
-            //simpleIterativeMergeSort
-            float iterativeMergeSortAVX512Time = 0.0;
-            tic_reset();
-            iterativeMergeSortAVX512(CUnsorted, Ct_length);
-            iterativeMergeSortAVX512Time = tic_sincelast();
-            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort using AVX512");
-            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("AVX512 Mergesort:      ");
-            printf("   %14.6f", 1000*iterativeMergeSortAVX512Time);
-            printf("   %16.6f", 1e9*(iterativeMergeSortAVX512Time / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortAVX512Time);
-            printf("\n");
-        }
-
-        if ( can_use_intel_knl_features() ) {
-            //simpleIterativeMergeSort
-            float ComboMergesort1 = 0.0;
-            tic_reset();
-            iterativeMergeSortAVX512Modified(CUnsorted, Ct_length);
-            ComboMergesort1 = tic_sincelast();
-            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
-            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("AVX512 ComboMergesort1:");
-            printf("   %14.6f", 1000*ComboMergesort1);
-            printf("   %16.6f", 1e9*(ComboMergesort1 / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/ComboMergesort1);
-            printf("\n");
-        }
-
-        if ( can_use_intel_knl_features() ) {
-            //simpleIterativeMergeSort
-            float ComboMergesort2 = 0.0;
-            tic_reset();
-            iterativeMergeSortAVX512Modified2(CUnsorted, Ct_length);
-            ComboMergesort2 = tic_sincelast();
-            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
-            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("AVX512 ComboMergesort2:");
-            printf("   %14.6f", 1000*ComboMergesort2);
-            printf("   %16.6f", 1e9*(ComboMergesort2 / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/ComboMergesort2);
-            printf("\n");
-        }
-        if ( can_use_intel_knl_features() ) {
-            //simpleIterativeMergeSort
-            float ComboMergesort3 = 0.0;
-            tic_reset();
-            iterativeMergeSortAVX512Modified3(CUnsorted, Ct_length);
-            ComboMergesort3 = tic_sincelast();
-            verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
-            memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-            printf("AVX512 ComboMergesort3:");
-            printf("   %14.6f", 1000*ComboMergesort3);
-            printf("   %16.6f", 1e9*(ComboMergesort3 / (float)(Ct_length)));
-            printf("   %20.6f", (float)(Ct_length)/ComboMergesort3);
-            printf("\n");
-        }
+        // parallelIMergeSort(CUnsorted,C_length);
+        //
+        // float mergeSortTime = 0.0;
+        // tic_reset();
+        // mergeSort(Ct_length, *CUnsorted);
+        // mergeSortTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Merge Sort");
+        // memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        // printf("Merge Sort:            ");
+        // printf("   %14.6f", 1000*mergeSortTime);
+        // printf("   %16.6f", 1e9*(mergeSortTime / (float)(Ct_length)));
+        // printf("   %20.6f", (float)(Ct_length)/mergeSortTime);
+        // printf("\n");
+        //
+        // float iterativeMergeSortTime = 0.0;
+        // tic_reset();
+        // simpleIterativeMergeSort(CUnsorted, Ct_length);
+        // iterativeMergeSortTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort");
+        // memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        // printf("IMerge Sort:            ");
+        // printf("   %14.6f", 1000*iterativeMergeSortTime);
+        // printf("   %16.6f", 1e9*(iterativeMergeSortTime / (float)(Ct_length)));
+        // printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortTime);
+        // printf("\n");
+        //
+        // float sseMergeSortTime = 0.0;
+        // tic_reset();
+        // sseMergeSort(Ct_length, *CUnsorted);
+        // sseMergeSortTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "SSE Merge Sort");
+        // memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        // printf("SSE:                 ");
+        // printf("   %14.6f", 1000*sseMergeSortTime);
+        // printf("   %16.6f", 1e9*(sseMergeSortTime / (float)(Ct_length)));
+        // printf("   %20.6f", (float)(Ct_length)/sseMergeSortTime);
+        // printf("\n");
+        //
+        // /*//paralel quick sort
+        // float parallelQuickSortTime = 0.0;
+        // tic_reset();
+        // quicksort(*CUnsorted, 0, Ct_length - 1);
+        // parallelQuickSortTime = tic_sincelast();
+        // verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Parallel Quick Sort");
+        // memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+        // printf("Parallel quicksort:   ");
+        // printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
+        // //free(parallelQuickSortTime);*/
+        //
+        // #ifdef __INTEL_COMPILER
+        // if ( can_use_intel_knl_features() ) {
+        //     //simpleIterativeMergeSort
+        //     float simpleIterativeMergeSortTime = 0.0;
+        //     tic_reset();
+        //     simpleIterativeMergeSort(CUnsorted, Ct_length);
+        //     simpleIterativeMergeSortTime = tic_sincelast();
+        //     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Simple Iterative Merge Sort");
+        //     memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        //     printf("Iterative Mergesort:   ");
+        //     printf("   %14.6f", 1000*simpleIterativeMergeSortTime);
+        //     printf("   %16.6f", 1e9*(simpleIterativeMergeSortTime / (float)(Ct_length)));
+        //     printf("   %20.6f", (float)(Ct_length)/simpleIterativeMergeSortTime);
+        //     printf("\n");
+        // }
+        //
+        // if ( can_use_intel_knl_features() ) {
+        //     //simpleIterativeMergeSort
+        //     float iterativeMergeSortAVX512Time = 0.0;
+        //     tic_reset();
+        //     iterativeMergeSortAVX512(CUnsorted, Ct_length);
+        //     iterativeMergeSortAVX512Time = tic_sincelast();
+        //     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "Iterative Merge Sort using AVX512");
+        //     memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        //     printf("AVX512 Mergesort:      ");
+        //     printf("   %14.6f", 1000*iterativeMergeSortAVX512Time);
+        //     printf("   %16.6f", 1e9*(iterativeMergeSortAVX512Time / (float)(Ct_length)));
+        //     printf("   %20.6f", (float)(Ct_length)/iterativeMergeSortAVX512Time);
+        //     printf("\n");
+        // }
+        //
+        // if ( can_use_intel_knl_features() ) {
+        //     //simpleIterativeMergeSort
+        //     float ComboMergesort1 = 0.0;
+        //     tic_reset();
+        //     iterativeMergeSortAVX512Modified(CUnsorted, Ct_length);
+        //     ComboMergesort1 = tic_sincelast();
+        //     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+        //     memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        //     printf("AVX512 ComboMergesort1:");
+        //     printf("   %14.6f", 1000*ComboMergesort1);
+        //     printf("   %16.6f", 1e9*(ComboMergesort1 / (float)(Ct_length)));
+        //     printf("   %20.6f", (float)(Ct_length)/ComboMergesort1);
+        //     printf("\n");
+        // }
+        //
+        // if ( can_use_intel_knl_features() ) {
+        //     //simpleIterativeMergeSort
+        //     float ComboMergesort2 = 0.0;
+        //     tic_reset();
+        //     iterativeMergeSortAVX512Modified2(CUnsorted, Ct_length);
+        //     ComboMergesort2 = tic_sincelast();
+        //     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+        //     memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        //     printf("AVX512 ComboMergesort2:");
+        //     printf("   %14.6f", 1000*ComboMergesort2);
+        //     printf("   %16.6f", 1e9*(ComboMergesort2 / (float)(Ct_length)));
+        //     printf("   %20.6f", (float)(Ct_length)/ComboMergesort2);
+        //     printf("\n");
+        // }
+        // if ( can_use_intel_knl_features() ) {
+        //     //simpleIterativeMergeSort
+        //     float ComboMergesort3 = 0.0;
+        //     tic_reset();
+        //     iterativeMergeSortAVX512Modified3(CUnsorted, Ct_length);
+        //     ComboMergesort3 = tic_sincelast();
+        //     verifyOutput((*CUnsorted), (*CSorted), Ct_length, "AVX512 Combo Mergesort");
+        //     memcpy( (*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+        //     printf("AVX512 ComboMergesort3:");
+        //     printf("   %14.6f", 1000*ComboMergesort3);
+        //     printf("   %16.6f", 1e9*(ComboMergesort3 / (float)(Ct_length)));
+        //     printf("   %20.6f", (float)(Ct_length)/ComboMergesort3);
+        //     printf("\n");
+        // }
         //#en
-        #endif
+        //#endif
 
         // float iterativeComboMergeSortTempTime = 0.0;
         // tic_reset();

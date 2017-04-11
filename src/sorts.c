@@ -1164,9 +1164,5 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
             }
         }
 
-        for (int i = 0; i < 100; i++) {
-            printf("Array%i:%i\n", i, (*array)[i]);
-        }
-
         free(C);
 }
