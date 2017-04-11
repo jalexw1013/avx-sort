@@ -1139,6 +1139,14 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
             //in core sort
             qsort((*array) + start, stop, sizeof(vec_t), hostBasicCompare);
 
+            #pragma omp barrier
+            #pragma omp single
+            {
+                for (int i = 0; i < 100; i++) {
+                    printf("INNNArray%i:%i\n", i, (*array)[i]);
+                }
+            }
+
             //begin merging
             #pragma omp barrier
             uint32_t currentSubArraySize = initialSubArraySize;
