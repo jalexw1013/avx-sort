@@ -1125,6 +1125,7 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
 {
         vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
         //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+        //omp_set_num_threads(72);
         #pragma omp parallel
         {
             //Calculate indicies
@@ -1158,8 +1159,13 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
                     vec_t* tmp = *array;
                     *array = C;
                     C = tmp;
+                    //memcpy(array, C, array_length * sizeof(vec_t));
                 }
             }
+        }
+
+        for (int i = 0; i < 100; i++) {
+            printf("Array%i:%i\n", i, (*array)[i]);
         }
 
         free(C);
