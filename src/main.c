@@ -67,10 +67,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 5000000;
-uint32_t  h_ui_B_length                = 5000000;
-uint32_t  h_ui_C_length                = 10000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 500000;
+uint32_t  h_ui_B_length                = 500000;
+uint32_t  h_ui_C_length                = 1000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
         &CUnsorted);
 
     freeGlobalData();
-    #if defined(SIMD_AVX512)
+    #ifdef AVX512
     printf("TESTTEST\n");
     #endif
 }
@@ -276,6 +276,90 @@ void clearArray(vec_t* array, uint32_t length) {
     }
 }
 
+template <void (*T)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)>
+void testMerge(
+    vec_t** A, uint32_t A_length,
+    vec_t** B, uint32_t B_length,
+    vec_t** C, uint32_t C_length,
+    vec_t** CSorted,
+    uint32_t runs, uint32_t algoID,
+    const char* algoName) {
+
+    //create input copies in case the algorithm acciedently changes the input
+    vec_t* ACopy = (vec_t*)xmalloc((A_length + 8) * sizeof(vec_t));
+    memcpy(ACopy, (*A), A_length * sizeof(vec_t));
+
+    vec_t* BCopy = (vec_t*)xmalloc((B_length + 8) * sizeof(vec_t));
+    memcpy(BCopy, (*B), B_length * sizeof(vec_t));
+
+    //clear out array just to be sure
+    clearArray((*C), C_length);
+
+    //setup timing mechanism
+    float time = 0.0;
+
+    //loop the number of runs
+    for (uint32_t i = 0; i < runs; i++) {
+        //reset timer
+        tic_reset();
+
+        //perform actual merge
+        T((*A), A_length, (*B), B_length, (*C), C_length);
+
+        //get timing
+        time += tic_sincelast();
+
+        //verify output is valid
+        verifyOutput((*C), (*CSorted), C_length, algoName);
+
+        //restore original values
+        clearArray((*C), C_length);
+        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
+    }
+    printf("%s%i:  ", algoName, algoID);
+    printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
+}
+
+template <void (*T)(vec_t**, uint32_t)>
+void testSort(
+    vec_t** CUnsorted, uint32_t C_length,
+    vec_t** CSorted, uint32_t Ct_length,
+    uint32_t runs, uint32_t algoID,
+    const char* algoName) {
+
+    //setup timing mechanism
+    float time = 0.0;
+
+    //store old values
+    vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
+    memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+
+    //loop the number of runs
+    for (uint32_t i = 0; i < runs; i++) {
+        //reset timer
+        tic_reset();
+
+        //perform actual merge
+        T(CUnsorted, C_length);
+
+        //get timing
+        time += tic_sincelast();
+
+        //verify output is valid
+        verifyOutput((*CUnsorted), (*CSorted), C_length, algoName);
+
+        //restore original values
+        memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+    }
+    printf("%s%i:  ", algoName, algoID);
+    printf("   %14.6f", 1000*(time/runs));
+    printf("   %16.6f", 1e9*((time/runs) / (float)(Ct_length)));
+    printf("   %20.6f", (float)(Ct_length)/(time/runs));
+    printf("\n");
+}
+
+
 void tester(
     vec_t** A, uint32_t A_length,
     vec_t** B, uint32_t B_length,
@@ -283,13 +367,6 @@ void tester(
     vec_t** CSorted, uint32_t Ct_length,
     vec_t** CUnsorted)
 {
-
-    //float qsortTime = 0.0;
-    //float singleCoreSort = 0.0;
-    //float multiCoreMergeSort = 0.0;
-
-    //int cpus = sysconf(_SC_NPROCESSORS_ONLN);
-
     printf("Parameters\n");
     printf("Entropy: %d\n", entropy);
     printf("A Size: %" PRIu32 "\n", A_length);
@@ -305,89 +382,19 @@ void tester(
     //
     //---------------------------------------------------------------------
     #ifdef MERGE
+        testMerge<serialMerge>(A, A_length, B, B_length, C, Ct_length, CSorted,
+            10, 0, "Serial Merge");
 
-        clearArray((*C), C_length);
-        printf("Merging Results:\n");
+        testMerge<serialMergeNoBranch>(A, A_length, B, B_length, C, Ct_length, CSorted,
+            10, 0, "Branchless Merge");
 
-        vec_t* ACopy = xmalloc((A_length + 8) * sizeof(vec_t));
-        memcpy(ACopy, (*A), A_length * sizeof(vec_t));
+        testMerge<bitonicMergeReal>(A, A_length, B, B_length, C, Ct_length, CSorted,
+            10, 0, "Bitonic Merge");
 
-        vec_t* BCopy = xmalloc((B_length + 8) * sizeof(vec_t));
-        memcpy(BCopy, (*B), B_length * sizeof(vec_t));
-
-        // for (int i = 0; i < A_length; i++) {
-        //     printf("A[%i]: %i\n", i, (*A)[i]);
-        // }
-        //
-        // for (int i = 1; i < B_length; i++) {
-        //     printf("B[%i]: %i\n", i, (*B)[i]);
-        // }
-
-        //Serial Merge
-        float* serial = (float*)xcalloc(1, sizeof(float));
-        tic_reset();
-        serialMerge((*A), A_length, (*B), B_length, (*C), C_length);
-        *serial = tic_sincelast();
-        verifyOutput((*C), (*CSorted), C_length, "Serial Merge");
-        clearArray((*C), C_length);
-        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
-        printf("Serial Merge:              ");
-        printf("%18.10f\n", 1e9*(*serial / (float)(Ct_length)));
-        free(serial);
-
-        //Branchless serial merge
-        float* serialNoBranch = (float*)xcalloc(1, sizeof(float));
-        tic_reset();
-        serialMergeNoBranch((*A), A_length, (*B), B_length, (*C), Ct_length);
-        *serialNoBranch = tic_sincelast();
-        verifyOutput((*C), (*CSorted), C_length, "Serial Merge Branchless");
-        clearArray((*C), C_length);
-        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
-        printf("Serial Merge no Branch:    ");
-        printf("%18.10f\n", 1e9*(*serialNoBranch / (float)(Ct_length)));
-        free(serialNoBranch);
-
-        //Bitonic
-        float* bitonicReal = (float*)xcalloc(1, sizeof(float));
-        tic_reset();
-        bitonicMergeReal((*A), A_length, (*B), B_length, (*C), Ct_length);
-        *bitonicReal = tic_sincelast();
-        verifyOutput((*C), (*CSorted), C_length, "Bitonic");
-        clearArray((*C), C_length);
-        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
-        printf("Bitonic Merge Real:        ");
-        printf("%18.10f\n", 1e9*(*bitonicReal / (float)(Ct_length)));
-        free(bitonicReal);
-
-        //#ifdef __INTEL_COMPILER
-        //AVX512 Merge (our algorithm)
-        if ( can_use_intel_knl_features() ) {
-            float* avx512 = (float*)xcalloc(1, sizeof(float));
-            tic_reset();
-            uint32_t ASplitters[17];
-            uint32_t BSplitters[17];
-            for (int i = 0; i < 17; i++) {
-                ASplitters[i] = 100;
-                BSplitters[i] = 100;
-            }
-            MergePathSplitter((*A), A_length, (*B), B_length, (*C),
-                Ct_length, 16, ASplitters, BSplitters);
-            serialMergeAVX512((*A), A_length, (*B), B_length, (*C), Ct_length,
-                ASplitters, BSplitters);
-            *avx512 = tic_sincelast();
-            verifyOutput((*C), (*CSorted), C_length, "AVX512 Merge");
-            clearArray((*C), C_length);
-            memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-            memcpy( (*B), BCopy, B_length * sizeof(vec_t));
-            printf("Serial Merge AVX-512:  ");
-            printf("%18.10f\n", 1e9*(*avx512 / (float)(Ct_length)));
-            free(avx512);
-        }
-        //#endif
-
+        #ifdef AVX512
+        testMerge<serialMergeAVX512>(A, A_length, B, B_length, C, Ct_length, CSorted,
+            10, 0, "AVX-512 Merge");
+        #endif
     #endif
 
     //---------------------------------------------------------------------
@@ -400,7 +407,7 @@ void tester(
     #ifdef SORT
         printf("\nSorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
-        vec_t* unsortedCopy = xmalloc(Ct_length * sizeof(vec_t));
+        vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
         memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
 
@@ -467,6 +474,11 @@ void tester(
         printf("\n");
         //free(qsortTime);
 
+        testSort<simpleIterativeMergeSort>(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            10, 0, "Iterative Merge Sort");
+
         float mergeSortTime = 0.0;
         tic_reset();
         mergeSort(Ct_length, *CUnsorted);
@@ -514,7 +526,7 @@ void tester(
         printf("%18.10f\n", 1e9*(parallelQuickSortTime / (float)(Ct_length)));
         //free(parallelQuickSortTime);*/
 
-        //#ifdef __INTEL_COMPILER
+        #ifdef __INTEL_COMPILER
         if ( can_use_intel_knl_features() ) {
             //simpleIterativeMergeSort
             float simpleIterativeMergeSortTime = 0.0;
@@ -589,7 +601,7 @@ void tester(
             printf("\n");
         }
         //#en
-        //#endif
+        #endif
 
         // float iterativeComboMergeSortTempTime = 0.0;
         // tic_reset();

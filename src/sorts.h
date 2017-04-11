@@ -18,13 +18,12 @@ void bitonicMergeReal(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 
-
+#ifdef AVX512
 void serialMergeAVX512(
-    vec_t* A, int32_t A_length,
-    vec_t* B, int32_t B_length,
-    vec_t* C, uint32_t C_length,
-    uint32_t* ASplitters, uint32_t* BSplitters);
-
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length);
+#endif
     #ifdef __INTEL_COMPILER
 
 
@@ -51,11 +50,12 @@ void Paralellquicksort(uint32_t * a, uint32_t p, uint32_t r);
 
 void simpleIterativeMergeSort(vec_t** array, uint32_t array_length);
 
+#ifdef AVX512
 void iterativeMergeSortAVX512(vec_t** array, uint32_t array_length);
-
 void iterativeMergeSortAVX512Modified(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified2(vec_t** array, uint32_t array_length);
 void iterativeMergeSortAVX512Modified3(vec_t** array, uint32_t array_length);
+#endif
 void sseMergeSort(uint32_t N, vec_t* A);
 void mergeSort(uint32_t N, vec_t* A);
 
