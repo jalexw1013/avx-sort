@@ -1131,13 +1131,11 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
             //Calculate indicies
             uint32_t threadNum = omp_get_thread_num();
             uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
-            uint32_t start,stop;
-            uint32_t i = threadNum*initialSubArraySize;
-            start=i;
-            stop=start+(i + initialSubArraySize < array_length)?initialSubArraySize:(array_length - i);
+            uint32_t start = threadNum*initialSubArraySize;
+            uint32_t size = (start + initialSubArraySize < array_length)?initialSubArraySize:(array_length - start);
 
             //in core sort
-            qsort((*array) + start, stop, sizeof(vec_t), hostBasicCompare);
+            qsort((*array) + start, size, sizeof(vec_t), hostBasicCompare);
 
             #pragma omp barrier
             // #pragma omp single
