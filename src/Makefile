@@ -1,13 +1,11 @@
 CC := g++
 AVX512 := NO#Valid Options are YES or NO
-#GCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic# -mavx512f
-
-#ICC = icc
-#ICCFLAGS += -qopenmp -std=c99 -axMIC-AVX512 -funroll-loops -Wall -pedantic
+MERGE := YES#Valid Options are YES or NO
+SORT  := YES#Valid Options are YES or NO
 
 OS = $(shell uname)
 
-FILES = main.c sorts.c util.c xmalloc.c
+FILES = main.c sorts.c utils/util.c utils/xmalloc.c
 
 #set compiler
 ifeq ($(CC),g++)
@@ -18,6 +16,22 @@ else ifeq ($(CC),icc)
 	CCFLAGS += -qopenmp -std=c99 -funroll-loops -Wall -pedantic
 else
     $(error Unknown Compiler Given)
+endif
+
+#check Whether merging and sorting
+ifeq ($(MERGE),NO)
+
+else ifeq ($(MERGE),YES)
+	CCFLAGS += -D MERGE
+else
+    $(error Invalid value for variable Merge. Valid values are YES or NO)
+endif
+ifeq ($(SORT),NO)
+
+else ifeq ($(SORT),YES)
+	CCFLAGS += -D SORT
+else
+    $(error Invalid value for variable SORT. Valid values are YES or NO)
 endif
 
 #check for AVX512
@@ -37,8 +51,9 @@ else
     $(error Invalid value for variable AVX512. Valid values are YES or NO)
 endif
 
+.PHONY: merge
 merge:
-	make clean
+	rm merge -f
 	$(CC) -O3 -o $@ $(CCFLAGS) $(FILES)
 
 run:

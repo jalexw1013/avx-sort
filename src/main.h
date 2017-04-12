@@ -13,6 +13,5 @@ void MergePathSplitter(
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters);
 
 int hostBasicCompare(const void * a, const void * b);
-void parallelIMergeSort(vec_t** array, uint32_t array_length);
 
 #endif
