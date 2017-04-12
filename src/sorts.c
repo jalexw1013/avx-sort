@@ -1126,57 +1126,70 @@ void parallelIMergeSort(vec_t** array, uint32_t array_length)
         vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
         //uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
         //omp_set_num_threads(72);
+        printf("Threads: %i\n", omp_get_num_threads());
+        int earlyEnd = 1; //Set to zero if small sub array
         #pragma omp parallel
         {
-            //Calculate indicies
-            uint32_t threadNum = omp_get_thread_num();
-            uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
-            uint32_t start = threadNum*initialSubArraySize;
-            uint32_t size = (start + initialSubArraySize < array_length)?initialSubArraySize:(array_length - start);
-
-            //in core sort
-            qsort((*array) + start, size, sizeof(vec_t), hostBasicCompare);
-
-            #pragma omp barrier
-            // #pragma omp single
-            // {
-            //     for (int i = 0; i < 100; i++) {
-            //         printf("INNNArray%i:%i\n", i, (*array)[i]);
-            //     }
-            // }
-
-            #pragma omp critical
+            //just quick sort for small array sizes
+            #pragma omp single
             {
-                printf("Thread: %i\n", omp_get_thread_num());
-                for (int i = omp_get_thread_num() * initialSubArraySize; i < omp_get_thread_num() * initialSubArraySize + 20; i++) {
-                    printf("INNNArray%i:%i\n", i, (*array)[i]);
+                if (array_length < omp_get_num_threads()) {
+                    qsort((*array), array_length, sizeof(vec_t), hostBasicCompare);
+                    earlyEnd = 0;
                 }
             }
 
-            //begin merging
-            #pragma omp barrier
-            uint32_t currentSubArraySize = initialSubArraySize;
-            while (currentSubArraySize < array_length) {
-                uint32_t A_start = threadNum * 2 * currentSubArraySize;
-                if (A_start < array_length - 1) {
-                    uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
-                    uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
-                    uint32_t A_length = B_start - A_start + 1;
-                    uint32_t B_length = B_end - B_start;
-                    serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
-                }
-                currentSubArraySize = 2 * currentSubArraySize;
+            if (earlyEnd) {
+                //Calculate indicies
+                uint32_t threadNum = omp_get_thread_num();
+                uint32_t initialSubArraySize = (array_length % omp_get_num_threads()) ? (array_length / omp_get_num_threads()) + 1 : (array_length / omp_get_num_threads());
+                uint32_t start = threadNum*initialSubArraySize;
+                uint32_t size = (start + initialSubArraySize < array_length)?initialSubArraySize:(array_length - start);
+
+                //in core sort
+                qsort((*array) + start, size, sizeof(vec_t), hostBasicCompare);
+
                 #pragma omp barrier
-                #pragma omp single
+                // #pragma omp single
+                // {
+                //     for (int i = 0; i < 100; i++) {
+                //         printf("INNNArray%i:%i\n", i, (*array)[i]);
+                //     }
+                // }
+
+                #pragma omp critical
                 {
-                    //pointer swap for C
-                    vec_t* tmp = *array;
-                    *array = C;
-                    C = tmp;
-                    // for (int i = 0; i < 100; i++) {
-                    //     printf("INNNArray%i:%i\n", i, (*array)[i]);
-                    // }
-                    //memcpy(array, C, array_length * sizeof(vec_t));
+                    printf("Thread: %i\n", omp_get_thread_num());
+                    for (int i = omp_get_thread_num() * initialSubArraySize; i < omp_get_thread_num() * initialSubArraySize + 20; i++) {
+                        printf("INNNArray%i:%i\n", i, (*array)[i]);
+                    }
+                }
+
+                //begin merging
+                #pragma omp barrier
+                uint32_t currentSubArraySize = initialSubArraySize;
+                while (currentSubArraySize < array_length) {
+                    uint32_t A_start = threadNum * 2 * currentSubArraySize;
+                    if (A_start < array_length - 1) {
+                        uint32_t B_start = min(A_start + currentSubArraySize - 1, array_length - 1);
+                        uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
+                        uint32_t A_length = B_start - A_start + 1;
+                        uint32_t B_length = B_end - B_start;
+                        serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+                    }
+                    currentSubArraySize = 2 * currentSubArraySize;
+                    #pragma omp barrier
+                    #pragma omp single
+                    {
+                        //pointer swap for C
+                        vec_t* tmp = *array;
+                        *array = C;
+                        C = tmp;
+                        // for (int i = 0; i < 100; i++) {
+                        //     printf("INNNArray%i:%i\n", i, (*array)[i]);
+                        // }
+                        //memcpy(array, C, array_length * sizeof(vec_t));
+                    }
                 }
             }
         }
