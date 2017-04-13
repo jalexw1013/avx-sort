@@ -229,11 +229,11 @@ void testMerge(
     printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
 }
 
-template <void (*T)(vec_t**, uint32_t)>
+template <template <void (*Sort)(vec_t**, uint32_t, const uint32_t), void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)> void (*T)(vec_t**,uint32_t,const uint32_t)>
 void testSort(
     vec_t** CUnsorted, uint32_t C_length,
     vec_t** CSorted, uint32_t Ct_length,
-    uint32_t runs, uint32_t algoID,
+    uint32_t runs, const uint32_t splitNumber,
     const char* algoName) {
 
     //setup timing mechanism
@@ -249,7 +249,7 @@ void testSort(
         tic_reset();
 
         //perform actual sort
-        T(CUnsorted, C_length);
+        T<Sort, Merge>(CUnsorted, C_length, splitNumber);
 
         //get timing
         time += tic_sincelast();
@@ -260,7 +260,7 @@ void testSort(
         //restore original values
         memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
     }
-    printf("%s%i:  ", algoName, algoID);
+    printf("%s:  ", algoName);
     printf("   %14.6f", 1000*(time/runs));
     printf("   %16.6f", 1e9*((time/runs) / (float)(Ct_length)));
     printf("   %20.6f", (float)(Ct_length)/(time/runs));
@@ -309,20 +309,20 @@ void tester(
     #ifdef SORT
         printf("\nSorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
-        testSort<quickSort>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 0, "QuickSort");
+        // testSort<quickSort>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 0, "QuickSort");
 
-        testSort<iterativeMergeSort>(
+        testSort<iterativeMergeSort<serialMerge, quickSort>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 0, "Iterative Merge Sort");
+            runs, 64, "Iterative Merge Sort");
 
-        testSort<parallelIterativeMergeSort>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 0, "Parallel Iterative Merge Sort");
+        // testSort<parallelIterativeMergeSort>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 0, "Parallel Iterative Merge Sort");
     #endif
 }
 

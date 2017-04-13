@@ -271,16 +271,34 @@ void avx512Merge(
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void quickSort(vec_t** array, uint32_t array_length)
+void quickSort(vec_t** array, uint32_t array_length, const uint32_t splitNumber)
 {
     qsort((void*)(*array), array_length, sizeof(vec_t), hostBasicCompare);
 }
 
-void iterativeMergeSort(vec_t** array, uint32_t array_length)
+//split number is the size of array that is sorted using the given sort
+template <void (*Sort)(vec_t**, uint32_t, const uint32_t),
+    void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)>
+void iterativeMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber)
 {
     vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
 
-    for (uint32_t currentSubArraySize = 1; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    uint32_t start = splitNumber; //Just in case splitNumber is invalid
+
+    if (splitNumber > 1) {
+        //sort individual arrays of size splitNumber
+        for (int i = 0; i < array_length; i += splitNumber) {
+            //adjust when array_length is not divisible by splitNumber
+            uint32_t actualSubArraySize = min(i + splitNumber, array_length - i);
+            Sort(array + i, actualSubArraySize, 0);
+        }
+    } else {
+        start = 1;
+    }
+
+    //now do actual iterative merge sort
+    for (uint32_t currentSubArraySize = start; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
     	for (uint32_t A_start = 0; A_start < array_length - 1; A_start += 2 * currentSubArraySize)
     	{
@@ -289,7 +307,7 @@ void iterativeMergeSort(vec_t** array, uint32_t array_length)
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
 
-            serialMerge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+            Merge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
         //pointer swap for C
         vec_t* tmp = *array;
