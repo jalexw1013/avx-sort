@@ -1,0 +1,41 @@
+Parameters
+System: Carmel
+Entropy: 28
+Array Size: 1000000
+
+
+Sorting Results:                                Total Time (ms)   Per Element (ns)    Elements per Second
+Quick Sort                                 :         131.053696         131.053696         7630460.000000
+Srinivas's Recursive Serial Merge Sort     :          98.993340          98.993340        10101690.000000
+Srinivas's Recursive Bitonic Merge Sort    :          80.451164          80.451159        12429901.000000
+Iterative Merge Sort Using Serial Merge    :          78.513748          78.513750        12736623.000000
+Iterative Merge Sort Using Branchless Merge:          72.058601          72.058604        13877593.000000
+Iterative Merge Sort Using Bitonic Merge   :          68.053932          68.053929        14694228.000000
+
+Parameters
+System: Intel(R) Core(TM) i7-5500U CPU @ 2.40GHz
+Entropy: 28
+Array Size: 1000000
+
+
+Sorting Results:                                Total Time (ms)   Per Element (ns)    Elements per Second
+Quick Sort                                 :         125.753593         125.753601         7952059.000000
+Srinivas's Recursive Serial Merge Sort     :         111.368958         111.368955         8979163.000000
+Srinivas's Recursive Bitonic Merge Sort    :          83.596016          83.596014        11962293.000000
+Iterative Merge Sort Using Serial Merge    :          83.747765          83.747764        11940617.000000
+Iterative Merge Sort Using Branchless Merge:          72.887230          72.887225        13719825.000000
+Iterative Merge Sort Using Bitonic Merge   :          66.737206          66.737208        14984146.000000
+
+Parameters
+System: Intel(R) Core(TM) i5-5250U CPU @ 1.60GHz
+Entropy: 28
+Array Size: 1000000
+
+
+Sorting Results:                                Total Time (ms)   Per Element (ns)    Elements per Second
+Quick Sort                                 :         139.215958         139.215956         7183084.500000
+Srinivas's Recursive Serial Merge Sort     :         116.792107         116.792108         8562223.000000
+Srinivas's Recursive Bitonic Merge Sort    :          92.629974          92.629975        10795641.000000
+Iterative Merge Sort Using Serial Merge    :          92.754440          92.754441        10781155.000000
+Iterative Merge Sort Using Branchless Merge:          80.704536          80.704538        12390877.000000
+Iterative Merge Sort Using Bitonic Merge   :          74.174637          74.174636        13481698.000000
