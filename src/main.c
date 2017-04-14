@@ -229,12 +229,12 @@ void testMerge(
     printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
 }
 
-template <template <void (*Sort)(vec_t**, uint32_t, const uint32_t), void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)> void (*T)(vec_t**,uint32_t,const uint32_t)>
 void testSort(
     vec_t** CUnsorted, uint32_t C_length,
     vec_t** CSorted, uint32_t Ct_length,
     uint32_t runs, const uint32_t splitNumber,
-    const char* algoName) {
+    const char* algoName, SortTemplate Sort,
+    MergeTemplate Merge) {
 
     //setup timing mechanism
     float time = 0.0;
@@ -249,7 +249,7 @@ void testSort(
         tic_reset();
 
         //perform actual sort
-        T<Sort, Merge>(CUnsorted, C_length, splitNumber);
+        Sort(CUnsorted, C_length, splitNumber, Merge);
 
         //get timing
         time += tic_sincelast();
@@ -263,7 +263,7 @@ void testSort(
     printf("%s:  ", algoName);
     printf("   %14.6f", 1000*(time/runs));
     printf("   %16.6f", 1e9*((time/runs) / (float)(Ct_length)));
-    printf("   %20.6f", (float)(Ct_length)/(time/runs));
+    printf("   %20f", (float)(Ct_length)/(time/runs));
     printf("\n");
 }
 
@@ -307,22 +307,62 @@ void tester(
     #endif
 
     #ifdef SORT
-        printf("\nSorting Results:      Total Time (ms)   Per Element (ns)    Elements per Second\n");
+        printf("\nSorting Results:                         Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
-        // testSort<quickSort>(
-        //     CUnsorted, C_length,
-        //     CSorted, Ct_length,
-        //     runs, 0, "QuickSort");
-
-        testSort<iterativeMergeSort<serialMerge, quickSort>>(
+        testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort");
+            runs, 64, "Quick Sort                                 ",
+            quickSort, NULL);
 
-        // testSort<parallelIterativeMergeSort>(
-        //     CUnsorted, C_length,
-        //     CSorted, Ct_length,
-        //     runs, 0, "Parallel Iterative Merge Sort");
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Alex's Quick Sort                          ",
+            alexRecursiveQuickSort, NULL);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Recursive Merge Sort Using Serial Merge    ",
+            recursiveMergeSort, serialMerge);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Recursive Merge Sort Using Branchless Merge",
+            recursiveMergeSort, serialMergeNoBranch);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Recursive Merge Sort Using Bitonic Merge   ",
+            recursiveMergeSort, bitonicMergeReal);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 0, "Srinivas's Recursive Merge Sort            ",
+            srinivasMergeSort, NULL);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Iterative Merge Sort Using Serial Merge    ",
+            iterativeMergeSort, serialMerge);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Iterative Merge Sort Using Branchless Merge",
+            iterativeMergeSort, serialMergeNoBranch);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Iterative Merge Sort Using Bitonic Merge   ",
+            iterativeMergeSort, bitonicMergeReal);
+
     #endif
 }
 

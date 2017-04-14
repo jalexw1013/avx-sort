@@ -80,6 +80,10 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length)
 {
+    if (A_length < 5 || B_length < 5 || C_length) {
+        serialMerge(A,A_length,B,B_length,C,C_length);
+        return;
+    }
     long Aindex = 0,Bindex = 0, Cindex = 0;
     int isA, isB;
 
@@ -129,7 +133,6 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
             sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
         }
     }
-
     if( isA ) Bindex += 4;
     else Aindex += 4;
 
@@ -151,7 +154,6 @@ void bitonicMergeReal(vec_t* A, uint32_t A_length,
         Bindex -= 4;
         _mm_storeu_si128((__m128i*)&(B[Bindex]), sB);
     }
-
     while (Cindex < C_length)
     {
         if (Aindex < A_length && Bindex < B_length)
@@ -271,16 +273,17 @@ void avx512Merge(
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void quickSort(vec_t** array, uint32_t array_length, const uint32_t splitNumber)
+void quickSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
 {
     qsort((void*)(*array), array_length, sizeof(vec_t), hostBasicCompare);
 }
 
-//split number is the size of array that is sorted using the given sort
-template <void (*Sort)(vec_t**, uint32_t, const uint32_t),
-    void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)>
+//split number is the size of array that is sorted using quickSort
 void iterativeMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber)
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
 {
     vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
 
@@ -290,8 +293,8 @@ void iterativeMergeSort(
         //sort individual arrays of size splitNumber
         for (int i = 0; i < array_length; i += splitNumber) {
             //adjust when array_length is not divisible by splitNumber
-            uint32_t actualSubArraySize = min(i + splitNumber, array_length - i);
-            Sort(array + i, actualSubArraySize, 0);
+            uint32_t actualSubArraySize = min(splitNumber, array_length - i);
+            qsort((void*)((*array) + i), actualSubArraySize, sizeof(vec_t), hostBasicCompare);
         }
     } else {
         start = 1;
@@ -306,7 +309,6 @@ void iterativeMergeSort(
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-
             Merge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
         //pointer swap for C
@@ -317,7 +319,9 @@ void iterativeMergeSort(
     free(C);
 }
 
-void parallelIterativeMergeSort(vec_t** array, uint32_t array_length)
+void parallelIterativeMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
 {
         vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
         int earlyEnd = 1; //Set to zero if small sub array
@@ -370,4 +374,178 @@ void parallelIterativeMergeSort(vec_t** array, uint32_t array_length)
         }
 
         free(C);
+}
+
+/*
+ * The following is taken from srinivas's code
+ */
+
+ int compare (const void* a, const void* b)
+ {
+     vec_t ka = *(const vec_t *)a;
+     vec_t kb = *(const vec_t *)b;
+     if (ka < kb)
+         return -1;
+     else if (ka == kb)
+         return 0;
+     else
+         return 1;
+ }
+
+ // Removing unnecessary copy of output to input
+ int omergesort(long N, vec_t* A, vec_t* O)
+ {
+     if(N < 64)
+     {
+         quickSort(&A, (uint32_t)N, 0, NULL);
+         return 0; // 0 - A contains the sorted lists 1 - O contains the sorted list
+     }
+
+     long d = N >> 1 ;
+
+     // Recursively sort them
+     int first_ret, last_ret;
+     first_ret = omergesort(d, A, O);
+     last_ret = omergesort(N - d, A + d, O + d);
+
+     vec_t *ip1,*ip2;
+
+     ip1 = (first_ret == 0)? A : O;
+     ip2 = (last_ret == 0)? A : O;
+
+     long i,i1,i2;
+     i = 0;
+     i1 = 0;
+     i2 = d;
+
+     vec_t* op;
+     op = (first_ret == 0)? O : A;
+
+     // Merge them
+     for( i = 0; i < N; i++)
+     {
+         if( i1 < d && i2 < N)
+         {
+             if(compare((void*)&(ip1[i1]),(void*)&(ip2[i2])) > 0)
+             {
+                 op[i] = ip2[i2];
+                 i2++;
+             }
+             else
+             {
+                 op[i] = ip1[i1];
+                 i1++;
+             }
+         }
+         else if( i1 >= d)
+         {
+             while(i2 < N)
+             {
+                 op[i] = ip2[i2];
+                 i2++;
+                 i++;
+             }
+         }
+         else
+         {
+             while( i1 < d)
+             {
+                 op[i] = ip1[i1];
+                 i1++;
+                 i++;
+             }
+         }
+     }
+
+     return (first_ret + 1)%2;
+ }
+
+ void mergeSortO(long N, vec_t* A)
+ {
+     int ret;
+
+     vec_t* Aaux = (vec_t *) malloc(sizeof(vec_t)*N);
+
+     ret = omergesort(N,A,Aaux);
+
+     if(ret == 1)
+     {
+         for(long i=0; i < N; i++)
+         {
+             A[i] = Aaux[i];
+         }
+     }
+
+     free(Aaux);
+
+     return;
+ }
+
+ void srinivasMergeSort(
+     vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+     MergeTemplate Merge)
+ {
+     mergeSortO((long)array_length,(*array));
+ }
+
+void alexRecursiveQuickSortHelper(vec_t* arr, int a, int b)
+{
+    if (a >= b) {
+        return;
+    }
+    int left = a + 1;
+    int right = b;
+    int pivotIndex = 1;//TODO make it random
+    vec_t pivot = arr[pivotIndex];
+    vec_t temp;
+    arr[pivotIndex] = arr[a];
+    arr[a] = pivot;
+    while (left <= right) {
+        while (left <= right && arr[left] < pivot) {
+            left++;
+        }
+        while (left <= right && arr[right] > pivot) {
+            right--;
+        }
+        if (left <= right) {
+            temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            left++;
+            right--;
+        }
+    }
+    temp = arr[right];
+    arr[right] = arr[a];
+    arr[a] = temp;
+    alexRecursiveQuickSortHelper(arr, a, right - 1);
+    alexRecursiveQuickSortHelper(arr, right + 1, b);
+}
+
+void alexRecursiveQuickSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
+{
+    alexRecursiveQuickSortHelper((*array), 0, array_length - 1);
+}
+
+void recursiveMergeSortHelper(
+    vec_t* array, uint32_t array_length, vec_t* C, MergeTemplate Merge)
+{
+    if (array_length < 2) {
+        return;
+    }
+    int mid = array_length / 2;
+    recursiveMergeSortHelper(array, mid, C, Merge);
+    recursiveMergeSortHelper(array + mid, mid + array_length%2, C + mid, Merge);
+    Merge(array, mid, array + mid, mid + array_length%2, C, array_length);
+    memcpy((void*)array, (void*)C, sizeof(vec_t)*array_length);
+}
+
+void recursiveMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
+{
+    vec_t* C = (vec_t*)xmalloc(sizeof(vec_t*)*array_length + 32);
+    recursiveMergeSortHelper((*array), array_length, C, Merge);
 }
