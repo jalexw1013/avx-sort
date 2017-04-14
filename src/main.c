@@ -321,23 +321,6 @@ void tester(
         //     runs, 64, "Alex's Quick Sort                          ",
         //     alexRecursiveQuickSort, NULL);
 
-        testSort(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 0, "Recursive Merge Sort Using Serial Merge    ",
-            recursiveMergeSort, serialMerge);
-
-        testSort(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 0, "Recursive Merge Sort Using Branchless Merge",
-            recursiveMergeSort, serialMergeNoBranch);
-
-        testSort(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 0, "Recursive Merge Sort Using Bitonic Merge   ",
-            recursiveMergeSort, bitonicMergeReal);
 
         testSort(
             CUnsorted, C_length,
@@ -368,6 +351,25 @@ void tester(
             CSorted, Ct_length,
             runs, 0, "Iterative Merge Sort Using Bitonic Merge   ",
             iterativeMergeSort, bitonicMergeReal);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 0, "Recursive Merge Sort Using Serial Merge    ",
+            recursiveMergeSort, serialMerge);
+            
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 0, "Recursive Merge Sort Using Branchless Merge",
+            recursiveMergeSort, serialMergeNoBranch);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 0, "Recursive Merge Sort Using Bitonic Merge   ",
+            recursiveMergeSort, bitonicMergeReal);
+
 
     #endif
 }
