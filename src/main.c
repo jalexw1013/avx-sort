@@ -307,43 +307,49 @@ void tester(
     #endif
 
     #ifdef SORT
-        printf("\nSorting Results:                         Total Time (ms)   Per Element (ns)    Elements per Second\n");
+        printf("\nSorting Results:                                Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Quick Sort                                 ",
+            runs, 0, "Quick Sort                                 ",
             quickSort, NULL);
 
-        testSort(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Alex's Quick Sort                          ",
-            alexRecursiveQuickSort, NULL);
+        // testSort(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Alex's Quick Sort                          ",
+        //     alexRecursiveQuickSort, NULL);
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Serial Merge    ",
+            runs, 0, "Recursive Merge Sort Using Serial Merge    ",
             recursiveMergeSort, serialMerge);
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Branchless Merge",
+            runs, 0, "Recursive Merge Sort Using Branchless Merge",
             recursiveMergeSort, serialMergeNoBranch);
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Bitonic Merge   ",
+            runs, 0, "Recursive Merge Sort Using Bitonic Merge   ",
             recursiveMergeSort, bitonicMergeReal);
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 0, "Srinivas's Recursive Merge Sort            ",
+            runs, 0, "Srinivas's Recursive Serial Merge Sort     ",
             srinivasMergeSort, NULL);
+
+        testSort(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 0, "Srinivas's Recursive Bitonic Merge Sort    ",
+            srinivasSSEMergeSort, NULL);
 
         testSort(
             CUnsorted, C_length,
@@ -354,13 +360,13 @@ void tester(
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort Using Branchless Merge",
+            runs, 0, "Iterative Merge Sort Using Branchless Merge",
             iterativeMergeSort, serialMergeNoBranch);
 
         testSort(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort Using Bitonic Merge   ",
+            runs, 0, "Iterative Merge Sort Using Bitonic Merge   ",
             iterativeMergeSort, bitonicMergeReal);
 
     #endif

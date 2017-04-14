@@ -59,4 +59,8 @@ void recursiveMergeSort(
     vec_t** array, uint32_t array_length, const uint32_t splitNumber,
     MergeTemplate Merge);
 
+void srinivasSSEMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge);
+
 #endif

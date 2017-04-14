@@ -549,3 +549,65 @@ void recursiveMergeSort(
     vec_t* C = (vec_t*)xmalloc(sizeof(vec_t*)*array_length + 32);
     recursiveMergeSortHelper((*array), array_length, C, Merge);
 }
+
+int ossemergesort(long N, vec_t* A, vec_t* O)
+{
+    if(N < 64)
+    {
+        quickSort(&A,(uint32_t)N,0, NULL);
+        return 0; // 0 - A contains the sorted lists 1 - O contains the sorted list
+    }
+
+    long d = N >> 1 ;
+
+    // Recursively sort them
+    int first_ret, last_ret;
+    first_ret = ossemergesort(d, A, O);
+    last_ret = ossemergesort(N - d, A + d, O + d);
+
+    vec_t *ip1,*ip2;
+
+    ip1 = (first_ret == 0)? A : O;
+    ip2 = (last_ret == 0)? A : O;
+
+    long i,i1,i2;
+    i = 0;
+    i1 = 0;
+    i2 = d;
+
+    vec_t* op;
+    op = (first_ret == 0)? O : A;
+
+    // SSE Merge
+    bitonicMergeReal(ip1, (uint32_t)d, ip2 + d, (uint32_t)(N - d), op, (uint32_t)N);
+
+    return (first_ret + 1)%2;
+}
+
+void sseMergeSortO(long N, vec_t* A)
+{
+    int ret;
+
+    vec_t* Aaux = (vec_t *) malloc(sizeof(vec_t)*N);
+
+    ret = ossemergesort(N,A,Aaux);
+
+    if(ret == 1)
+    {
+        for(long i=0; i < N; i++)
+        {
+            A[i] = Aaux[i];
+        }
+    }
+
+    free(Aaux);
+
+    return;
+}
+
+void srinivasSSEMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
+    MergeTemplate Merge)
+{
+    sseMergeSortO((long)array_length,(*array));
+}

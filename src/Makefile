@@ -1,6 +1,6 @@
 CC := g++
 AVX512 := NO#Valid Options are YES or NO
-MERGE := YES#Valid Options are YES or NO
+MERGE := NO#Valid Options are YES or NO
 SORT  := YES#Valid Options are YES or NO
 
 OS = $(shell uname)
