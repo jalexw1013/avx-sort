@@ -395,16 +395,15 @@ int recursiveMergeSortHelper(vec_t* array, uint32_t array_length, vec_t* C, cons
     ip1 = (first_ret == 0)? array : C;
     ip2 = (last_ret == 0)? array : C;
 
-    long i,i1,i2;
+    uint32_t i,i1,i2;
     i = 0;
     i1 = 0;
-    i2 = d;
+    i2 = subSize;
 
     vec_t* op;
     op = (first_ret == 0)? C : array;
 
-    // SSE Merge
-    Merge(ip1, (uint32_t)d, ip2 + subSize, (uint32_t)(array_length - subSize), op, (uint32_t)array_length);
+    Merge(ip1, (uint32_t)subSize, ip2 + subSize, (uint32_t)(array_length - subSize), op, (uint32_t)array_length);
 
     return (first_ret + 1)%2;
 }
