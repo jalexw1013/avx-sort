@@ -33,34 +33,21 @@ void avx512Merge(
 /*
  * Sorting Functions
  */
-typedef void (*SortTemplate)(vec_t**, uint32_t, const uint32_t, MergeTemplate);
+typedef void (*SortTemplate)(vec_t**, uint32_t, const uint32_t);
 
 void quickSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 
-void iterativeMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
-
-void parallelIterativeMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
-
-void srinivasMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
-
-void alexRecursiveQuickSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
-
+template <MergeTemplate Merge>
 void recursiveMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 
-void srinivasSSEMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber,
-    MergeTemplate Merge);
+template <MergeTemplate Merge>
+void iterativeMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+
+template <MergeTemplate Merge>
+void parallelIterativeMergeSort(
+    vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 
 #endif
