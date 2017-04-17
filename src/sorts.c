@@ -85,7 +85,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
         return;
     }
     long Aindex = 0,Bindex = 0, Cindex = 0;
-    int isA, isB;
+    int isA = 0;//, isB;
 
     __m128i sA = _mm_loadu_si128((const __m128i*)&(A[Aindex]));
     __m128i sB = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
@@ -93,7 +93,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
     {
         // load SIMD registers from A and B
         isA = 0;
-        isB = 0;
+        //isB = 0;
         // reverse B
         sB = _mm_shuffle_epi32(sB, m0123);
         // level 1
@@ -119,9 +119,6 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
         // calculate index for the next run
         sB=sH3p;
         Cindex+=4;
-        #if PRINTCMP
-        global_count += 24;
-        #endif
         if (A[Aindex+4]<B[Bindex+4]){
             Aindex+=4;
             isA = 1;
@@ -129,21 +126,18 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
         }
         else {
             Bindex+=4;
-            isB = 1;
+            //isB = 1;
             sA = _mm_loadu_si128((const __m128i*)&(B[Bindex]));
         }
     }
     if( isA ) Bindex += 4;
     else Aindex += 4;
 
-    int tempindex = 0;
-    int temp_length = 4;
+    //int tempindex = 0;
+    //int temp_length = 4;
     vec_t temp[4];
     _mm_storeu_si128((__m128i*)temp, sB);
 
-    #if PRINTCMP
-    global_count++;
-    #endif
     if (temp[3] <= A[Aindex])
     {
         Aindex -= 4;
@@ -158,9 +152,6 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
     {
         if (Aindex < A_length && Bindex < B_length)
         {
-            #if PRINTCMP
-            global_count++;
-            #endif
             if (A[Aindex] < B[Bindex])
             {
                 C[Cindex++] = A[Aindex++];
@@ -289,7 +280,7 @@ void iterativeMergeSort(
 
     if (splitNumber > 1) {
         //sort individual arrays of size splitNumber
-        for (int i = 0; i < array_length; i += splitNumber) {
+        for (uint32_t i = 0; i < array_length; i += splitNumber) {
             //adjust when array_length is not divisible by splitNumber
             uint32_t actualSubArraySize = min(splitNumber, array_length - i);
             qsort((void*)((*array) + i), actualSubArraySize, sizeof(vec_t), hostBasicCompare);
@@ -395,10 +386,10 @@ int recursiveMergeSortHelper(vec_t* array, uint32_t array_length, vec_t* C, cons
     ip1 = (first_ret == 0)? array : C;
     ip2 = (last_ret == 0)? array : C;
 
-    uint32_t i,i1,i2;
-    i = 0;
-    i1 = 0;
-    i2 = subSize;
+    //uint32_t i,i1,i2;
+    //i = 0;
+    //i1 = 0;
+    //i2 = subSize;
 
     vec_t* op;
     op = (first_ret == 0)? C : array;

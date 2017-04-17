@@ -167,7 +167,7 @@ void freeGlobalData() {
 }
 
 int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
-    for(int i = 0; i < length; i++) {
+    for(uint32_t i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
             printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
             printf("    Index:%d, Given Value:%d, Correct "
@@ -179,7 +179,7 @@ int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* 
 }
 
 void clearArray(vec_t* array, uint32_t length) {
-    for (int i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         array[i] = 0;
     }
 }
@@ -360,18 +360,18 @@ void MergePathSplitter(
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
 
-  for (int i = 0; i <= threads; i++) {
+  for (uint32_t i = 0; i <= threads; i++) {
       ASplitters[i] = A_length;
       BSplitters[i] = B_length;
   }
 
-  int minLength = A_length > B_length ? B_length : A_length;
+  uint32_t minLength = A_length > B_length ? B_length : A_length;
 
-  for (int thread=0; thread<threads;thread++)
+  for (uint32_t thread=0; thread<threads;thread++)
   {
     // uint32_t thread = omp_get_thread_num();
-    int32_t combinedIndex = thread * (minLength * 2) / threads;
-    int32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+    uint32_t combinedIndex = thread * (minLength * 2) / threads;
+    uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
     x_top = combinedIndex > minLength ? minLength : combinedIndex;
     y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
     x_bottom = y_top;
@@ -436,7 +436,7 @@ void hostParseArgs(int argc, char** argv)
     int c = getopt_long(argc, argv, "A:B:R:E:h",
   long_options, &option_index);
     extern char * optarg;
-    extern int    optind, opterr, optopt;
+    //extern int    optind, opterr, optopt;
     int intout = 0;
 
     if(-1 == c)
