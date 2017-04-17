@@ -177,7 +177,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
 }
 
 #ifdef AVX512
-void avx512Merge(
+inline void avx512Merge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length)
@@ -230,7 +230,6 @@ void avx512Merge(
     //other Variables
     const __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-    const __m512i minegone = _mm512_set_epi32(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
 
     __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
     __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);

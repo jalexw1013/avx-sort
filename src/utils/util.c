@@ -51,7 +51,7 @@ void print16intarray(char *text, int *val) {
            val[8], val[9], val[10], val[11], val[12], val[13], val[14], val[15]);
 }
 void printmmask16(char *text, __mmask16 mask) {
-    printf("%s: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n",text,
+    printf("%s: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN "\n",text,
 		BYTE_TO_BINARY(mask>>8), BYTE_TO_BINARY(mask));
 }
 #endif

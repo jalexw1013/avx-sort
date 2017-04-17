@@ -24,7 +24,7 @@ extern void bitonicMergeReal(
     vec_t* C, uint32_t C_length);
 
 #ifdef AVX512
-void avx512Merge(
+extern void avx512Merge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
