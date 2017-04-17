@@ -184,6 +184,30 @@ void clearArray(vec_t* array, uint32_t length) {
     }
 }
 
+template void testMerge<serialMerge>(
+	vec_t** A, uint32_t A_length,
+    vec_t** B, uint32_t B_length,
+    vec_t** C, uint32_t C_length,
+    vec_t** CSorted,
+    uint32_t runs, uint32_t algoID,
+    const char* algoName);
+
+template void testMerge<serialMergeNoBranch>(
+	vec_t** A, uint32_t A_length,
+    vec_t** B, uint32_t B_length,
+    vec_t** C, uint32_t C_length,
+    vec_t** CSorted,
+    uint32_t runs, uint32_t algoID,
+    const char* algoName);
+
+template void testMerge<bitonicMergeReal>(
+	vec_t** A, uint32_t A_length,
+    vec_t** B, uint32_t B_length,
+    vec_t** C, uint32_t C_length,
+    vec_t** CSorted,
+    uint32_t runs, uint32_t algoID,
+    const char* algoName);
+
 template <void (*T)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)>
 void testMerge(
     vec_t** A, uint32_t A_length,
