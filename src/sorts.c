@@ -80,7 +80,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length)
 {
-    if (A_length < 5 || B_length < 5 || C_length) {
+    if (A_length < 5 || B_length < 5 || C_length < 5) {
         serialMerge(A,A_length,B,B_length,C,C_length);
         return;
     }
