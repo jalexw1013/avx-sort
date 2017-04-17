@@ -428,7 +428,12 @@ void recursiveMergeSort(vec_t** array, uint32_t array_length, const uint32_t spl
 template void iterativeMergeSort<serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 template void iterativeMergeSort<serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 template void iterativeMergeSort<bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-
+#ifdef AVX512
+template void iterativeMergeSort<avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+#endif
 template void recursiveMergeSort<serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 template void recursiveMergeSort<serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 template void recursiveMergeSort<bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+#ifdef AVX512
+template void recursiveMergeSort<avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+#endif

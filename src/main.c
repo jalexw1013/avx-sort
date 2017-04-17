@@ -189,8 +189,7 @@ void testMerge(
     vec_t** A, uint32_t A_length,
     vec_t** B, uint32_t B_length,
     vec_t** C, uint32_t C_length,
-    vec_t** CSorted,
-    uint32_t runs, uint32_t algoID,
+    vec_t** CSorted, uint32_t runs,
     const char* algoName) {
 
     //create input copies in case the algorithm acciedently changes the input
@@ -225,7 +224,7 @@ void testMerge(
         memcpy( (*A), ACopy, A_length * sizeof(vec_t));
         memcpy( (*B), BCopy, B_length * sizeof(vec_t));
     }
-    printf("%s%i:  ", algoName, algoID);
+    printf("%s:  ", algoName);
     printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
 }
 
@@ -277,6 +276,7 @@ void tester(
 {
     printf("Parameters\n");
     printf("Entropy: %d\n", entropy);
+    printf("Runs: %i\n", runs);
     #ifdef MERGE
     printf("A Size: %" PRIu32 "\n", A_length);
     printf("B Size: %" PRIu32 "\n", B_length);
@@ -288,28 +288,26 @@ void tester(
 
     #ifdef MERGE
 
-        serialMerge((*A), A_length, (*B), B_length, (*C), Ct_length);
-
         testMerge<serialMerge>(
             A, A_length, B, B_length,
             C, Ct_length, CSorted,
-            runs, 0, "Serial Merge");
+            runs, "Serial Merge      ");
 
         testMerge<serialMergeNoBranch>(
             A, A_length, B, B_length,
             C, Ct_length, CSorted,
-            runs, 0, "Branchless Merge");
+            runs, "Branchless Merge  ");
 
         testMerge<bitonicMergeReal>(
             A, A_length, B, B_length,
             C, Ct_length, CSorted,
-            runs, 0, "Bitonic Merge");
+            runs, "Bitonic Merge     ");
 
         #ifdef AVX512
         testMerge<avx512Merge>(
             A, A_length, B, B_length,
             C, Ct_length, CSorted,
-            runs, 0, "AVX-512 Merge");
+            runs, "AVX-512 Merge     ");
         #endif
     #endif
 
@@ -321,35 +319,27 @@ void tester(
             CSorted, Ct_length,
             runs, 64, "Quick Sort                                 ");
 
-        testSort<recursiveMergeSort<serialMerge>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Serial Merge    ");
-
-        testSort<recursiveMergeSort<serialMergeNoBranch>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Branchless Merge");
-
-        testSort<recursiveMergeSort<bitonicMergeReal>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Recursive Merge Sort Using Bitonic Merge   ");
-
         testSort<iterativeMergeSort<serialMerge>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort Using Serial Merge    ");
+            runs, 64, "Merge Sort Using Serial Merge    ");
 
         testSort<iterativeMergeSort<serialMergeNoBranch>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort Using Branchless Merge");
+            runs, 64, "Merge Sort Using Branchless Merge");
 
         testSort<iterativeMergeSort<bitonicMergeReal>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Iterative Merge Sort Using Bitonic Merge   ");
+            runs, 64, "Merge Sort Using Bitonic Merge   ");
+
+        #ifdef AVX512
+        testSort<iterativeMergeSort<avx512Merge>>(
+            CUnsorted, C_length,
+            CSorted, Ct_length,
+            runs, 64, "Merge Sort Using AVX512 Merge   ");
+        #endif
     #endif
 }
 
