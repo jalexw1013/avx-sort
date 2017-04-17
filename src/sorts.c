@@ -21,7 +21,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void serialMerge(
+inline void serialMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length)
@@ -37,7 +37,7 @@ void serialMerge(
     while(Bindex < B_length) C[Cindex++] = B[Bindex++];
 }
 
-void serialMergeNoBranch(
+inline void serialMergeNoBranch(
       vec_t* A, uint32_t A_length,
       vec_t* B, uint32_t B_length,
       vec_t* C, uint32_t C_length)
@@ -76,7 +76,7 @@ const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
 const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
 const uint8_t m1001 = (1<<6)                   | 1;
 
-void bitonicMergeReal(vec_t* A, uint32_t A_length,
+inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length)
 {

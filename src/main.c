@@ -277,9 +277,13 @@ void tester(
 {
     printf("Parameters\n");
     printf("Entropy: %d\n", entropy);
+    #ifdef MERGE
     printf("A Size: %" PRIu32 "\n", A_length);
     printf("B Size: %" PRIu32 "\n", B_length);
-    printf("C Size: %" PRIu32 "\n", C_length);
+    #endif
+    #ifdef SORT
+    printf("Array Size: %" PRIu32 "\n", C_length);
+    #endif
     printf("\n");
 
     #ifdef MERGE
