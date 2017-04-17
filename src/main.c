@@ -287,6 +287,9 @@ void tester(
     printf("\n");
 
     #ifdef MERGE
+
+        serialMerge((*A), A_length, (*B), B_length, (*C), Ct_length);
+
         testMerge<serialMerge>(
             A, A_length, B, B_length,
             C, Ct_length, CSorted,

@@ -8,17 +8,17 @@
  */
 typedef void (*MergeTemplate)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t);
 
-void serialMerge(
+extern void serialMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 
-void serialMergeNoBranch(
+extern void serialMergeNoBranch(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
 
-void bitonicMergeReal(
+extern void bitonicMergeReal(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length);
