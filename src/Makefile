@@ -1,7 +1,8 @@
 CC := g++
 AVX512 := NO#Valid Options are YES or NO
 MERGE := NO#Valid Options are YES or NO
-SORT  := YES#Valid Options are YES or NO
+SORT := NO#Valid Options are YES or NO
+PARALLELSORT := YES#Valid Options are YES or NO
 
 OS = $(shell uname)
 
@@ -9,7 +10,7 @@ FILES = main.c sorts.c utils/util.c utils/xmalloc.c
 
 #set compiler
 ifeq ($(CC),g++)
-	CCFLAGS += -g -std=c++11 -fopenmp -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
+	CCFLAGS += -std=c++11 -fopenmp -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),gcc)
 	CCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),icc)
@@ -33,6 +34,13 @@ else ifeq ($(SORT),YES)
 else
     $(error Invalid value for variable SORT. Valid values are YES or NO)
 endif
+ifeq ($(PARALLELSORT),NO)
+
+else ifeq ($(PARALLELSORT),YES)
+	CCFLAGS += -D PARALLELSORT
+else
+    $(error Invalid value for variable PARALLELSORT. Valid values are YES or NO)
+endif
 
 #check for AVX512
 ifeq ($(AVX512),NO)
@@ -54,7 +62,7 @@ endif
 .PHONY: merge
 merge:
 	rm merge -f
-	$(CC) -O3 -o $@ $(CCFLAGS) $(FILES)
+	$(CC) -O1 -o $@ $(CCFLAGS) $(FILES)
 
 run:
 	make merge
