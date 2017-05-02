@@ -446,19 +446,17 @@ void singlePathMergePathSplitter(
     ASplitters[thread + 1] = A_length;
     BSplitters[thread + 1] = B_length;
 
-  uint32_t minLength = A_length > B_length ? B_length : A_length;
+    uint32_t minLength = A_length > B_length ? B_length : A_length;
+    uint32_t previousThreadValue = thread;
 
-    for (;thread <= thread + 1; thread++)
+    for (;thread <= previousThreadValue + 1; thread++)
     {
-        printf("ONE\n");
         // uint32_t thread = omp_get_thread_num();
         uint32_t combinedIndex = thread * (minLength * 2) / threads;
         uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
         x_top = combinedIndex > minLength ? minLength : combinedIndex;
         y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
         x_bottom = y_top;
-
-        printf("TWO\n");
 
         oldx = -1;
         oldy = -1;
@@ -472,8 +470,6 @@ void singlePathMergePathSplitter(
             if (current_x == oldx || current_y == oldy) {
               return;
             }
-
-            printf("THREE\n");
 
             oldx = current_x;
             oldy = current_y;
@@ -489,8 +485,6 @@ void singlePathMergePathSplitter(
                 } else {
                     Ai = A[current_x - 1];Bi = B[current_y];
                 }
-
-                printf("FOUR\n");
 
                 if(Ai <= Bi) {//Found it
                     ASplitters[thread]   = current_x;

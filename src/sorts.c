@@ -328,11 +328,13 @@ void parallelIterativeMergeSort(
 
             printf("Starting Thread: %i\n", omp_get_thread_num());
 
-            vec_t ASplitters[2] = {0, 0};
-            vec_t BSplitters[2] = {0, 0};
-
             //end if already sorted above
             if (earlyEnd) {
+
+                //allocate splitters
+                uint32_t* ASplitters = (uint32_t*)xcalloc(omp_get_num_threads(), sizeof(vec_t));
+                uint32_t* BSplitters = (uint32_t*)xcalloc(omp_get_num_threads(), sizeof(vec_t));
+
                 //Calculate indicies
                 uint32_t threadNum = omp_get_thread_num();
                 uint32_t numberOfSubArrays = omp_get_num_threads();
@@ -361,12 +363,13 @@ void parallelIterativeMergeSort(
 
                     #pragma omp critical
                     {
-                        singlePathMergePathSplitter(
+                        MergePathSplitter(
                             (*array) + subArrayStart, currentSubArraySize,
                             (*array) + subArrayStart + currentSubArraySize, currentSubArraySize,
                             C + subArrayStart, currentSubArraySize * 2,
-                            threadNum % numPerMergeThreads, numPerMergeThreads,
-                            ASplitters, BSplitters);
+                            numPerMergeThreads,
+                            ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads),
+                            BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads));
                     }
 
                     printf("%i:ASplitters:%i\n", omp_get_thread_num(), ASplitters[0]);
@@ -377,7 +380,7 @@ void parallelIterativeMergeSort(
                     uint32_t A_start = ASplitters[threadNum];
                     uint32_t A_end = ASplitters[threadNum + 1];
                     uint32_t B_start = BSplitters[threadNum];
-                    uint32_t B_end = BSplitters[threadNum];
+                    uint32_t B_end = BSplitters[threadNum + 1];
                     uint32_t A_length = A_end - A_start;
                     uint32_t B_length = B_end - B_start;
 
@@ -392,19 +395,24 @@ void parallelIterativeMergeSort(
                     currentSubArraySize = 2 * currentSubArraySize;
                     numberOfSubArrays = numberOfSubArrays/2 + numberOfSubArrays%2;
                     #pragma omp barrier
+                    printf("%i:All Threads Done\n", omp_get_thread_num());
                     #pragma omp single
                     {
+                        printf("%i:Swapping Array\n", omp_get_thread_num());
                         //pointer swap for C
                         vec_t* tmp = *array;
                         *array = C;
                         C = tmp;
+                        printf("%i:Swap Completed!!\n", omp_get_thread_num());
                     }
                 }
             }
-            printf("%i:Ending:%i\n", omp_get_thread_num(), omp_get_thread_num());
+            printf("\n\n%i:Ending:%i\n", omp_get_thread_num(), omp_get_thread_num());
+            //printf("\n\n");
         }
-
+        printf("Almost Done\n");
         free(C);
+        printf("All Done\n");
 }
 
 template <MergeTemplate Merge>
