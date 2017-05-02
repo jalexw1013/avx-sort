@@ -360,6 +360,7 @@ void parallelIterativeMergeSort(
 
                     printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                     printf("%i:subArrayStart:%i\n", omp_get_thread_num(), subArrayStart);
+                    printf("%i:currentSubArraySize:%i\n", omp_get_thread_num(), currentSubArraySize);
 
                     #pragma omp critical
                     {
@@ -369,18 +370,18 @@ void parallelIterativeMergeSort(
                             C + subArrayStart, currentSubArraySize * 2,
                             numPerMergeThreads,
                             ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads),
-                            BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads));
+                            BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads)); //Splitters[threadNum] should be index zero
                     }
 
-                    printf("%i:ASplitters:%i\n", omp_get_thread_num(), ASplitters[0]);
-                    printf("%i:ASplitters:%i\n", omp_get_thread_num(), ASplitters[1]);
-                    printf("%i:BSplitters:%i\n", omp_get_thread_num(), BSplitters[0]);
-                    printf("%i:BSplitters:%i\n", omp_get_thread_num(), BSplitters[1]);
+                    printf("%i:ASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
+                    printf("%i:ASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum+1]);
+                    printf("%i:BSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum]);
+                    printf("%i:BSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum+1]);
 
-                    uint32_t A_start = ASplitters[threadNum];
-                    uint32_t A_end = ASplitters[threadNum + 1];
-                    uint32_t B_start = BSplitters[threadNum];
-                    uint32_t B_end = BSplitters[threadNum + 1];
+                    uint32_t A_start = ASplitters[threadNum] + subArrayStart;
+                    uint32_t A_end = ASplitters[threadNum + 1] + subArrayStart;
+                    uint32_t B_start = BSplitters[threadNum] + subArrayStart + currentSubArraySize;
+                    uint32_t B_end = BSplitters[threadNum + 1] + subArrayStart + currentSubArraySize;
                     uint32_t A_length = A_end - A_start;
                     uint32_t B_length = B_end - B_start;
 

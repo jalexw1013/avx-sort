@@ -254,7 +254,9 @@ void testSort(
         time += tic_sincelast();
 
         //verify output is valid
-        verifyOutput((*CUnsorted), (*CSorted), C_length, algoName);
+        if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
+            return;
+        }
 
         //restore original values
         memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
