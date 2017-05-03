@@ -65,13 +65,15 @@ uint32_t  h_ui_A_length                = 500000;
 uint32_t  h_ui_B_length                = 500000;
 uint32_t  h_ui_C_length                = 1000000; //array to put values in
 uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
-uint32_t  RUNS                         = 50;
+uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
 
 // Host Functions
 ////////////////////////////
 int main(int argc, char** argv)
 {
+    omp_set_dynamic(0);
+    omp_set_num_threads(32);
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
@@ -378,10 +380,26 @@ void MergePathSplitter(
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
 
+    // for (uint32_t i = 0; i < A_length; i++) {
+    //     printf("A[%i]:%i\n", i, A[i]);
+    // }
+    //
+    // for (uint32_t i = 0; i < B_length; i++) {
+    //     printf("B[%i]:%i\n", i, B[i]);
+    // }
+
   for (uint32_t i = 0; i <= threads; i++) {
       ASplitters[i] = A_length;
       BSplitters[i] = B_length;
   }
+
+  // printf("A_Length:%i\n", A_length);
+  // printf("B_Length:%i\n", B_length);
+
+  // for (uint32_t i = 0; i <= threads; i++) {
+  //     printf("SPLITTER:ASplitters:%i\n", ASplitters[i]);
+  //     printf("SPLITTER:BSplitters:%i\n", BSplitters[i]);
+  // }
 
   uint32_t minLength = A_length > B_length ? B_length : A_length;
 
@@ -393,6 +411,11 @@ void MergePathSplitter(
     x_top = combinedIndex > minLength ? minLength : combinedIndex;
     y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
     x_bottom = y_top;
+
+    // printf("%i:combinedIndex:%i\n", thread, combinedIndex);
+    // printf("%i:X_top:%i\n", thread, combinedIndex);
+    // printf("%i:y_top:%i\n", thread, combinedIndex);
+    // printf("%i:x_bottom:%i\n", thread, combinedIndex);
 
     oldx = -1;
     oldy = -1;
@@ -423,6 +446,8 @@ void MergePathSplitter(
         }
 
         if(Ai <= Bi) {//Found it
+            // printf("%i:A:%i\n", thread, current_x);
+            // printf("%i:B:%i\n", thread, current_y);
           ASplitters[thread]   = current_x;
           BSplitters[thread] = current_y;
           break;
@@ -434,72 +459,8 @@ void MergePathSplitter(
       }
     }
   }
-}
-
-void singlePathMergePathSplitter(
-    vec_t * A, uint32_t A_length,
-    vec_t * B, uint32_t B_length,
-    vec_t * C, uint32_t C_length,
-    uint32_t thread, uint32_t threads,
-    uint32_t* ASplitters, uint32_t* BSplitters)
-{
-    ASplitters[thread] = A_length;
-    BSplitters[thread] = B_length;
-    ASplitters[thread + 1] = A_length;
-    BSplitters[thread + 1] = B_length;
-
-    uint32_t minLength = A_length > B_length ? B_length : A_length;
-    uint32_t previousThreadValue = thread;
-
-    for (;thread <= previousThreadValue + 1; thread++)
-    {
-        // uint32_t thread = omp_get_thread_num();
-        uint32_t combinedIndex = thread * (minLength * 2) / threads;
-        uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
-        x_top = combinedIndex > minLength ? minLength : combinedIndex;
-        y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
-        x_bottom = y_top;
-
-        oldx = -1;
-        oldy = -1;
-
-        vec_t Ai, Bi;
-        while(1) {
-            offset = (x_top - x_bottom) / 2;
-            current_y = y_top + offset;
-            current_x = x_top - offset;
-
-            if (current_x == oldx || current_y == oldy) {
-              return;
-            }
-
-            oldx = current_x;
-            oldy = current_y;
-
-            if(current_x > A_length - 1 || current_y < 1) {
-                Ai = 1;Bi = 0;
-            } else {
-                Ai = A[current_x];Bi = B[current_y - 1];
-            }
-            if(Ai > Bi) {
-                if(current_y > B_length - 1 || current_x < 1) {
-                    Ai = 0;Bi = 1;
-                } else {
-                    Ai = A[current_x - 1];Bi = B[current_y];
-                }
-
-                if(Ai <= Bi) {//Found it
-                    ASplitters[thread]   = current_x;
-                    BSplitters[thread] = current_y;
-                    break;
-                } else {//Both zeros
-                    x_top = current_x - 1;y_top = current_y + 1;
-                }
-            } else {// Both ones
-                x_bottom = current_x + 1;
-            }
-        }
-    }
+  // printf("%i:A:%i\n", threads, ASplitters[threads]);
+  // printf("%i:B:%i\n", threads, ASplitters[threads]);
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
