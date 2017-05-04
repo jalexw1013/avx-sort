@@ -20,14 +20,6 @@
 #include "sorts.h"
 #include "main.h"
 
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
 // Random Tuning Parameters
 //////////////////////////////
 #define INFINITY_VALUE 1073741824
@@ -61,10 +53,10 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-uint32_t  h_ui_A_length                = 500000;
-uint32_t  h_ui_B_length                = 500000;
-uint32_t  h_ui_C_length                = 1000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 50;
+uint32_t  h_ui_B_length                = 50;
+uint32_t  h_ui_C_length                = 100; //array to put values in
+uint32_t  h_ui_Ct_length               = 100; //for unsorted and sorted
 uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
 
@@ -73,7 +65,7 @@ uint32_t  entropy                      = 28;
 int main(int argc, char** argv)
 {
     omp_set_dynamic(0);
-    omp_set_num_threads(32);
+    omp_set_num_threads(6);
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
