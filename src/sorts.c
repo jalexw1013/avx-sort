@@ -307,6 +307,17 @@ void iterativeMergeSort(
     free(C);
 }
 
+/*
+ * Sums the values of the array up to and not including the given index
+ */
+inline uint32_t arraySum(uint32_t* array, uint32_t sumToIndex) {
+    uint32_t sum = 0;
+    for (uint32_t i = 0; i < sumToIndex; i++) {
+        sum += array[i];
+    }
+    return sum;
+}
+
 template <MergeTemplate Merge>
 void parallelIterativeMergeSort(
     vec_t** array, uint32_t array_length, const uint32_t splitNumber)
@@ -334,32 +345,36 @@ void parallelIterativeMergeSort(
             if (earlyEnd) {
 
                 //allocate splitters
-                uint32_t* ASplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(vec_t));
-                uint32_t* BSplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(vec_t));
+                uint32_t* ASplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
+                uint32_t* BSplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
 
                 //Calculate indicies
                 uint32_t threadNum = omp_get_thread_num();
                 uint32_t numberOfSubArrays = omp_get_num_threads();
                 uint32_t initialSubArraySize = array_length / omp_get_num_threads();
-                if (((threadNum % 2) == 1) && threadNum < 2*(array_length % (uint32_t)omp_get_num_threads())) {
-                    initialSubArraySize++;
-                } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && threadNum < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
-                    initialSubArraySize++;
-                }
-                // if (threadNum < (array_length % (uint32_t)omp_get_num_threads())) {
-                //     initialSubArraySize++; //balances sub array sizes when they dont divide evenly for the number of threads
-                // }
-                uint32_t start = threadNum*initialSubArraySize;
-                uint32_t size = (start + initialSubArraySize < array_length)?initialSubArraySize:(array_length - start);
 
-                // printf("%i:threadNum:%i\n", omp_get_thread_num(), threadNum);
-                // printf("%i:numberOfSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
+                //allocate and initilize size vectors (tracks array size)
+                uint32_t* arraySizes = (uint32_t*)xcalloc(omp_get_num_threads(), sizeof(uint32_t));
+                for (uint32_t thread = 0; thread < (uint32_t)omp_get_num_threads(); thread++) {
+                    arraySizes[thread] = initialSubArraySize;
+                    if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)omp_get_num_threads())) {
+                        arraySizes[thread]++;
+                    } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
+                        arraySizes[thread]++;
+                    }
+                }
+
+                uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
+                uint32_t subArraySize = arraySizes[threadNum];
+
+                printf("%i:threadNum:%i\n", omp_get_thread_num(), threadNum);
+                printf("%i:numberOfSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
                 printf("%i:initialSubArraySize:%i\n", omp_get_thread_num(), initialSubArraySize);
-                // printf("%i:start:%i\n", omp_get_thread_num(), start);
-                // printf("%i:size:%i\n", omp_get_thread_num(), size);
+                printf("%i:threadStartIndex:%i\n", omp_get_thread_num(), threadStartIndex);
+                printf("%i:subArraySize:%i\n", omp_get_thread_num(), subArraySize);
 
                 //in core sort
-                qsort((*array) + start, size, sizeof(vec_t), hostBasicCompare);
+                qsort((*array) + threadStartIndex, subArraySize, sizeof(vec_t), hostBasicCompare);
 
                 // #pragma omp barrier
                 // #pragma omp single

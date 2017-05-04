@@ -54,9 +54,9 @@ vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
 uint32_t  h_ui_A_length                = 50;
-uint32_t  h_ui_B_length                = 50;
-uint32_t  h_ui_C_length                = 100; //array to put values in
-uint32_t  h_ui_Ct_length               = 100; //for unsorted and sorted
+uint32_t  h_ui_B_length                = 78;
+uint32_t  h_ui_C_length                = 128; //array to put values in
+uint32_t  h_ui_Ct_length               = 128; //for unsorted and sorted
 uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
 
@@ -65,7 +65,7 @@ uint32_t  entropy                      = 28;
 int main(int argc, char** argv)
 {
     omp_set_dynamic(0);
-    omp_set_num_threads(6);
+    omp_set_num_threads(12);
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
