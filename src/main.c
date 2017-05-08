@@ -59,6 +59,11 @@ uint32_t  h_ui_C_length                = 134; //array to put values in
 uint32_t  h_ui_Ct_length               = 134; //for unsorted and sorted
 uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
+uint32_t  OutToFile                    = 0; // 1 if all out put to file
+
+//These Variables for a full testing run
+const uint32_t testingEntropies[] = {2, 5, 10, 15, 20, 25, 28, 35};
+const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
 // Host Functions
 ////////////////////////////
