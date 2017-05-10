@@ -71,6 +71,10 @@ int main(int argc, char** argv)
 {
     omp_set_dynamic(0);
     omp_set_num_threads(6);
+
+    uint32_t seed = time(0);
+    srand(seed);
+
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
@@ -128,9 +132,6 @@ void insertData(vec_t** A, uint32_t A_length,
                 vec_t** CSorted, uint32_t Ct_length,
                 vec_t** CUnsorted)
 {
-    uint32_t seed = time(0);
-    srand(seed);
-
     for(uint32_t i = 0; i < A_length; ++i) {
         (*A)[i] = rand() % (1 << (entropy - 1));
         (*CUnsorted)[i] = (*A)[i];
@@ -204,22 +205,22 @@ float testMerge(
     //setup timing mechanism
     float time = 0.0;
 
-        //reset timer
-        tic_reset();
+    //reset timer
+    tic_reset();
 
-        //perform actual merge
-        Merge((*A), A_length, (*B), B_length, (*C), C_length);
+    //perform actual merge
+    Merge((*A), A_length, (*B), B_length, (*C), C_length);
 
-        //get timing
-        time = tic_sincelast();
+    //get timing
+    time = tic_sincelast();
 
-        //verify output is valid
-        verifyOutput((*C), (*CSorted), C_length, algoName);
+    //verify output is valid
+    verifyOutput((*C), (*CSorted), C_length, algoName);
 
-        //restore original values
-        clearArray((*C), C_length);
-        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
+    //restore original values
+    clearArray((*C), C_length);
+    memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+    memcpy( (*B), BCopy, B_length * sizeof(vec_t));
 
     // printf("%s:  ", algoName);
     // printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
@@ -227,7 +228,7 @@ float testMerge(
 }
 
 template <SortTemplate Sort>
-void testSort(
+float testSort(
     vec_t** CUnsorted, uint32_t C_length,
     vec_t** CSorted, uint32_t Ct_length,
     uint32_t runs, const uint32_t splitNumber,
@@ -240,30 +241,24 @@ void testSort(
     vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
     memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
-    //loop the number of runs
-    for (uint32_t i = 0; i < runs; i++) {
-        //reset timer
-        tic_reset();
+    //reset timer
+    tic_reset();
 
-        //perform actual sort
-        Sort(CUnsorted, C_length, splitNumber);
+    //perform actual sort
+    Sort(CUnsorted, C_length, splitNumber);
 
-        //get timing
-        time += tic_sincelast();
+    //get timing
+    time += tic_sincelast();
 
-        //verify output is valid
-        if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
-            return;
-        }
-
-        //restore original values
-        memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+    //verify output is valid
+    if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
+        return 0.0;
     }
-    printf("%s:  ", algoName);
-    printf("   %14.6f", 1000*(time/runs));
-    printf("   %16.6f", 1e9*((time/runs) / (float)(Ct_length)));
-    printf("   %20f", (float)(Ct_length)/(time/runs));
-    printf("\n");
+
+    //restore original values
+    memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+
+    return time;
 }
 
 void printfcomma(int n) {
@@ -331,6 +326,13 @@ void tester(
             C, Ct_length, CSorted,
             runs, "AVX-512 Merge");
         #endif
+
+        insertData(
+            A, A_length,
+            B, B_length,
+            C, C_length,
+            CSorted, Ct_length,
+            CUnsorted);
     }
 
     serialMergeTime /= RUNS;
@@ -340,45 +342,79 @@ void tester(
     avx512MergeTime /= RUNS;
     #endif
 
-    printf("Merging Resluts        :  Elements per Second\n");
+    printf("Merging Results        :  Elements per Second\n");
     printf("Serial Merge           :     ");printfcomma((int)((float)Ct_length/serialMergeTime));printf("\n");
     printf("Serial Merge Branchless:     ");printfcomma((int)((float)Ct_length/serialMergeNoBranchTime));printf("\n");
     printf("Bitonic Merge          :     ");printfcomma((int)((float)Ct_length/bitonicMergeRealTime));printf("\n");
     #ifdef AVX512
     printf("AVX512 Merge           :     ");printfcomma((int)((float)Ct_length/avx512MergeTime));printf("\n");
     #endif
-
+    printf("\n\n");
     #endif
 
     #ifdef SORT
-        printf("\nSorting Results:                      Total Time (ms)   Per Element (ns)    Elements per Second\n");
 
-        testSort<quickSort>(
+    float quickSortTime = 0.0;
+    float serialMergeSortTime = 0.0;
+    float serialMergeNoBranchSortTime = 0.0;
+    float bitonicMergeRealSortTime = 0.0;
+    #ifdef AVX512
+    float avx512MergeSortTime = 0.0;
+    #endif
+
+    for (uint32_t run = 0; run < RUNS; run++) {
+        quickSortTime += testSort<quickSort>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Quick Sort                       ");
+            runs, 64, "Quick Sort");
 
-        testSort<iterativeMergeSort<serialMerge>>(
+        serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Merge Sort Using Serial Merge    ");
+            runs, 64, "Merge Sort Using Serial Merge");
 
-        testSort<iterativeMergeSort<serialMergeNoBranch>>(
+        serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
             runs, 64, "Merge Sort Using Branchless Merge");
 
-        testSort<iterativeMergeSort<bitonicMergeReal>>(
+        bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Merge Sort Using Bitonic Merge   ");
+            runs, 64, "Merge Sort Using Bitonic Merge");
 
         #ifdef AVX512
-        testSort<iterativeMergeSort<avx512Merge>>(
+        avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
             CUnsorted, C_length,
             CSorted, Ct_length,
-            runs, 64, "Merge Sort Using AVX512 Merge   ");
+            runs, 64, "Merge Sort Using AVX512 Merge");
         #endif
+
+        insertData(
+            A, A_length,
+            B, B_length,
+            C, C_length,
+            CSorted, Ct_length,
+            CUnsorted);
+    }
+
+    quickSortTime /= RUNS;
+    serialMergeSortTime /= RUNS;
+    serialMergeNoBranchSortTime /= RUNS;
+    bitonicMergeRealSortTime /= RUNS;
+    #ifdef AVX512
+    avx512MergeSortTime /= RUNS;
+    #endif
+
+    printf("Sorting Results                         :  Elements per Second\n");
+    printf("Quick Sort                              :     ");printfcomma((int)((float)Ct_length/quickSortTime));printf("\n");
+    printf("Merge Sort using Serial Merge           :     ");printfcomma((int)((float)Ct_length/serialMergeSortTime));printf("\n");
+    printf("Merge Sort using Serial Merge Branchless:     ");printfcomma((int)((float)Ct_length/serialMergeNoBranchSortTime));printf("\n");
+    printf("Merge Sort using Bitonic Merge          :     ");printfcomma((int)((float)Ct_length/bitonicMergeRealSortTime));printf("\n");
+    #ifdef AVX512
+    printf("Merge Sort using AVX512 Merge           :     ");printfcomma((int)((float)Ct_length/avx512MergeSortTime));printf("\n");
+    #endif
+    printf("\n\n");
     #endif
 
     #ifdef PARALLELSORT
