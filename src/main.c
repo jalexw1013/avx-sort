@@ -53,13 +53,22 @@ vec_t*    globalB;
 vec_t*    globalC;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
+#ifdef MERGE
+FILE *mergeFile;
+#endif
+#ifdef SORT
+FILE *sortFile;
+#endif
+#ifdef PARALLELSORT
+FILE *parallelSortFile;
+#endif
 uint32_t  h_ui_A_length                = 50;
 uint32_t  h_ui_B_length                = 84;
 uint32_t  h_ui_C_length                = 134; //array to put values in
 uint32_t  h_ui_Ct_length               = 134; //for unsorted and sorted
 uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
-uint32_t  OutToFile                    = 0; // 1 if all out put to file
+uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
 const uint32_t testingEntropies[] = {2, 5, 10, 15, 20, 25, 28, 35};
@@ -74,6 +83,24 @@ int main(int argc, char** argv)
 
     uint32_t seed = time(0);
     srand(seed);
+
+    #ifdef MERGE
+    if (OutToFile) {
+        initMergeFilePointer(&mergeFile);
+    }
+    #endif
+
+    #ifdef SORT
+    if (OutToFile) {
+        initSortFilePointer(&sortFile)
+    }
+    #endif
+
+    #ifdef PARALLELSORT
+    if (OutToFile) {
+        initParallelSortFilePointer(&parallelSortFile);
+    }
+    #endif
 
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
@@ -165,6 +192,51 @@ void freeGlobalData() {
       free(CSorted);
       free(CUnsorted);
 }
+
+#ifdef MERGE
+void initMergeFilePointer(FILE** fp) {
+    char* fileName;
+    sprintf(fileName, "results/MergeResults.%i.txt", time(0));
+    (*fp) = fopen(fileName, "w+");
+    fprintf((*fp), "Name, Entropy, A Size, B Size, Elements Per Second, Total Time");
+}
+
+void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, float time) {
+    char* data;
+    sprintf(data, "results/SortResults.%i.txt", time(0));
+    fprintf(mergeFile, "");
+}
+#endif
+
+#ifdef SORT
+void initSortFilePointer(FILE** fp) {
+    char* fileName;
+    sprintf(fileName, "results/SortResults.%i.txt", time(0));
+    (*fp) = fopen(fileName, "w+");
+    fprintf((*fp), "Name, Entropy, C Size, Elements Per Second, Total Time");
+}
+
+void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float time) {
+
+}
+#endif
+
+#ifdef PARALLELSORT
+void initParallelSortFilePointer(FILE** fp) {
+    char* fileName;
+    sprintf(fileName, "results/ParallelSortResults.%i.txt", time(0));
+    (*fp) = fopen(fileName, "w+");
+    fprintf((*fp), "Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time");
+}
+
+void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, uint32_t numThreads, float time) {
+
+}
+#endif
+
+
+
+
 
 int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name) {
     for(uint32_t i = 0; i < length; i++) {
