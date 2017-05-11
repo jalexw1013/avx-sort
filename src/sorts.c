@@ -411,6 +411,9 @@ void parallelIterativeMergeSort(
                 //begin merging
                 #pragma omp barrier
                 while (currentSubArraySize < array_length) {
+                        printf("%i:EnternumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
+
+                        printf("%i:arraySizesIndex:%i\n", omp_get_thread_num(), arraySizesIndex);
 
                         //Start Point for Sub Arrays
                         uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
@@ -510,6 +513,9 @@ void parallelIterativeMergeSort(
                     printf("%i:newNumpermegethreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
 
                     arraySizesIndex /= 2;
+                    if (arraySizesIndex >= numberOfSubArrays - 1) {
+                        arraySizesIndex = 0;
+                    }
 
                     #pragma omp barrier
                     #pragma omp single
@@ -528,6 +534,7 @@ void parallelIterativeMergeSort(
                     //printf("%i:EndNumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                     printf("\n");
                     #pragma omp barrier
+                    printf("%i:ExitnumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                 }
             }
             // printf("\n\n%i:Ending:%i\n", omp_get_thread_num(), omp_get_thread_num());
