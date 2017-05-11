@@ -81,8 +81,10 @@ uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
-const uint32_t testingEntropies[] = {2, 5, 10, 15, 20, 25, 28, 35};
-const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+const uint32_t testingEntropies[] = {2, 5, 10, 15, 20, 25, 28, 32};
+const uint32_t testingEntropiesLength = 8;
+const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000};
+const uint32_t testingSizesLength = 5;
 
 // Host Functions
 ////////////////////////////
@@ -115,28 +117,58 @@ int main(int argc, char** argv)
     }
     #endif
 
-    initArrays(
-        &globalA, h_ui_A_length,
-        &globalB, h_ui_B_length,
-        &globalC, h_ui_C_length,
-        &CSorted, h_ui_Ct_length,
-        &CUnsorted);
+    if (!OutToFile) {
+        initArrays(
+            &globalA, h_ui_A_length,
+            &globalB, h_ui_B_length,
+            &globalC, h_ui_C_length,
+            &CSorted, h_ui_Ct_length,
+            &CUnsorted);
 
-    insertData(
-        &globalA, h_ui_A_length,
-        &globalB, h_ui_B_length,
-        &globalC, h_ui_C_length,
-        &CSorted, h_ui_Ct_length,
-        &CUnsorted);
+        insertData(
+            &globalA, h_ui_A_length,
+            &globalB, h_ui_B_length,
+            &globalC, h_ui_C_length,
+            &CSorted, h_ui_Ct_length,
+            &CUnsorted);
 
-    tester(
-        &globalA, h_ui_A_length,
-        &globalB, h_ui_B_length,
-        &globalC, h_ui_C_length,
-        &CSorted, h_ui_Ct_length,
-        &CUnsorted, RUNS);
+        tester(
+            &globalA, h_ui_A_length,
+            &globalB, h_ui_B_length,
+            &globalC, h_ui_C_length,
+            &CSorted, h_ui_Ct_length,
+            &CUnsorted, RUNS);
 
-    freeGlobalData();
+            freeGlobalData();
+    } else {
+        for (uint32_t i = 0; i < testingSizesLength; i++) {
+            initArrays(
+                &globalA, testingSizes[i]/2,
+                &globalB, testingSizes[i]/2,
+                &globalC, testingSizes[i],
+                &CSorted, testingSizes[i],
+                &CUnsorted);
+            for (uint32_t e = 0; e < testingEntropiesLength; e++) {
+                entropy = testingEntropies[e];
+                insertData(
+                    &globalA, testingSizes[i]/2,
+                    &globalB, testingSizes[i]/2,
+                    &globalC, testingSizes[i],
+                    &CSorted, testingSizes[i],
+                    &CUnsorted);
+
+                tester(
+                    &globalA, testingSizes[i]/2,
+                    &globalB, testingSizes[i]/2,
+                    &globalC, testingSizes[i],
+                    &CSorted, testingSizes[i],
+                    &CUnsorted, RUNS);
+            }
+            freeGlobalData();
+        }
+    }
+
+
 }
 
 int hostBasicCompare(const void * a, const void * b) {
@@ -633,7 +665,6 @@ void MergePathSplitter(
 
 void hostParseArgs(int argc, char** argv)
 {
-    printf("TESTTEST\n");
   static struct option long_options[] = {
     {"Alength", required_argument, 0, 'A'},
     {"Blength", required_argument, 0, 'B'},
@@ -654,9 +685,6 @@ void hostParseArgs(int argc, char** argv)
 
     if(-1 == c)
       break;
-
-      printf("TESTTEST2%i\n", c);
-      printf("%s\n", optarg);
 
     switch(c) {
       default:
@@ -722,7 +750,6 @@ void hostParseArgs(int argc, char** argv)
         OutToFile = 1;
         break;
     }
-    printf("6\n");
   }
   h_ui_C_length = h_ui_A_length + h_ui_B_length;
   h_ui_Ct_length = h_ui_C_length;
