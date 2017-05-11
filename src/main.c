@@ -78,7 +78,7 @@ uint32_t  h_ui_C_length                = 134; //array to put values in
 uint32_t  h_ui_Ct_length               = 134; //for unsorted and sorted
 uint32_t  RUNS                         = 5;
 uint32_t  entropy                      = 28;
-uint32_t  OutToFile                    = 1; // 1 if out put to file
+uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
 const uint32_t testingEntropies[] = {2, 5, 10, 15, 20, 25, 28, 35};
@@ -88,6 +88,9 @@ const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000, 10
 ////////////////////////////
 int main(int argc, char** argv)
 {
+    // parse langths of A and B if user entered
+    hostParseArgs(argc, argv);
+
     omp_set_dynamic(0);
     omp_set_num_threads(6);
 
@@ -102,7 +105,7 @@ int main(int argc, char** argv)
 
     #ifdef SORT
     if (OutToFile) {
-        initSortFilePointer(&sortFile)
+        initSortFilePointer(&sortFile);
     }
     #endif
 
@@ -111,9 +114,6 @@ int main(int argc, char** argv)
         initParallelSortFilePointer(&parallelSortFile);
     }
     #endif
-
-    // parse langths of A and B if user entered
-    hostParseArgs(argc, argv);
 
     initArrays(
         &globalA, h_ui_A_length,
@@ -218,14 +218,14 @@ void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_
 
 #ifdef SORT
 void initSortFilePointer(FILE** fp) {
-    char* fileName;
+    char fileName [50];
     sprintf(fileName, "results/SortResults.%li.txt", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, C Size, Elements Per Second, Total Time");
 }
 
 void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float time) {
-
+    fprintf(sortFile, "\n%s, %i, %i, %i, %.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
 }
 #endif
 
@@ -238,7 +238,7 @@ void initParallelSortFilePointer(FILE** fp) {
 }
 
 void writeToParallelSortOut(const char* name, uint32_t entropy, uint32_t CSize, uint32_t numThreads, float time) {
-
+    fprintf(parallelSortFile, "\n%s, %i, %i, %i, %i, %.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
 }
 #endif
 
@@ -491,6 +491,16 @@ void tester(
     avx512MergeSortTime /= RUNS;
     #endif
 
+    if (OutToFile) {
+        writeToSortOut("Quick Sort", entropy, C_length, quickSortTime);
+        writeToSortOut("Merge Sort using Serial Merge", entropy, C_length, serialMergeSortTime);
+        writeToSortOut("Merge Sort using Serial Merge Branchless", entropy, C_length, serialMergeNoBranchSortTime);
+        writeToSortOut("Merge Sort using Bitonic Merge", entropy, C_length, bitonicMergeRealSortTime);
+        #ifdef AVX512
+        writeToSortOut("Merge Sort using AVX512 Merge", entropy, C_length, avx512MergeSortTime);
+        #endif
+    }
+
     printf("Sorting Results                         :  Elements per Second\n");
     printf("Quick Sort                              :     ");printfcomma((int)((float)Ct_length/quickSortTime));printf("\n");
     printf("Merge Sort using Serial Merge           :     ");printfcomma((int)((float)Ct_length/serialMergeSortTime));printf("\n");
@@ -623,18 +633,20 @@ void MergePathSplitter(
 
 void hostParseArgs(int argc, char** argv)
 {
+    printf("TESTTEST\n");
   static struct option long_options[] = {
     {"Alength", required_argument, 0, 'A'},
     {"Blength", required_argument, 0, 'B'},
     {"Runs"   , optional_argument, 0, 'R'},
     {"Entropy", optional_argument, 0, 'E'},
+    {"FileOut", no_argument      , 0, 'F'},
     {"help"   , no_argument      , 0, 'h'},
     {0        , 0                , 0,  0 }
   };
 
   while(1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "A:B:R:E:h",
+    int c = getopt_long(argc, argv, "A:B:R:E:h:F",
   long_options, &option_index);
     extern char * optarg;
     //extern int    optind, opterr, optopt;
@@ -642,6 +654,9 @@ void hostParseArgs(int argc, char** argv)
 
     if(-1 == c)
       break;
+
+      printf("TESTTEST2%i\n", c);
+      printf("%s\n", optarg);
 
     switch(c) {
       default:
@@ -663,6 +678,9 @@ void hostParseArgs(int argc, char** argv)
             "\n\t-E --Entropy <number>"
             "\n\t\tSpecify the number of bits of entropy "
             "to be used for random number generation\n"
+            "\n\t-F --FileOut 0 or 1"
+            "\n\t\tSpecify weather to write full "
+            "output to a file\n"
             );
          exit(0);
          break;
@@ -700,7 +718,11 @@ void hostParseArgs(int argc, char** argv)
         }
         entropy = (intout < 1) ? 1: intout;
         break;
+      case 'F':
+        OutToFile = 1;
+        break;
     }
+    printf("6\n");
   }
   h_ui_C_length = h_ui_A_length + h_ui_B_length;
   h_ui_Ct_length = h_ui_C_length;
