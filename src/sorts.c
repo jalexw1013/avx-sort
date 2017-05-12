@@ -505,8 +505,11 @@ void parallelIterativeMergeSort(
                     printf("%i:CurrentDefferedSubArray:%i\n", deferedSubArray);
 
                     if (numberOfSubArrays % 2 == 1 && deferedSubArray) {
-                        memcpy((void*)C, (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
-                        printf("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n");
+                        #pragma omp single
+                        {
+                            memcpy((void*)(C+array_length-deferedSize), (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
+                            printf("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n");
+                        }
                         deferedSubArray = 0;
                         arraySizes[numberOfSubArrays] = deferedSize;
                         numberOfSubArrays++;
@@ -524,7 +527,7 @@ void parallelIterativeMergeSort(
                         #pragma omp single
                         {
                             printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
-                            memcpy((void*)C, (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
+                            memcpy((void*)(C+array_length-deferedSize), (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
                         }
                     }
 
