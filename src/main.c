@@ -624,6 +624,13 @@ void MergePathSplitter(
       current_y = y_top + offset;
       current_x = x_top - offset;
 
+      printf("%i:y_top:%i\n", thread, y_top);
+      printf("%i:x_top:%i\n", thread, x_top);
+      printf("%i:x_bottom:%i\n", thread, x_bottom);
+      printf("%i:offset:%i\n", thread, offset);
+      printf("%i:current_x:%i\n", thread, current_x);
+      printf("%i:current_y:%i\n", thread, current_y);
+
       if (current_x == oldx || current_y == oldy) {
           return;
       }
@@ -644,8 +651,8 @@ void MergePathSplitter(
         }
 
         if(Ai <= Bi) {//Found it
-            // printf("%i:A:%i\n", thread, current_x);
-            // printf("%i:B:%i\n", thread, current_y);
+            printf("%i:A:%i\n", thread, current_x);
+            printf("%i:B:%i\n", thread, current_y);
           ASplitters[thread]   = current_x;
           BSplitters[thread] = current_y;
           break;
