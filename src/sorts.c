@@ -401,6 +401,7 @@ void parallelIterativeMergeSort(
                 //calulate a couple more variables
                 //uint32_t currentSubArraySize = arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1];
                 uint32_t numPerMergeThreads = 2*(omp_get_num_threads()/numberOfSubArrays);
+                uint32_t assignmentNumPerMergeThreads = 2*(omp_get_num_threads()/numberOfSubArrays);
                 uint32_t leftOverThreads = omp_get_num_threads()%numberOfSubArrays;//calulate how many left over threads there are
                 //now asign left over threads starting at the front
                 for (uint32_t i = 0; i < leftOverThreads; i++) {
@@ -409,7 +410,23 @@ void parallelIterativeMergeSort(
                     }
                 }
 
-                uint32_t arraySizesIndex = threadNum - threadNum % numPerMergeThreads; //the index of array A in the array sizes
+                uint32_t leftOverThreadsCounter = leftOverThreads;
+                uint32_t groupNumber = 0;
+                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads(); i++) {
+                    if (leftOverThreadsCounter) {
+                        leftOverThreadsCounter--;
+                        i += (assignmentNumPerMergeThreads + 1);
+                    } else {
+                        i += assignmentNumPerMergeThreads;
+                    }
+                    if (threadNum < i) {
+                        break;
+                    }
+                    groupNumber++;
+                }
+
+                uint32_t arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
+
 
                 // #pragma omp barrier
                 // #pragma omp single
@@ -556,7 +573,7 @@ void parallelIterativeMergeSort(
                     //printf("%i:\n", );
 
                     numPerMergeThreads = 2*(omp_get_num_threads()/numberOfSubArrays);
-                    printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
+                    assignmentNumPerMergeThreads = 2*(omp_get_num_threads()/numberOfSubArrays);
                     leftOverThreads = omp_get_num_threads()%numberOfSubArrays;//calulate how many left over threads there are
                     //now asign left over threads starting at the front
                     for (uint32_t i = 0; i < leftOverThreads; i++) {
@@ -564,6 +581,26 @@ void parallelIterativeMergeSort(
                             numPerMergeThreads++;
                         }
                     }
+
+                    leftOverThreadsCounter = leftOverThreads;
+                    groupNumber = 0;
+                    for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads(); i++) {
+                        if (leftOverThreadsCounter) {
+                            leftOverThreadsCounter--;
+                            i += (assignmentNumPerMergeThreads + 1);
+                        } else {
+                            i += assignmentNumPerMergeThreads;
+                        }
+                        if (threadNum < i) {
+                            break;
+                        }
+                        groupNumber++;
+                    }
+
+                    arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
+                    printf("%i:newArraySizesIndex:%i\n", omp_get_thread_num(), arraySizesIndex);
+
+
                     printf("%i:newNumpermegethreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
 
                     arraySizesIndex /= 2;
