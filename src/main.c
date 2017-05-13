@@ -237,7 +237,7 @@ void freeGlobalData() {
 
 #ifdef MERGE
 void initMergeFilePointer(FILE** fp) {
-    char fileName [50];
+    char fileName[50];
     sprintf(fileName, "results/MergeResults.%li.txt", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, A Size, B Size, Elements Per Second, Total Time");
@@ -250,7 +250,7 @@ void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_
 
 #ifdef SORT
 void initSortFilePointer(FILE** fp) {
-    char fileName [50];
+    char fileName[50];
     sprintf(fileName, "results/SortResults.%li.txt", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, C Size, Elements Per Second, Total Time");
@@ -263,7 +263,7 @@ void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float ti
 
 #ifdef PARALLELSORT
 void initParallelSortFilePointer(FILE** fp) {
-    char* fileName;
+    char fileName[50];
     sprintf(fileName, "results/ParallelSortResults.%li.txt", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time");
@@ -572,22 +572,22 @@ void tester(
             CSorted, Ct_length,
             runs, 64, "Parallel Merge Sort Using Serial Merge    ");
 
-        testSort<parallelIterativeMergeSort<serialMergeNoBranch>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Parallel Merge Sort Using Branchless Merge");
-
-        testSort<parallelIterativeMergeSort<bitonicMergeReal>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
-
-        #ifdef AVX512
-        testSort<parallelIterativeMergeSort<avx512Merge>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Parallel Merge Sort Using AVX512 Merge   ");
-        #endif
+        // testSort<parallelIterativeMergeSort<serialMergeNoBranch>>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Parallel Merge Sort Using Branchless Merge");
+        //
+        // testSort<parallelIterativeMergeSort<bitonicMergeReal>>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
+        //
+        // #ifdef AVX512
+        // testSort<parallelIterativeMergeSort<avx512Merge>>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Parallel Merge Sort Using AVX512 Merge   ");
+        // #endif
     #endif
 }
 
@@ -647,12 +647,12 @@ void MergePathSplitter(
       current_y = y_top + offset;
       current_x = x_top - offset;
 
-      printf("%i:y_top:%i\n", thread, y_top);
-      printf("%i:x_top:%i\n", thread, x_top);
-      printf("%i:x_bottom:%i\n", thread, x_bottom);
-      printf("%i:offset:%i\n", thread, offset);
-      printf("%i:current_x:%i\n", thread, current_x);
-      printf("%i:current_y:%i\n", thread, current_y);
+    //   printf("%i:y_top:%i\n", thread, y_top);
+    //   printf("%i:x_top:%i\n", thread, x_top);
+    //   printf("%i:x_bottom:%i\n", thread, x_bottom);
+    //   printf("%i:offset:%i\n", thread, offset);
+    //   printf("%i:current_x:%i\n", thread, current_x);
+    //   printf("%i:current_y:%i\n", thread, current_y);
 
       if (current_x == oldx || current_y == oldy) {
           return;
@@ -674,8 +674,8 @@ void MergePathSplitter(
         }
 
         if(Ai <= Bi) {//Found it
-            printf("%i:A:%i\n", thread, current_x);
-            printf("%i:B:%i\n", thread, current_y);
+            // printf("%i:A:%i\n", thread, current_x);
+            // printf("%i:B:%i\n", thread, current_y);
           ASplitters[thread]   = current_x;
           BSplitters[thread] = current_y;
           break;
