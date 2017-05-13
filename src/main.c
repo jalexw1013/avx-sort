@@ -94,7 +94,7 @@ int main(int argc, char** argv)
     hostParseArgs(argc, argv);
 
     omp_set_dynamic(0);
-    omp_set_num_threads(6);
+    omp_set_num_threads(5);
 
     uint32_t seed = time(0);
     srand(seed);
@@ -323,7 +323,9 @@ float testMerge(
     time = tic_sincelast();
 
     //verify output is valid
-    verifyOutput((*C), (*CSorted), C_length, algoName);
+    if (!verifyOutput((*C), (*CSorted), C_length, algoName)) {
+        time = -1.0;
+    }
 
     //restore original values
     clearArray((*C), C_length);
@@ -360,7 +362,7 @@ float testSort(
 
     //verify output is valid
     if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
-        return 0.0;
+        time = -1.0;
     }
 
     //restore original values
@@ -413,26 +415,34 @@ void tester(
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        serialMergeTime += testMerge<serialMerge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Serial Merge");
+        if (serialMergeTime >= 0.0) {
+            serialMergeTime += testMerge<serialMerge>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "Serial Merge");
+        }
 
-        serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Branchless Merge");
+        if (serialMergeNoBranchTime >= 0.0) {
+            serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "Branchless Merge");
+        }
 
-        bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Bitonic Merge");
+        if (bitonicMergeRealTime >= 0.0) {
+            bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "Bitonic Merge");
+        }
 
         #ifdef AVX512
-        avx512MergeTime += testMerge<avx512Merge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "AVX-512 Merge");
+        if (avx512MergeTime >= 0.0) {
+            avx512MergeTime += testMerge<avx512Merge>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "AVX-512 Merge");
+        }
         #endif
 
         insertData(
@@ -480,31 +490,41 @@ void tester(
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        quickSortTime += testSort<quickSort>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Quick Sort");
+        if (quickSortTime >= 0.0) {
+            quickSortTime += testSort<quickSort>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Quick Sort");
+        }
 
-        serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Merge Sort Using Serial Merge");
+        if (serialMergeSortTime >= 0.0) {
+            serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Merge Sort Using Serial Merge");
+        }
 
-        serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Merge Sort Using Branchless Merge");
+        if (serialMergeNoBranchSortTime >= 0.0) {
+            serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Merge Sort Using Branchless Merge");
+        }
 
-        bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Merge Sort Using Bitonic Merge");
+        if (bitonicMergeRealSortTime >= 0.0) {
+            bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Merge Sort Using Bitonic Merge");
+        }
 
         #ifdef AVX512
-        avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Merge Sort Using AVX512 Merge");
+        if (avx512MergeSortTime >= 0.0) {
+            avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Merge Sort Using AVX512 Merge");
+        }
         #endif
 
         insertData(
@@ -621,6 +641,9 @@ void MergePathSplitter(
     vec_t Ai, Bi;
     while(1) {
       offset = (x_top - x_bottom) / 2;
+      if (x_top < x_bottom) {
+          offset = 0;
+      }
       current_y = y_top + offset;
       current_x = x_top - offset;
 

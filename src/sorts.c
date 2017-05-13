@@ -330,10 +330,7 @@ void parallelIterativeMergeSort(
             //just quick sort for small array sizes
             #pragma omp single
             {
-                if (omp_get_num_threads() % 2 == 1) {
-                    printf(ANSI_COLOR_RED "Error: Number of allocated threads cannot be odd." ANSI_COLOR_RESET "\n");
-                    earlyEnd = 0;
-                } else if (array_length < (uint32_t)omp_get_num_threads()) {
+                if (array_length < (uint32_t)omp_get_num_threads()) {
                     quickSort(array, array_length, splitNumber);
                     earlyEnd = 0;
                 }
@@ -385,17 +382,28 @@ void parallelIterativeMergeSort(
                 //in core sort
                 qsort((*array) + threadStartIndex, currentSubArraySize, sizeof(vec_t), hostBasicCompare);
 
+                //variables for defered sub array, this occurs when the number of threads is not 2
+                uint32_t deferedSubArray = 0; //acts like a boolean
+                uint32_t deferedSize = 0;
+
+                if (numberOfSubArrays % 2 == 1) {
+                    deferedSubArray = 1; //acts like a boolean
+                    deferedSize = arraySizes[numberOfSubArrays - 1];
+
+                    printf("%i:DeferingSubArrayAtStart\n", omp_get_thread_num());
+                    printf("%i:deferedSize:%i\n", omp_get_thread_num(), deferedSize);
+
+                    numberOfSubArrays--;
+                }
+
                 //calulate a couple more variables
-                uint32_t arraySizesIndex = threadNum - threadNum % 2; //the index of array A in the array sizes
                 //uint32_t currentSubArraySize = arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1];
                 uint32_t numPerMergeThreads = 2*(omp_get_num_threads()/numberOfSubArrays);
                 if (omp_get_num_threads() - numPerMergeThreads*numberOfSubArrays/2 > threadNum) {
                     numPerMergeThreads++;
                 }
 
-                //variables for defered sub array, this occurs when the number of threads is not 2
-                uint32_t deferedSubArray = 0; //acts like a boolean
-                uint32_t deferedSize = 0;
+                uint32_t arraySizesIndex = threadNum - threadNum % numPerMergeThreads; //the index of array A in the array sizes
 
                 // #pragma omp barrier
                 // #pragma omp single
@@ -410,7 +418,7 @@ void parallelIterativeMergeSort(
 
                 //begin merging
                 #pragma omp barrier
-                while (currentSubArraySize < array_length) {
+                while (currentSubArraySize < array_length && numberOfSubArrays > 1) {
                         printf("%i:EnternumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                         printf("%i:EnterDefered:%i\n", omp_get_thread_num(), deferedSubArray);
 
@@ -496,6 +504,7 @@ void parallelIterativeMergeSort(
 
                     numberOfSubArrays = numberOfSubArrays/2;
 
+
                     int index = 0;
                     for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                         arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
@@ -513,7 +522,7 @@ void parallelIterativeMergeSort(
                         deferedSubArray = 0;
                         arraySizes[numberOfSubArrays] = deferedSize;
                         numberOfSubArrays++;
-                    } else if (numberOfSubArrays % 2 == 1) {
+                    } else if (numberOfSubArrays % 2 == 1 && numberOfSubArrays != 1) {
                         printf("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ\n");
                         deferedSubArray = 1; //acts like a boolean
                         deferedSize = arraySizes[numberOfSubArrays - 1];
@@ -535,7 +544,7 @@ void parallelIterativeMergeSort(
                         printf("%i:arraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                     }
 
-                    currentSubArraySize = arraySizes[threadNum];
+                    currentSubArraySize = arraySizes[0];
 
                     printf("%i:NewNumberofSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
                     //printf("%i:\n", );
