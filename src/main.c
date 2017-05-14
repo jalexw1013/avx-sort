@@ -94,7 +94,7 @@ int main(int argc, char** argv)
     hostParseArgs(argc, argv);
 
     omp_set_dynamic(0);
-    omp_set_num_threads(5);
+    omp_set_num_threads(8);
 
     uint32_t seed = time(0);
     srand(seed);

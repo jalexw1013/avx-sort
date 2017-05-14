@@ -364,8 +364,10 @@ void parallelIterativeMergeSort(
                     }
                 }
 
-                for (uint32_t i = 0; i < numberOfSubArrays; i++) {
-                    printf("%i:arraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
+                if (threadNum == 4) {
+                    for (uint32_t i = 0; i < numberOfSubArrays; i++) {
+                        printf("%i:arraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
+                    }
                 }
 
 
@@ -373,11 +375,13 @@ void parallelIterativeMergeSort(
                 uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
                 uint32_t currentSubArraySize = arraySizes[threadNum];
 
-                printf("%i:threadNum:%i\n", omp_get_thread_num(), threadNum);
-                printf("%i:numberOfSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
-                printf("%i:initialSubArraySize:%i\n", omp_get_thread_num(), initialSubArraySize);
-                printf("%i:threadStartIndex:%i\n", omp_get_thread_num(), threadStartIndex);
-                //printf("%i:subArraySize:%i\n", omp_get_thread_num(), subArraySize);
+                if (threadNum == 4) {
+                    printf("%i:threadNum:%i\n", omp_get_thread_num(), threadNum);
+                    printf("%i:numberOfSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
+                    printf("%i:initialSubArraySize:%i\n", omp_get_thread_num(), initialSubArraySize);
+                    printf("%i:threadStartIndex:%i\n", omp_get_thread_num(), threadStartIndex);
+                    //printf("%i:subArraySize:%i\n", omp_get_thread_num(), subArraySize);
+                }
 
                 //in core sort
                 qsort((*array) + threadStartIndex, currentSubArraySize, sizeof(vec_t), hostBasicCompare);
@@ -390,13 +394,17 @@ void parallelIterativeMergeSort(
                     deferedSubArray = 1; //acts like a boolean
                     deferedSize = arraySizes[numberOfSubArrays - 1];
 
-                    printf("%i:DeferingSubArrayAtStart\n", omp_get_thread_num());
-                    printf("%i:deferedSize:%i\n", omp_get_thread_num(), deferedSize);
+                    if (threadNum == 4) {
+                        printf("%i:DeferingSubArrayAtStart\n", omp_get_thread_num());
+                        printf("%i:deferedSize:%i\n", omp_get_thread_num(), deferedSize);
+                    }
 
                     numberOfSubArrays--;
                 }
 
-                printf("%i:NewNumberofSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
+                if (threadNum == 4) {
+                    printf("%i:NewNumberofSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
+                }
 
                 //calulate a couple more variables
                 //uint32_t currentSubArraySize = arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1];
@@ -412,7 +420,7 @@ void parallelIterativeMergeSort(
 
                 uint32_t leftOverThreadsCounter = leftOverThreads;
                 uint32_t groupNumber = 0;
-                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads(); i++) {
+                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
                     if (leftOverThreadsCounter) {
                         leftOverThreadsCounter--;
                         i += (assignmentNumPerMergeThreads + 1);
@@ -442,21 +450,25 @@ void parallelIterativeMergeSort(
                 //begin merging
                 #pragma omp barrier
                 while (currentSubArraySize < array_length && numberOfSubArrays > 1) {
+                    if (threadNum == 4) {
                         printf("%i:EnternumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                         printf("%i:EnterDefered:%i\n", omp_get_thread_num(), deferedSubArray);
 
                         printf("%i:arraySizesIndex:%i\n", omp_get_thread_num(), arraySizesIndex);
+                    }
 
                         //Start Point for Sub Arrays
                         uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
                         uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
 
+if (threadNum == 4) {
                         printf("%i:AStartMergePath:%i\n", omp_get_thread_num(), AStartMergePath);
                         printf("%i:BStartMergePath:%i\n", omp_get_thread_num(), BStartMergePath);
                         printf("%i:ASize:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex]);
                         printf("%i:BSize:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex + 1]);
 
                         printf("%i:Thread Entering Merge\n", omp_get_thread_num());
+                    }
                         MergePathSplitter(
                             (*array) + AStartMergePath, arraySizes[arraySizesIndex],
                             (*array) + BStartMergePath, arraySizes[arraySizesIndex + 1],
@@ -465,20 +477,22 @@ void parallelIterativeMergeSort(
                             ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads),
                             BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads)); //Splitters[subArrayStart thread num] should be index zero
 
+if (threadNum == 4) {
                         printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
 
-                        if (threadNum == 3) {
+
                         for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
                             printf("%i:ASplitters:%i\n", omp_get_thread_num(), (ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads))[i]);
                         }
                         for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
                             printf("%i:BSplitters:%i\n", omp_get_thread_num(), (BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads))[i]);
                         }
-                    }
+
+                }
 
 #pragma omp barrier
 
-                if (threadNum == 3) {
+                if (threadNum == 4) {
                     printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
                     printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
                     printf("%i:SBSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum]);
@@ -491,10 +505,11 @@ void parallelIterativeMergeSort(
                     uint32_t B_start = BStartMergePath + BSplitters[threadNum];
                     uint32_t B_end = BStartMergePath + BSplitters[threadNum + 1];
                     uint32_t B_length = B_end - B_start;
-                    printf("%i:Data: (%i mod %i) ? %i + %i + %i\n", omp_get_thread_num(),threadNum, numPerMergeThreads, ASplitters[threadNum], BSplitters[threadNum], A_start);
+                    //printf("%i:Data: (%i mod %i) ? %i + %i + %i\n", omp_get_thread_num(),threadNum, numPerMergeThreads, ASplitters[threadNum], BSplitters[threadNum], A_start);
                     uint32_t C_start = (threadNum % numPerMergeThreads) ?  ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath : AStartMergePath; //start C at offset of previous
                     uint32_t C_length = A_length + B_length;
 
+if (threadNum == 4) {
                     printf("%i:A_start:%i\n", omp_get_thread_num(), A_start);
                     printf("%i:A_end:%i\n", omp_get_thread_num(), A_end);
                     printf("%i:B_start:%i\n", omp_get_thread_num(), B_start);
@@ -503,6 +518,7 @@ void parallelIterativeMergeSort(
                     printf("%i:B_length:%i\n", omp_get_thread_num(), B_length);
                     printf("%i:C_start:%i\n", omp_get_thread_num(), C_start);
                     printf("%i:C_length:%i\n", omp_get_thread_num(), C_length);
+                }
 
                     #pragma omp barrier
                     #pragma omp single
@@ -513,9 +529,9 @@ void parallelIterativeMergeSort(
                     }
 
                     Merge((*array) + A_start, A_length, (*array) + B_start, B_length, C + C_start, C_length);
-                        for (uint32_t i = 0; i < C_length; i++) {
-                            printf("%i:CAAAA[%i]:%i\n", omp_get_thread_num(),i, (C + C_start)[i]);
-                        }
+                        // for (uint32_t i = 0; i < C_length; i++) {
+                        //     printf("%i:CAAAA[%i]:%i\n", omp_get_thread_num(),i, (C + C_start)[i]);
+                        // }
                         #pragma omp barrier
                         #pragma omp single
                         {
@@ -533,6 +549,7 @@ void parallelIterativeMergeSort(
                         arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
                         index += 2;
                     }
+
 
                     printf("%i:CurrentDefferedSubArray:%i\n", omp_get_thread_num(), deferedSubArray);
 
@@ -584,7 +601,7 @@ void parallelIterativeMergeSort(
 
                     leftOverThreadsCounter = leftOverThreads;
                     groupNumber = 0;
-                    for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads(); i++) {
+                    for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
                         if (leftOverThreadsCounter) {
                             leftOverThreadsCounter--;
                             i += (assignmentNumPerMergeThreads + 1);
