@@ -10,7 +10,7 @@ FILES = main.c sorts.c utils/util.c utils/xmalloc.c
 
 #set compiler
 ifeq ($(CC),g++)
-	CCFLAGS += -std=c++11 -fopenmp -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
+	CCFLAGS += -g -std=c++11 -fopenmp -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),gcc)
 	CCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),icc)
