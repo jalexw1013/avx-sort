@@ -445,6 +445,9 @@ void parallelIterativeMergeSort(
 
                 uint32_t arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
 
+                //TODO Update this!!
+                uint32_t mergeHeadThreadNum = 0;//the thread number that is the lowest in the this threads merge
+
 
                 // #pragma omp barrier
                 // #pragma omp single
@@ -484,6 +487,13 @@ if (threadNum == 21 || 1 == 2) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:PreMergearraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
+                    }
+
+                    if (threadNum == 21 || 1 == 2) {
+                        printf("%i:Splitters Offset:%i\n", omp_get_thread_num(),numPerMergeThreads*(threadNum / numPerMergeThreads));
+                        printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
+                        printf("%i:A_Length:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex]);
+                        printf("%i:B_Length:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex + 1]);
                     }
 
                         MergePathSplitter(
