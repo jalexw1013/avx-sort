@@ -364,7 +364,7 @@ void parallelIterativeMergeSort(
                     }
                 }
 
-                if (threadNum == 4 || 1 == 1) {
+                if (threadNum == 21 || 1 == 1) {
                     for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                         printf("%i:arraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                     }
@@ -375,7 +375,7 @@ void parallelIterativeMergeSort(
                 uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
                 uint32_t currentSubArraySize = arraySizes[threadNum];
 
-                if (threadNum == 4 || 1 == 1) {
+                if (threadNum == 21 || 1 == 1) {
                     printf("%i:threadNum:%i\n", omp_get_thread_num(), threadNum);
                     printf("%i:numberOfSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
                     printf("%i:initialSubArraySize:%i\n", omp_get_thread_num(), initialSubArraySize);
@@ -394,7 +394,7 @@ void parallelIterativeMergeSort(
                     deferedSubArray = 1; //acts like a boolean
                     deferedSize = arraySizes[numberOfSubArrays - 1];
 
-                    if (threadNum == 4 || 1 == 1) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:DeferingSubArrayAtStart\n", omp_get_thread_num());
                         printf("%i:deferedSize:%i\n", omp_get_thread_num(), deferedSize);
                     }
@@ -402,7 +402,7 @@ void parallelIterativeMergeSort(
                     numberOfSubArrays--;
                 }
 
-                if (threadNum == 4 || 1 == 1) {
+                if (threadNum == 21 || 1 == 1) {
                     printf("%i:NewNumberofSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
                 }
 
@@ -430,23 +430,30 @@ void parallelIterativeMergeSort(
 
                 uint32_t leftOverThreadsCounter = leftOverThreads;
                 uint32_t groupNumber = 0;
+                uint32_t mergeHeadThreadNum = 0;
                 for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
                     if (leftOverThreadsCounter) {
                         leftOverThreadsCounter--;
                         i += (assignmentNumPerMergeThreads + 1);
+                        printf("akjsdlfkjaksdfjkladsjfklasdjlkfjdalksfjdjalfdasfads\n");
                     } else {
                         i += assignmentNumPerMergeThreads;
+                        printf("jackolanternasdfkjaldsfjadskfjaldsfjkdasjldasjfljdaslkfjdsalf\n");
                     }
                     if (threadNum < i) {
                         break;
                     }
+                    printf("%i:assignmentNumPerMergeThreads:%i\n", omp_get_thread_num(), assignmentNumPerMergeThreads);
+                    printf("%i:i:%i\n", omp_get_thread_num(), i);
+                    mergeHeadThreadNum = i;
                     groupNumber++;
                 }
 
                 uint32_t arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
 
-                //TODO Update this!!
-                uint32_t mergeHeadThreadNum = 0;//the thread number that is the lowest in the this threads merge
+                if (threadNum == 21 || 1 == 1) {
+                    printf("%i:mergeHeadThreadNum:%i\n", omp_get_thread_num(), mergeHeadThreadNum);
+                }
 
 
                 // #pragma omp barrier
@@ -463,7 +470,7 @@ void parallelIterativeMergeSort(
                 //begin merging
                 #pragma omp barrier
                 while (currentSubArraySize < array_length && numberOfSubArrays > 1) {
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:EnternumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                         printf("%i:EnterDefered:%i\n", omp_get_thread_num(), deferedSubArray);
 
@@ -474,7 +481,7 @@ void parallelIterativeMergeSort(
                         uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
                         uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
 
-if (threadNum == 21 || 1 == 2) {
+if (threadNum == 21 || 1 == 1) {
                         printf("%i:AStartMergePath:%i\n", omp_get_thread_num(), AStartMergePath);
                         printf("%i:BStartMergePath:%i\n", omp_get_thread_num(), BStartMergePath);
                         printf("%i:ASize:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex]);
@@ -483,13 +490,13 @@ if (threadNum == 21 || 1 == 2) {
                         printf("%i:Thread Entering Merge\n", omp_get_thread_num());
                     }
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:PreMergearraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
                     }
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:Splitters Offset:%i\n", omp_get_thread_num(),numPerMergeThreads*(threadNum / numPerMergeThreads));
                         printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                         printf("%i:A_Length:%i\n", omp_get_thread_num(), arraySizes[arraySizesIndex]);
@@ -501,36 +508,35 @@ if (threadNum == 21 || 1 == 2) {
                             (*array) + BStartMergePath, arraySizes[arraySizesIndex + 1],
                             C + AStartMergePath, arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1],
                             numPerMergeThreads,
-                            ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads),
-                            BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads)); //Splitters[subArrayStart thread num] should be index zero
+                            ASplitters + mergeHeadThreadNum, BSplitters + mergeHeadThreadNum); //Splitters[subArrayStart thread num] should be index zero
 
-                            if (threadNum == 21 || 1 == 2) {
+                            if (threadNum == 21 || 1 == 1) {
                                 for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                                     printf("%i:AfterMergearraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                                 }
                             }
 
-if (threadNum == 21 || 1 == 2) {
+if (threadNum == 21 || 1 == 1) {
                         printf("%i:numPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
 
 
                         for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
-                            printf("%i:ASplitters[%i]:%i\n", omp_get_thread_num(), i, (ASplitters + numPerMergeThreads*(threadNum / numPerMergeThreads))[i]);
+                            printf("%i:ASplitters[%i]:%i\n", omp_get_thread_num(), i, (ASplitters + mergeHeadThreadNum)[i]);
                         }
                         for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
-                            printf("%i:BSplitters[%i]:%i\n", omp_get_thread_num(), i, (BSplitters + numPerMergeThreads*(threadNum / numPerMergeThreads))[i]);
+                            printf("%i:BSplitters[%i]:%i\n", omp_get_thread_num(), i, (BSplitters + mergeHeadThreadNum)[i]);
                         }
 
                 }
 
 #pragma omp barrier
 
-                // if (threadNum == 4 || 1 == 1) {
-                //     printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
-                //     printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
-                //     printf("%i:SBSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum]);
-                //     printf("%i:SBSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum]);
-                // }
+                if (threadNum == 21 || 1 == 1) {
+                    printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum]);
+                    printf("%i:SASplitters:%i\n", omp_get_thread_num(), ASplitters[threadNum+1]);
+                    printf("%i:SBSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum]);
+                    printf("%i:SBSplitters:%i\n", omp_get_thread_num(), BSplitters[threadNum+1]);
+                }
 
                     uint32_t A_start = AStartMergePath + ASplitters[threadNum];
                     uint32_t A_end = AStartMergePath + ASplitters[threadNum + 1];
@@ -542,7 +548,7 @@ if (threadNum == 21 || 1 == 2) {
                     uint32_t C_start = (threadNum % numPerMergeThreads) ?  ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath : AStartMergePath; //start C at offset of previous
                     uint32_t C_length = A_length + B_length;
 
-if (threadNum == 21 || 1 == 2) {
+if (threadNum == 21 || 1 == 1) {
                     printf("%i:A_start:%i\n", omp_get_thread_num(), A_start);
                     printf("%i:A_end:%i\n", omp_get_thread_num(), A_end);
                     printf("%i:B_start:%i\n", omp_get_thread_num(), B_start);
@@ -561,7 +567,7 @@ if (threadNum == 21 || 1 == 2) {
                         }
                     }
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:PreMainMergearraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
@@ -582,7 +588,7 @@ if (threadNum == 21 || 1 == 2) {
 
                     numberOfSubArrays = numberOfSubArrays/2;
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays*2; i++) {
                             printf("%i:arraySizesBefore[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
@@ -594,7 +600,7 @@ if (threadNum == 21 || 1 == 2) {
                         index += 2;
                     }
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:arraySizesAfter[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
@@ -632,7 +638,7 @@ if (threadNum == 21 || 1 == 2) {
                         }
                     }
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:arraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }
@@ -640,7 +646,7 @@ if (threadNum == 21 || 1 == 2) {
 
                     currentSubArraySize = arraySizes[0];
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:NewNumberofSubArrays:%i\n", omp_get_thread_num(), numberOfSubArrays);
                     }
                     //printf("%i:\n", );
@@ -664,6 +670,7 @@ if (threadNum == 21 || 1 == 2) {
 
                     leftOverThreadsCounter = leftOverThreads;
                     groupNumber = 0;
+                    mergeHeadThreadNum = 0;
                     for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
                         if (leftOverThreadsCounter) {
                             leftOverThreadsCounter--;
@@ -674,12 +681,17 @@ if (threadNum == 21 || 1 == 2) {
                         if (threadNum < i) {
                             break;
                         }
+                        mergeHeadThreadNum = i;
                         groupNumber++;
+                    }
+
+                    if (threadNum == 21 || 1 == 1) {
+                        printf("%i:mergeHeadThreadNum:%i\n", omp_get_thread_num(), mergeHeadThreadNum);
                     }
 
                     arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
 
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:newArraySizesIndex:%i\n", omp_get_thread_num(), arraySizesIndex);
                         printf("%i:newNumpermegethreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                     }
@@ -706,10 +718,10 @@ if (threadNum == 21 || 1 == 2) {
                     //printf("%i:EndNumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                     printf("\n");
                     #pragma omp barrier
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         printf("%i:ExitnumPerMergeThreads:%i\n", omp_get_thread_num(), numPerMergeThreads);
                     }
-                    if (threadNum == 21 || 1 == 2) {
+                    if (threadNum == 21 || 1 == 1) {
                         for (uint32_t i = 0; i < numberOfSubArrays; i++) {
                             printf("%i:ExitarraySizes[%i]:%i\n", omp_get_thread_num(), i, arraySizes[i]);
                         }

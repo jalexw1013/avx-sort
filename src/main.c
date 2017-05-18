@@ -94,7 +94,7 @@ int main(int argc, char** argv)
     hostParseArgs(argc, argv);
 
     omp_set_dynamic(0);
-    omp_set_num_threads(22);
+    omp_set_num_threads(5);
 
     uint32_t seed = time(0);
     srand(seed);
@@ -687,6 +687,12 @@ void MergePathSplitter(
       }
   }
 }
+
+for (uint32_t i = 0; i <= threads; i++) {
+    // printf("InMergePathASplitters[%i]:%i\n", i, ASplitters[i]);
+    // printf("InMergePathBSplitters[%i]:%i\n", i, BSplitters[i]);
+}
+
   // printf("%i:A:%i\n", threads, ASplitters[threads]);
   // printf("%i:B:%i\n", threads, ASplitters[threads]);
 }
