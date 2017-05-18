@@ -545,7 +545,7 @@ if (threadNum == 21 || 1 == 1) {
                     uint32_t B_end = BStartMergePath + BSplitters[threadNum + 1];
                     uint32_t B_length = B_end - B_start;
                     //printf("%i:Data: (%i mod %i) ? %i + %i + %i\n", omp_get_thread_num(),threadNum, numPerMergeThreads, ASplitters[threadNum], BSplitters[threadNum], A_start);
-                    uint32_t C_start = (threadNum % numPerMergeThreads) ?  ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath : AStartMergePath; //start C at offset of previous
+                    uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
                     uint32_t C_length = A_length + B_length;
 
 if (threadNum == 21 || 1 == 1) {
