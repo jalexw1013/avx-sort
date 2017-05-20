@@ -322,6 +322,7 @@ template <MergeTemplate Merge>
 void parallelIterativeMergeSort(
     vec_t** array, uint32_t array_length, const uint32_t splitNumber)
 {
+        printf("Starting Sort\n");
         vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
         int earlyEnd = 1; //Set to zero if small sub array or error
 
@@ -727,9 +728,9 @@ if (threadNum == 21 || 1 == 1) {
                         }
                     }
                 }
-                //free(ASplitters);
-                //free(BSplitters);
-                //free(arraySizes);
+                free(ASplitters);
+                free(BSplitters);
+                free(arraySizes);
             }
             // printf("\n\n%i:Ending:%i\n", omp_get_thread_num(), omp_get_thread_num());
             // printf("\n\n");
