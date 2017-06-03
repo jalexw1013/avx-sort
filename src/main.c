@@ -73,20 +73,20 @@ FILE *sortFile;
 FILE *parallelSortFile;
 #endif
 uint32_t  h_ui_A_length                = 50;
-uint32_t  h_ui_B_length                = 84;
-uint32_t  h_ui_C_length                = 134; //array to put values in
-uint32_t  h_ui_Ct_length               = 134; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_B_length                = 50;
+uint32_t  h_ui_C_length                = 100; //array to put values in
+uint32_t  h_ui_Ct_length               = 100; //for unsorted and sorted
+uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
-const uint32_t testingEntropies[] = {1, 2, 4, 6, 10, 15, 18, 22, 25, 28, 32};
-const uint32_t testingEntropiesLength = 11;
-const uint32_t testingSizes[] = {100, 101, 102, 103, 104, 105, 106, 107};
-const uint32_t testingSizesLength = 8;
-const uint32_t testingThreads[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
-const uint32_t testingThreadsLength = 100;
+const uint32_t testingEntropies[] = {28, 32};
+const uint32_t testingEntropiesLength = 2;
+const uint32_t testingSizes[] = {100, 1000, 10000};
+const uint32_t testingSizesLength = 3;
+const uint32_t testingThreads[] = {5,6,7,8,11,22,32,36,72};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
+const uint32_t testingThreadsLength = 9;
 
 // Host Functions
 ////////////////////////////
@@ -418,7 +418,7 @@ void tester(
         printf("A Size: %" PRIu32 "\n", A_length);
         printf("B Size: %" PRIu32 "\n", B_length);
         #endif
-        #ifdef SORT || PARALLELSORT
+        #if defined(SORT) || defined(PARALLELSORT)
         printf("Array Size: %" PRIu32 "\n", C_length);
         #endif
         printf("\n");
@@ -497,8 +497,9 @@ void tester(
         printf("AVX512 Merge           :     ");printfcomma((int)((float)Ct_length/avx512MergeTime));printf("\n");
         #endif
         printf("\n\n");
-        #endif
     }
+
+    #endif
 
     #ifdef SORT
 
@@ -584,8 +585,9 @@ void tester(
         printf("Merge Sort using AVX512 Merge           :     ");printfcomma((int)((float)Ct_length/avx512MergeSortTime));printf("\n");
         #endif
         printf("\n\n");
-        #endif
     }
+
+    #endif
 
     #ifdef PARALLELSORT
 

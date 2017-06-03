@@ -1,0 +1,163 @@
+Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time
+Parallel Merge Sort using Serial Merge, 28, 100, 5, 292286, 0.00034213066101074219
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 5, 371835, 0.00026893615722656250
+Parallel Merge Sort using Bitonic Merge, 28, 100, 5, 340170, 0.00029397010803222656
+Parallel Merge Sort using Serial Merge, 32, 100, 5, 383041, 0.00026106834411621094
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 5, 387643, 0.00025796890258789062
+Parallel Merge Sort using Bitonic Merge, 32, 100, 5, 56595, 0.00176692008972167969
+Parallel Merge Sort using Serial Merge, 28, 100, 6, 348364, 0.00028705596923828125
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 6, 391991, 0.00025510787963867188
+Parallel Merge Sort using Bitonic Merge, 28, 100, 6, 189359, 0.00052809715270996094
+Parallel Merge Sort using Serial Merge, 32, 100, 6, 442437, 0.00022602081298828125
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 6, 502311, 0.00019907951354980469
+Parallel Merge Sort using Bitonic Merge, 32, 100, 6, 458895, 0.00021791458129882812
+Parallel Merge Sort using Serial Merge, 28, 100, 7, 295998, 0.00033783912658691406
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 7, 317509, 0.00031495094299316406
+Parallel Merge Sort using Bitonic Merge, 28, 100, 7, 322638, 0.00030994415283203125
+Parallel Merge Sort using Serial Merge, 32, 100, 7, 312541, 0.00031995773315429688
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 7, 316551, 0.00031590461730957031
+Parallel Merge Sort using Bitonic Merge, 32, 100, 7, 43914, 0.00227713584899902344
+Parallel Merge Sort using Serial Merge, 28, 100, 8, 295790, 0.00033807754516601562
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 8, 284166, 0.00035190582275390625
+Parallel Merge Sort using Bitonic Merge, 28, 100, 8, 50655, 0.00197410583496093750
+Parallel Merge Sort using Serial Merge, 32, 100, 8, 203705, 0.00049090385437011719
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 8, 320420, 0.00031208992004394531
+Parallel Merge Sort using Bitonic Merge, 32, 100, 8, 357266, 0.00027990341186523438
+Parallel Merge Sort using Serial Merge, 28, 100, 11, 162067, 0.00061702728271484375
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 11, 182758, 0.00054717063903808594
+Parallel Merge Sort using Bitonic Merge, 28, 100, 11, 182202, 0.00054883956909179688
+Parallel Merge Sort using Serial Merge, 32, 100, 11, 179550, 0.00055694580078125000
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 11, 170917, 0.00058507919311523438
+Parallel Merge Sort using Bitonic Merge, 32, 100, 11, 218795, 0.00045704841613769531
+Parallel Merge Sort using Serial Merge, 28, 100, 22, 79558, 0.00125694274902343750
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 22, 90413, 0.00110602378845214844
+Parallel Merge Sort using Bitonic Merge, 28, 100, 22, 91319, 0.00109505653381347656
+Parallel Merge Sort using Serial Merge, 32, 100, 22, 80768, 0.00123810768127441406
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 22, 92855, 0.00107693672180175781
+Parallel Merge Sort using Bitonic Merge, 32, 100, 22, 97090, 0.00102996826171875000
+Parallel Merge Sort using Serial Merge, 28, 100, 32, 64025, 0.00156188011169433594
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 32, 70232, 0.00142383575439453125
+Parallel Merge Sort using Bitonic Merge, 28, 100, 32, 67660, 0.00147795677185058594
+Parallel Merge Sort using Serial Merge, 32, 100, 32, 72678, 0.00137591361999511719
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 32, 67119, 0.00148987770080566406
+Parallel Merge Sort using Bitonic Merge, 32, 100, 32, 74012, 0.00135111808776855469
+Parallel Merge Sort using Serial Merge, 28, 100, 36, 46299, 0.00215983390808105469
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 36, 47989, 0.00208377838134765625
+Parallel Merge Sort using Bitonic Merge, 28, 100, 36, 52441, 0.00190687179565429688
+Parallel Merge Sort using Serial Merge, 32, 100, 36, 53247, 0.00187802314758300781
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 36, 56595, 0.00176692008972167969
+Parallel Merge Sort using Bitonic Merge, 32, 100, 36, 54849, 0.00182318687438964844
+Parallel Merge Sort using Serial Merge, 28, 100, 72, 20743, 0.00482082366943359375
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 72, 22405, 0.00446319580078125000
+Parallel Merge Sort using Bitonic Merge, 28, 100, 72, 20060, 0.00498485565185546875
+Parallel Merge Sort using Serial Merge, 32, 100, 72, 23255, 0.00430011749267578125
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 72, 25000, 0.00399994850158691406
+Parallel Merge Sort using Bitonic Merge, 32, 100, 72, 25898, 0.00386118888854980469
+Parallel Merge Sort using Serial Merge, 28, 1000, 5, 1883387, 0.00053095817565917969
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 5, 2857155, 0.00034999847412109375
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 5, 4032984, 0.00024795532226562500
+Parallel Merge Sort using Serial Merge, 32, 1000, 5, 6364649, 0.00015711784362792969
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 5, 6452775, 0.00015497207641601562
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 5, 6452775, 0.00015497207641601562
+Parallel Merge Sort using Serial Merge, 28, 1000, 6, 5555369, 0.00018000602722167969
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 6, 5817342, 0.00017189979553222656
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 6, 5127511, 0.00019502639770507812
+Parallel Merge Sort using Serial Merge, 32, 1000, 6, 5096359, 0.00019621849060058594
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 6, 5777278, 0.00017309188842773438
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 6, 5645093, 0.00017714500427246094
+Parallel Merge Sort using Serial Merge, 28, 1000, 7, 5377313, 0.00018596649169921875
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 7, 5289160, 0.00018906593322753906
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 7, 5377313, 0.00018596649169921875
+Parallel Merge Sort using Serial Merge, 32, 1000, 7, 5178153, 0.00019311904907226562
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 7, 5315974, 0.00018811225891113281
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 7, 5433036, 0.00018405914306640625
+Parallel Merge Sort using Serial Merge, 28, 1000, 8, 4387347, 0.00022792816162109375
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 8, 4424371, 0.00022602081298828125
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 8, 4629474, 0.00021600723266601562
+Parallel Merge Sort using Serial Merge, 32, 1000, 8, 4670717, 0.00021409988403320312
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 8, 707183, 0.00141406059265136719
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 8, 4382763, 0.00022816658020019531
+Parallel Merge Sort using Serial Merge, 28, 1000, 11, 551591, 0.00181293487548828125
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 11, 1481562, 0.00067496299743652344
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 11, 2816859, 0.00035500526428222656
+Parallel Merge Sort using Serial Merge, 32, 1000, 11, 2785062, 0.00035905838012695312
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 11, 2445658, 0.00040888786315917969
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 11, 2631307, 0.00038003921508789062
+Parallel Merge Sort using Serial Merge, 28, 1000, 22, 1106092, 0.00090408325195312500
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 22, 1149439, 0.00086998939514160156
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 22, 1088298, 0.00091886520385742188
+Parallel Merge Sort using Serial Merge, 32, 1000, 22, 1131150, 0.00088405609130859375
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 22, 1127501, 0.00088691711425781250
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 22, 1126290, 0.00088787078857421875
+Parallel Merge Sort using Serial Merge, 28, 1000, 32, 756411, 0.00132203102111816406
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 32, 810963, 0.00123310089111328125
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 32, 818241, 0.00122213363647460938
+Parallel Merge Sort using Serial Merge, 32, 1000, 32, 363394, 0.00275182723999023438
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 32, 773428, 0.00129294395446777344
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 32, 761078, 0.00131392478942871094
+Parallel Merge Sort using Serial Merge, 28, 1000, 36, 399191, 0.00250506401062011719
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 36, 550939, 0.00181508064270019531
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 36, 555831, 0.00179910659790039062
+Parallel Merge Sort using Serial Merge, 32, 1000, 36, 563977, 0.00177311897277832031
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 36, 562088, 0.00177907943725585938
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 36, 567181, 0.00176310539245605469
+Parallel Merge Sort using Serial Merge, 28, 1000, 72, 235238, 0.00425100326538085938
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 72, 248816, 0.00401902198791503906
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 72, 252592, 0.00395894050598144531
+Parallel Merge Sort using Serial Merge, 32, 1000, 72, 234410, 0.00426602363586425781
+Parallel Merge Sort using Serial Merge Branchless, 32, 1000, 72, 244025, 0.00409793853759765625
+Parallel Merge Sort using Bitonic Merge, 32, 1000, 72, 247334, 0.00404310226440429688
+Parallel Merge Sort using Serial Merge, 28, 100000, 5, 16049223, 0.00623083114624023438
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 5, 16686442, 0.00599288940429687500
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 5, 17711684, 0.00564599037170410156
+Parallel Merge Sort using Serial Merge, 32, 100000, 5, 15873085, 0.00629997253417968750
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 5, 16719700, 0.00598096847534179688
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 5, 17803404, 0.00561690330505371094
+Parallel Merge Sort using Serial Merge, 28, 100000, 6, 9035164, 0.01106786727905273438
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 6, 10398413, 0.00961685180664062500
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 6, 10112361, 0.00988888740539550781
+Parallel Merge Sort using Serial Merge, 32, 100000, 6, 13985675, 0.00715017318725585938
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 6, 16900250, 0.00591707229614257812
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 6, 20716704, 0.00482702255249023438
+Parallel Merge Sort using Serial Merge, 28, 100000, 7, 16074441, 0.00622105598449707031
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 7, 14480094, 0.00690603256225585938
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 7, 16439226, 0.00608301162719726562
+Parallel Merge Sort using Serial Merge, 32, 100000, 7, 19915974, 0.00502109527587890625
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 7, 20716704, 0.00482702255249023438
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 7, 17806428, 0.00561594963073730469
+Parallel Merge Sort using Serial Merge, 28, 100000, 8, 22026594, 0.00453996658325195312
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 8, 14357171, 0.00696516036987304688
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 8, 16297420, 0.00613594055175781250
+Parallel Merge Sort using Serial Merge, 32, 100000, 8, 18338962, 0.00545287132263183594
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 8, 17965836, 0.00556612014770507812
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 8, 18885604, 0.00529503822326660156
+Parallel Merge Sort using Serial Merge, 28, 100000, 11, 14760360, 0.00677490234375000000
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 11, 6250825, 0.01599788665771484375
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 11, 9783774, 0.01022100448608398438
+Parallel Merge Sort using Serial Merge, 32, 100000, 11, 19164324, 0.00521802902221679688
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 11, 14819291, 0.00674796104431152344
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 11, 21801050, 0.00458693504333496094
+Parallel Merge Sort using Serial Merge, 28, 100000, 22, 12906345, 0.00774812698364257812
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 22, 15494289, 0.00645399093627929688
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 22, 18681204, 0.00535297393798828125
+Parallel Merge Sort using Serial Merge, 32, 100000, 22, 15349133, 0.00651502609252929688
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 22, 17176396, 0.00582194328308105469
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 22, 20687072, 0.00483393669128417969
+Parallel Merge Sort using Serial Merge, 28, 100000, 32, 15718423, 0.00636196136474609375
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 32, 18109338, 0.00552201271057128906
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 32, 20263318, 0.00493502616882324219
+Parallel Merge Sort using Serial Merge, 32, 100000, 32, 16469565, 0.00607180595397949219
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 32, 19091052, 0.00523805618286132812
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 32, 18385588, 0.00543904304504394531
+Parallel Merge Sort using Serial Merge, 28, 100000, 36, 14298439, 0.00699377059936523438
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 36, 13941049, 0.00717306137084960938
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 36, 17056256, 0.00586295127868652344
+Parallel Merge Sort using Serial Merge, 32, 100000, 36, 14353241, 0.00696706771850585938
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 36, 15033348, 0.00665187835693359375
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 36, 17100066, 0.00584793090820312500
+Parallel Merge Sort using Serial Merge, 28, 100000, 72, 10625754, 0.00941109657287597656
+Parallel Merge Sort using Serial Merge Branchless, 28, 100000, 72, 11331363, 0.00882506370544433594
+Parallel Merge Sort using Bitonic Merge, 28, 100000, 72, 10890902, 0.00918197631835937500
+Parallel Merge Sort using Serial Merge, 32, 100000, 72, 11116039, 0.00899600982666015625
+Parallel Merge Sort using Serial Merge Branchless, 32, 100000, 72, 11319742, 0.00883412361145019531
+Parallel Merge Sort using Bitonic Merge, 32, 100000, 72, 4461693, 0.02241301536560058594

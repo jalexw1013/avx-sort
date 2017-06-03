@@ -10,14 +10,11 @@ xmalloc (size_t sz)
 {
     void * out;
     // out = memalign (16, sz);
-    printf("5:%i\n", sz);
     out = malloc (sz);
-    printf("6\n");
     if (!out) {
 	perror ("Failed xmalloc: ");
 	abort ();
     }
-    printf("7\n");
     return out;
 }
 void *
