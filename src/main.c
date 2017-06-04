@@ -406,7 +406,7 @@ float testParallelSort(
     tic_reset();
 
     //perform actual sort
-    ParallelSort(CUnsorted, C_length, splitNumber);
+    ParallelSort((*CUnsorted), C_length, splitNumber);
 
     //get timing
     time += tic_sincelast();

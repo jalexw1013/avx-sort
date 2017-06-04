@@ -42,10 +42,10 @@ template <MergeTemplate Merge>
 void iterativeMergeSort(
     vec_t* array, uint32_t array_length, const uint32_t splitNumber);
 
-typedef void (*ParallelSortTemplate)(vec_t**, uint32_t, const uint32_t);
+typedef void (*ParallelSortTemplate)(vec_t*, uint32_t, const uint32_t);
 
 template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+    vec_t* array, uint32_t array_length, const uint32_t splitNumber);
 
 #endif
