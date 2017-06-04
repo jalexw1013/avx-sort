@@ -366,9 +366,7 @@ void parallelIterativeMergeSort(
                 //in core sort
                 qsort((*array) + threadStartIndex, currentSubArraySize, sizeof(vec_t), hostBasicCompare);
 
-                //variables for defered sub array, this occurs when the number of threads is not 2
-                uint32_t deferedSubArray = 0; //acts like a boolean
-                uint32_t deferedSize = 0;
+                uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, assignmentNumPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
 
                 if (numberOfSubArrays % 2 == 1) {
                     deferedSubArray = 1; //acts like a boolean
@@ -376,48 +374,49 @@ void parallelIterativeMergeSort(
                     numberOfSubArrays--;
                 }
 
-                //calulate a couple more variables
-                uint32_t numPerMergeThreads = 0;
-                uint32_t assignmentNumPerMergeThreads = 0;
-                uint32_t leftOverThreads = 0;
-                if (numberOfSubArrays/2  > 0) {
-                    numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                    assignmentNumPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                    leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);//calulate how many left over threads there are
-                } else {
-                    numPerMergeThreads = omp_get_num_threads();
-                    assignmentNumPerMergeThreads = omp_get_num_threads();
-                    leftOverThreads = 0;
-                }
-                //now asign left over threads starting at the front
-                for (uint32_t i = 0; i < leftOverThreads; i++) {
-                    if (threadNum >= (numPerMergeThreads+1)*i && threadNum < (numPerMergeThreads+1)*(i+1)) {
-                        numPerMergeThreads++;
-                    }
-                }
-
-                uint32_t leftOverThreadsCounter = leftOverThreads;
-                uint32_t groupNumber = 0;
-                uint32_t mergeHeadThreadNum = 0;
-                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
-                    if (leftOverThreadsCounter) {
-                        leftOverThreadsCounter--;
-                        i += (assignmentNumPerMergeThreads + 1);
-                    } else {
-                        i += assignmentNumPerMergeThreads;
-                    }
-                    if (threadNum < i) {
-                        break;
-                    }
-                    mergeHeadThreadNum = i;
-                    groupNumber++;
-                }
-
-                uint32_t arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
-
                 //begin merging
                 #pragma omp barrier
-                while (currentSubArraySize < array_length && numberOfSubArrays > 1) {
+                while (currentSubArraySize < array_length && (numberOfSubArrays > 1 || deferedSubArray)) {
+
+                    currentSubArraySize = arraySizes[0];
+
+                    if (numberOfSubArrays/2 > 0) {
+                        numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
+                        assignmentNumPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
+                        leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);//calulate how many left over threads there are
+                    } else {
+                        numPerMergeThreads = omp_get_num_threads();
+                        assignmentNumPerMergeThreads = omp_get_num_threads();
+                        leftOverThreads = 0;
+                    }
+
+                    //now asign left over threads starting at the front
+                    for (uint32_t i = 0; i < leftOverThreads; i++) {
+                        if (threadNum >= (numPerMergeThreads+1)*i && threadNum < (numPerMergeThreads+1)*(i+1)) {
+                            numPerMergeThreads++;
+                        }
+                    }
+
+                    leftOverThreadsCounter = leftOverThreads;
+                    groupNumber = 0;
+                    mergeHeadThreadNum = 0;
+                    for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
+                        if (leftOverThreadsCounter) {
+                            leftOverThreadsCounter--;
+                            i += (assignmentNumPerMergeThreads + 1);
+                        } else {
+                            i += assignmentNumPerMergeThreads;
+                        }
+                        if (threadNum < i) {
+                            break;
+                        }
+                        mergeHeadThreadNum = i;
+                        groupNumber++;
+                    }
+
+                    arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
+
+
                         //Start Point for Sub Arrays
                         uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
                         uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
@@ -438,8 +437,6 @@ void parallelIterativeMergeSort(
                         uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
                         uint32_t C_length = A_length + B_length;
 
-                        //#pragma omp barrier
-                        //printf("Here:%i\n", threadNum);
                         Merge((*array) + A_start, A_length, (*array) + B_start, B_length, C + C_start, C_length);
 
                         numberOfSubArrays = numberOfSubArrays/2;
@@ -461,7 +458,6 @@ void parallelIterativeMergeSort(
                         } else if (numberOfSubArrays % 2 == 1 && numberOfSubArrays != 1) {
                             deferedSubArray = 1; //acts like a boolean
                             deferedSize = arraySizes[numberOfSubArrays - 1];
-
                             numberOfSubArrays--;
                         } else if (deferedSubArray) {
                             //Copy sub array to C so it doesn't get lost
@@ -471,43 +467,6 @@ void parallelIterativeMergeSort(
                             }
                         }
 
-                        currentSubArraySize = arraySizes[0];
-
-                        if (numberOfSubArrays/2 > 0) {
-                            numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                            assignmentNumPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                            leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);//calulate how many left over threads there are
-                        } else {
-                            numPerMergeThreads = omp_get_num_threads();
-                            assignmentNumPerMergeThreads = omp_get_num_threads();
-                            leftOverThreads = 0;
-                        }
-
-                        //now asign left over threads starting at the front
-                        for (uint32_t i = 0; i < leftOverThreads; i++) {
-                            if (threadNum >= (numPerMergeThreads+1)*i && threadNum < (numPerMergeThreads+1)*(i+1)) {
-                                numPerMergeThreads++;
-                            }
-                        }
-
-                        leftOverThreadsCounter = leftOverThreads;
-                        groupNumber = 0;
-                        mergeHeadThreadNum = 0;
-                        for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
-                            if (leftOverThreadsCounter) {
-                                leftOverThreadsCounter--;
-                                i += (assignmentNumPerMergeThreads + 1);
-                            } else {
-                                i += assignmentNumPerMergeThreads;
-                            }
-                            if (threadNum < i) {
-                                break;
-                            }
-                            mergeHeadThreadNum = i;
-                            groupNumber++;
-                        }
-
-                        arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
 
                         #pragma omp barrier
                         #pragma omp single
