@@ -264,16 +264,21 @@ inline void avx512Merge(
 ////////////////////////////////////////////////////////////////////////////////
 
 void quickSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber)
+    vec_t* array, uint32_t array_length, const uint32_t splitNumber)
 {
-    qsort((void*)(*array), array_length, sizeof(vec_t), hostBasicCompare);
+    qsort((void*)array, array_length, sizeof(vec_t), hostBasicCompare);
 }
 
 template <MergeTemplate Merge>
 void iterativeMergeSort(
-    vec_t** array, uint32_t array_length, const uint32_t splitNumber)
+    vec_t* array, uint32_t array_length, const uint32_t splitNumber)
 {
     vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
+
+    // We can't return a C that we alloced because this
+    // will cause memory issues.
+    // Therefore we might need to copy in the last step
+    int numberOfSwaps = 0;
 
     uint32_t start = splitNumber; //Just in case splitNumber is invalid
 
@@ -282,7 +287,7 @@ void iterativeMergeSort(
         for (uint32_t i = 0; i < array_length; i += splitNumber) {
             //adjust when array_length is not divisible by splitNumber
             uint32_t actualSubArraySize = min(splitNumber, array_length - i);
-            qsort((void*)((*array) + i), actualSubArraySize, sizeof(vec_t), hostBasicCompare);
+            qsort((void*)(array + i), actualSubArraySize, sizeof(vec_t), hostBasicCompare);
         }
     } else {
         start = 1;
@@ -297,11 +302,18 @@ void iterativeMergeSort(
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize - 1, array_length - 1);
             uint32_t A_length = B_start - A_start + 1;
             uint32_t B_length = B_end - B_start;
-            Merge((*array) + A_start, A_length, (*array) + B_start + 1, B_length, C + A_start, A_length + B_length);
+            Merge(array + A_start, A_length, array + B_start + 1, B_length, C + A_start, A_length + B_length);
     	}
         //pointer swap for C
-        vec_t* tmp = *array;
-        *array = C;
+        vec_t* tmp = array;
+        array = C;
+        C = tmp;
+        numberOfSwaps++;
+    }
+    if (numberOfSwaps%2 == 1) {
+        memcpy((void*)C,(void*)array, array_length*sizeof(vec_t));
+        vec_t* tmp = array;
+        array = C;
         C = tmp;
     }
     free(C);
@@ -318,227 +330,162 @@ inline uint32_t arraySum(uint32_t* array, uint32_t sumToIndex) {
     return sum;
 }
 
-template <MergeTemplate Merge>
+template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSort(
     vec_t** array, uint32_t array_length, const uint32_t splitNumber)
 {
-        vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
-        int earlyEnd = 1; //Set to zero if small sub array or error
+    vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
+    int earlyEnd = 1; //Set to zero if small sub array or error
 
-        #pragma omp parallel
+    #pragma omp parallel
+    {
+        //algorithm does not support array_length < num threads
+        //for that case, just quick sort
+        #pragma omp single
         {
-            //just quick sort for small array sizes
-            #pragma omp single
-            {
-                if (array_length < (uint32_t)omp_get_num_threads()) {
-                    quickSort(array, array_length, splitNumber);
-                    earlyEnd = 0;
-                }
-            }
-
-            //end if already sorted above
-            if (earlyEnd) {
-
-                //allocate splitters
-                uint32_t* ASplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
-                uint32_t* BSplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
-
-                //Calculate indicies
-                uint32_t threadNum = omp_get_thread_num();
-                uint32_t numberOfSubArrays = omp_get_num_threads();
-                uint32_t initialSubArraySize = array_length / omp_get_num_threads();
-
-                //allocate and initilize size vectors (tracks array size)
-                uint32_t* arraySizes = (uint32_t*)xcalloc(omp_get_num_threads(), sizeof(uint32_t));
-
-                for (uint32_t thread = 0; thread < (uint32_t)omp_get_num_threads(); thread++) {
-                    arraySizes[thread] = initialSubArraySize;
-                    if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)omp_get_num_threads())) {
-                        arraySizes[thread]++;
-                    } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
-                        arraySizes[thread]++;
-                    }
-                }
-
-                uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
-                uint32_t currentSubArraySize = arraySizes[threadNum];
-
-                //in core sort
-                qsort((*array) + threadStartIndex, currentSubArraySize, sizeof(vec_t), hostBasicCompare);
-
-                uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, assignmentNumPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
-
-                if (numberOfSubArrays % 2 == 1) {
-                    deferedSubArray = 1; //acts like a boolean
-                    deferedSize = arraySizes[numberOfSubArrays - 1];
-                    numberOfSubArrays--;
-                }
-
-                //begin merging
-                #pragma omp barrier
-                while (currentSubArraySize < array_length && (numberOfSubArrays > 1 || deferedSubArray)) {
-
-                    currentSubArraySize = arraySizes[0];
-
-                    if (numberOfSubArrays/2 > 0) {
-                        numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                        assignmentNumPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                        leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);//calulate how many left over threads there are
-                    } else {
-                        numPerMergeThreads = omp_get_num_threads();
-                        assignmentNumPerMergeThreads = omp_get_num_threads();
-                        leftOverThreads = 0;
-                    }
-
-                    //now asign left over threads starting at the front
-                    for (uint32_t i = 0; i < leftOverThreads; i++) {
-                        if (threadNum >= (numPerMergeThreads+1)*i && threadNum < (numPerMergeThreads+1)*(i+1)) {
-                            numPerMergeThreads++;
-                        }
-                    }
-
-                    leftOverThreadsCounter = leftOverThreads;
-                    groupNumber = 0;
-                    mergeHeadThreadNum = 0;
-                    for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && assignmentNumPerMergeThreads != 0; ) {
-                        if (leftOverThreadsCounter) {
-                            leftOverThreadsCounter--;
-                            i += (assignmentNumPerMergeThreads + 1);
-                        } else {
-                            i += assignmentNumPerMergeThreads;
-                        }
-                        if (threadNum < i) {
-                            break;
-                        }
-                        mergeHeadThreadNum = i;
-                        groupNumber++;
-                    }
-
-                    arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
-
-
-                        //Start Point for Sub Arrays
-                        uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
-                        uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
-
-                        MergePathSplitter(
-                            (*array) + AStartMergePath, arraySizes[arraySizesIndex],
-                            (*array) + BStartMergePath, arraySizes[arraySizesIndex + 1],
-                            C + AStartMergePath, arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1],
-                            numPerMergeThreads,
-                            ASplitters + mergeHeadThreadNum, BSplitters + mergeHeadThreadNum); //Splitters[subArrayStart thread num] should be index zero
-
-                        uint32_t A_start = AStartMergePath + ASplitters[threadNum];
-                        uint32_t A_end = AStartMergePath + ASplitters[threadNum + 1];
-                        uint32_t A_length = A_end - A_start;
-                        uint32_t B_start = BStartMergePath + BSplitters[threadNum];
-                        uint32_t B_end = BStartMergePath + BSplitters[threadNum + 1];
-                        uint32_t B_length = B_end - B_start;
-                        uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
-                        uint32_t C_length = A_length + B_length;
-
-                        Merge((*array) + A_start, A_length, (*array) + B_start, B_length, C + C_start, C_length);
-
-                        numberOfSubArrays = numberOfSubArrays/2;
-
-                        int index = 0;
-                        for (uint32_t i = 0; i < numberOfSubArrays; i++) {
-                            arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
-                            index += 2;
-                        }
-
-                        if (numberOfSubArrays % 2 == 1 && deferedSubArray) {
-                            #pragma omp single
-                            {
-                                memcpy((void*)(C+array_length-deferedSize), (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
-                            }
-                            deferedSubArray = 0;
-                            arraySizes[numberOfSubArrays] = deferedSize;
-                            numberOfSubArrays++;
-                        } else if (numberOfSubArrays % 2 == 1 && numberOfSubArrays != 1) {
-                            deferedSubArray = 1; //acts like a boolean
-                            deferedSize = arraySizes[numberOfSubArrays - 1];
-                            numberOfSubArrays--;
-                        } else if (deferedSubArray) {
-                            //Copy sub array to C so it doesn't get lost
-                            #pragma omp single
-                            {
-                                memcpy((void*)(C+array_length-deferedSize), (void*)((*array)+array_length-deferedSize), deferedSize*sizeof(vec_t));
-                            }
-                        }
-
-
-                        #pragma omp barrier
-                        #pragma omp single
-                        {
-                            //pointer swap for C
-                            vec_t* tmp = *array;
-                            *array = C;
-                            C = tmp;
-                        }
-                    }
-                free(ASplitters);
-                free(BSplitters);
-                free(arraySizes);
+            if (array_length < (uint32_t)omp_get_num_threads()) {
+                quickSort((*array), array_length, splitNumber);
+                earlyEnd = 0;
             }
         }
-        free(C);
-}
 
-template <MergeTemplate Merge>
-int recursiveMergeSortHelper(vec_t* array, uint32_t array_length, vec_t* C, const uint32_t splitNumber)
-{
-    if(array_length < splitNumber)
-    {
-        quickSort(&array,(uint32_t)array_length,0);
-        return 0;
+        if (earlyEnd) {
+            uint32_t* ASplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
+            uint32_t* BSplitters = (uint32_t*)xcalloc(omp_get_num_threads() + 1, sizeof(uint32_t));
+            uint32_t* arraySizes = (uint32_t*)xcalloc(omp_get_num_threads(), sizeof(uint32_t));
+
+            uint32_t threadNum = omp_get_thread_num();
+            uint32_t numberOfSubArrays = omp_get_num_threads();
+            uint32_t initialSubArraySize = array_length / omp_get_num_threads();
+
+            //Calculate the size of each subarray
+            for (uint32_t thread = 0; thread < (uint32_t)omp_get_num_threads(); thread++) {
+                arraySizes[thread] = initialSubArraySize;
+                if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)omp_get_num_threads())) {
+                    arraySizes[thread]++;
+                } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
+                    arraySizes[thread]++;
+                }
+            }
+
+            uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
+            uint32_t currentSubArraySize = arraySizes[threadNum];
+
+            Sort((*array) + threadStartIndex, currentSubArraySize, splitNumber);
+
+            uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
+
+            //check if odd number of subarrays
+            if (numberOfSubArrays % 2 == 1) {
+                deferedSubArray = 1; //acts like a boolean
+                deferedSize = arraySizes[numberOfSubArrays - 1];
+                numberOfSubArrays--;
+            }
+
+            //begin merging
+            #pragma omp barrier
+            while (currentSubArraySize < array_length && (numberOfSubArrays > 1 || deferedSubArray)) {
+
+                currentSubArraySize = arraySizes[0];
+                numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
+                leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);
+
+                leftOverThreadsCounter = leftOverThreads;
+                groupNumber = 0;
+                mergeHeadThreadNum = 0;
+                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && numPerMergeThreads != 0; ) {
+                    if (leftOverThreadsCounter) {
+                        leftOverThreadsCounter--;
+                        i += (numPerMergeThreads + 1);
+                    } else {
+                        i += numPerMergeThreads;
+                    }
+                    if (threadNum < i) {
+                        break;
+                    }
+                    mergeHeadThreadNum = i;
+                    groupNumber++;
+                }
+
+                arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
+
+                //now asign left over threads starting at the front
+                for (uint32_t i = 0; i < leftOverThreads; i++) {
+                    if (threadNum >= (numPerMergeThreads+1)*i && threadNum < (numPerMergeThreads+1)*(i+1)) {
+                        numPerMergeThreads++;
+                    }
+                }
+
+                uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
+                uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
+
+                MergePathSplitter(
+                    (*array) + AStartMergePath, arraySizes[arraySizesIndex],
+                    (*array) + BStartMergePath, arraySizes[arraySizesIndex + 1],
+                    C + AStartMergePath, arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1],
+                    numPerMergeThreads,
+                    ASplitters + mergeHeadThreadNum, BSplitters + mergeHeadThreadNum); //Splitters[subArrayStart thread num] should be index zero
+
+                uint32_t A_start = AStartMergePath + ASplitters[threadNum];
+                uint32_t A_end = AStartMergePath + ASplitters[threadNum + 1];
+                uint32_t A_length = A_end - A_start;
+                uint32_t B_start = BStartMergePath + BSplitters[threadNum];
+                uint32_t B_end = BStartMergePath + BSplitters[threadNum + 1];
+                uint32_t B_length = B_end - B_start;
+                uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
+                uint32_t C_length = A_length + B_length;
+
+                Merge((*array) + A_start, A_length, (*array) + B_start, B_length, C + C_start, C_length);
+
+                //number of sub arrays is now cut in half
+                numberOfSubArrays = numberOfSubArrays/2;
+
+                //Add up array sizes
+                for (uint32_t i = 0, index = 0; i < numberOfSubArrays; i++) {
+                    arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
+                    index += 2;
+                }
+
+                //Take care of odd sized number of sub arrays
+                //If there is a defered sub array, we need to
+                //Manually copy it here
+                if (numberOfSubArrays % 2 == 1 && deferedSubArray) {
+                    #pragma omp single
+                    {
+                        memcpy((void*)(C+array_length-deferedSize),
+                            (void*)((*array)+array_length-deferedSize),
+                            deferedSize*sizeof(vec_t));
+                    }
+                    deferedSubArray = 0;
+                    arraySizes[numberOfSubArrays] = deferedSize;
+                    numberOfSubArrays++;
+                } else if (numberOfSubArrays % 2 == 1 && numberOfSubArrays != 1) {
+                    deferedSubArray = 1;
+                    deferedSize = arraySizes[numberOfSubArrays - 1];
+                    numberOfSubArrays--;
+                } else if (deferedSubArray) {
+                    #pragma omp single
+                    {
+                        memcpy((void*)(C+array_length-deferedSize),
+                            (void*)((*array)+array_length-deferedSize),
+                            deferedSize*sizeof(vec_t));
+                    }
+                }
+
+                #pragma omp barrier
+                #pragma omp single
+                {
+                    //pointer swap for C
+                    vec_t* tmp = *array;
+                    *array = C;
+                    C = tmp;
+                }
+            }
+            free(ASplitters);
+            free(BSplitters);
+            free(arraySizes);
+        }
     }
-
-    uint32_t subSize = array_length >> 1 ;
-
-    // Recursively sort them
-    int first_ret, last_ret;
-    first_ret = recursiveMergeSortHelper<Merge>(array, subSize, C, splitNumber);
-    last_ret = recursiveMergeSortHelper<Merge>(array + subSize, array_length - subSize, C + subSize, splitNumber);
-
-    vec_t *ip1,*ip2;
-
-    ip1 = (first_ret == 0)? array : C;
-    ip2 = (last_ret == 0)? array : C;
-
-    //uint32_t i,i1,i2;
-    //i = 0;
-    //i1 = 0;
-    //i2 = subSize;
-
-    vec_t* op;
-    op = (first_ret == 0)? C : array;
-
-    Merge(ip1, (uint32_t)subSize, ip2 + subSize, (uint32_t)(array_length - subSize), op, (uint32_t)array_length);
-
-    return (first_ret + 1)%2;
-}
-
-template <MergeTemplate Merge>
-void recursiveMergeSort(vec_t** array, uint32_t array_length, const uint32_t splitNumber)
-{
-    if (splitNumber < 2) {
-        printf("Invalid Split Number Given\n");
-        exit(1);
-    }
-    int swap;
-
-    vec_t* C = (vec_t*) malloc(sizeof(vec_t)*array_length);
-
-    swap = recursiveMergeSortHelper<Merge>((*array),array_length,C,splitNumber);
-
-    if(swap == 1)
-    {
-        vec_t* tmp = *array;
-        *array = C;
-        C = tmp;
-    }
-
     free(C);
 }
 
@@ -546,21 +493,16 @@ void recursiveMergeSort(vec_t** array, uint32_t array_length, const uint32_t spl
  * Template Instantiations
  */
 
-template void iterativeMergeSort<serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void iterativeMergeSort<serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void iterativeMergeSort<bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSort<serialMerge>(vec_t* array, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSort<serialMergeNoBranch>(vec_t* array, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSort<bitonicMergeReal>(vec_t* array, uint32_t array_length, const uint32_t splitNumber);
 #ifdef AVX512
-template void iterativeMergeSort<avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSort<avx512Merge>(vec_t* array, uint32_t array_length, const uint32_t splitNumber);
 #endif
-template void recursiveMergeSort<serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void recursiveMergeSort<serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void recursiveMergeSort<bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+
+template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+template void parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 #ifdef AVX512
-template void recursiveMergeSort<avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-#endif
-template void parallelIterativeMergeSort<serialMerge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void parallelIterativeMergeSort<serialMergeNoBranch>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-template void parallelIterativeMergeSort<bitonicMergeReal>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
-#ifdef AVX512
-template void parallelIterativeMergeSort<avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
+template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t** array, uint32_t array_length, const uint32_t splitNumber);
 #endif

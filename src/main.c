@@ -366,7 +366,7 @@ float testSort(
     tic_reset();
 
     //perform actual sort
-    Sort(CUnsorted, C_length, splitNumber);
+    Sort((*CUnsorted), C_length, splitNumber);
 
     // for (uint32_t i = 0; i < Ct_length; i++) {
     //     printf("CSorted[%i]:%i\n", i,(*CSorted)[i]);
@@ -387,6 +387,42 @@ float testSort(
 
     return time;
 }
+
+template <ParallelSortTemplate ParallelSort>
+float testParallelSort(
+    vec_t** CUnsorted, uint32_t C_length,
+    vec_t** CSorted, uint32_t Ct_length,
+    uint32_t runs, const uint32_t splitNumber,
+    const char* algoName) {
+
+    //setup timing mechanism
+    float time = 0.0;
+
+    //store old values
+    vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
+    memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+
+    //reset timer
+    tic_reset();
+
+    //perform actual sort
+    ParallelSort(CUnsorted, C_length, splitNumber);
+
+    //get timing
+    time += tic_sincelast();
+
+    //verify output is valid
+    if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
+        time = -1.0;
+    }
+
+    //restore original values
+    memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+    free(unsortedCopy);
+
+    return time;
+}
+
 
 void printfcomma(int n) {
     if (n < 0) {
@@ -610,21 +646,21 @@ void tester(
 
         for (uint32_t run = 0; run < RUNS; run++) {
             if (serialMergeParallelSortTime >= 0.0) {
-                serialMergeParallelSortTime += testSort<parallelIterativeMergeSort<serialMerge>>(
+                serialMergeParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>>(
                                                     CUnsorted, C_length,
                                                     CSorted, Ct_length,
                                                     runs, 64, "Parallel Merge Sort Using Serial Merge    ");
             }
 
             if (serialMergeNoBranchParallelSortTime >= 0.0) {
-                serialMergeNoBranchParallelSortTime += testSort<parallelIterativeMergeSort<serialMergeNoBranch>>(
+                serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>>(
                                                             CUnsorted, C_length,
                                                             CSorted, Ct_length,
                                                             runs, 64, "Parallel Merge Sort Using Branchless Merge");
             }
 
             if (bitonicMergeRealParallelSortTime >= 0.0) {
-                bitonicMergeRealParallelSortTime += testSort<parallelIterativeMergeSort<bitonicMergeReal>>(
+                bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
                                                         CUnsorted, C_length,
                                                         CSorted, Ct_length,
                                                         runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
@@ -632,7 +668,7 @@ void tester(
 
             #ifdef AVX512
             if (avx512MergeParallelSortTime >= 0.0)
-                avx512MergeParallelSortTime += testSort<parallelIterativeMergeSort<avx512Merge>>(
+                avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>>(
                                                     CUnsorted, C_length,
                                                     CSorted, Ct_length,
                                                     runs, 64, "Parallel Merge Sort Using AVX512 Merge   ");
@@ -682,43 +718,20 @@ void MergePathSplitter(
     vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
-
-    // for (uint32_t i = 0; i < A_length; i++) {
-    //     printf("A[%i]:%i\n", i, A[i]);
-    // }
-    //
-    // for (uint32_t i = 0; i < B_length; i++) {
-    //     printf("B[%i]:%i\n", i, B[i]);
-    // }
-
   for (uint32_t i = 0; i <= threads; i++) {
       ASplitters[i] = A_length;
       BSplitters[i] = B_length;
   }
 
-  // printf("A_Length:%i\n", A_length);
-  // printf("B_Length:%i\n", B_length);
-
-  // for (uint32_t i = 0; i <= threads; i++) {
-  //     printf("SPLITTER:ASplitters:%i\n", ASplitters[i]);
-  //     printf("SPLITTER:BSplitters:%i\n", BSplitters[i]);
-  // }
-
   uint32_t minLength = A_length > B_length ? B_length : A_length;
 
   for (uint32_t thread=0; thread<threads;thread++)
   {
-    // uint32_t thread = omp_get_thread_num();
     uint32_t combinedIndex = thread * (minLength * 2) / threads;
     uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
     x_top = combinedIndex > minLength ? minLength : combinedIndex;
     y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
     x_bottom = y_top;
-
-    // printf("%i:combinedIndex:%i\n", thread, combinedIndex);
-    // printf("%i:X_top:%i\n", thread, combinedIndex);
-    // printf("%i:y_top:%i\n", thread, combinedIndex);
-    // printf("%i:x_bottom:%i\n", thread, combinedIndex);
 
     oldx = -1;
     oldy = -1;
@@ -731,13 +744,6 @@ void MergePathSplitter(
       }
       current_y = y_top + offset;
       current_x = x_top - offset;
-
-    //   printf("%i:y_top:%i\n", thread, y_top);
-    //   printf("%i:x_top:%i\n", thread, x_top);
-    //   printf("%i:x_bottom:%i\n", thread, x_bottom);
-    //   printf("%i:offset:%i\n", thread, offset);
-    //   printf("%i:current_x:%i\n", thread, current_x);
-    //   printf("%i:current_y:%i\n", thread, current_y);
 
       if (current_x == oldx || current_y == oldy) {
           return;
@@ -759,8 +765,6 @@ void MergePathSplitter(
         }
 
         if(Ai <= Bi) {//Found it
-            // printf("%i:A:%i\n", thread, current_x);
-            // printf("%i:B:%i\n", thread, current_y);
           ASplitters[thread]   = current_x;
           BSplitters[thread] = current_y;
           break;
@@ -772,14 +776,6 @@ void MergePathSplitter(
       }
   }
 }
-
-for (uint32_t i = 0; i <= threads; i++) {
-    // printf("InMergePathASplitters[%i]:%i\n", i, ASplitters[i]);
-    // printf("InMergePathBSplitters[%i]:%i\n", i, BSplitters[i]);
-}
-
-  // printf("%i:A:%i\n", threads, ASplitters[threads]);
-  // printf("%i:B:%i\n", threads, ASplitters[threads]);
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
