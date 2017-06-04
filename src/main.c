@@ -243,7 +243,7 @@ void freeGlobalData() {
 #ifdef MERGE
 void initMergeFilePointer(FILE** fp) {
     char fileName[50];
-    sprintf(fileName, "../results/MergeResults.%li.txt", time(0));
+    sprintf(fileName, "../results/MergeResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, A Size, B Size, Elements Per Second, Total Time");
 }
@@ -256,7 +256,7 @@ void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_
 #ifdef SORT
 void initSortFilePointer(FILE** fp) {
     char fileName[50];
-    sprintf(fileName, "../results/SortResults.%li.txt", time(0));
+    sprintf(fileName, "../results/SortResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, C Size, Elements Per Second, Total Time");
 }
@@ -269,7 +269,7 @@ void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float ti
 #ifdef PARALLELSORT
 void initParallelSortFilePointer(FILE** fp) {
     char fileName[50];
-    sprintf(fileName, "../results/ParallelSortResults.%li.txt", time(0));
+    sprintf(fileName, "../results/ParallelSortResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
     fprintf((*fp), "Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time");
 }
