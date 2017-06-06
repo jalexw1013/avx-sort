@@ -72,10 +72,10 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 50;
-uint32_t  h_ui_B_length                = 50;
-uint32_t  h_ui_C_length                = 100; //array to put values in
-uint32_t  h_ui_Ct_length               = 100; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 5000;
+uint32_t  h_ui_B_length                = 5000;
+uint32_t  h_ui_C_length                = 10000; //array to put values in
+uint32_t  h_ui_Ct_length               = 10000; //for unsorted and sorted
 uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
@@ -227,9 +227,6 @@ void insertData(vec_t** A, uint32_t A_length,
     }
     while(ai < A_length) (*CSorted)[ci++] = (*A)[ai++];
     while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];
-    // for (uint32_t i = 0; i < Ct_length; i++) {
-    //     printf("InitCSorted[%i]:%i\n", i, (*CSorted)[i]);
-    // }
 }
 
 void freeGlobalData() {
@@ -337,8 +334,9 @@ float testMerge(
     memcpy( (*A), ACopy, A_length * sizeof(vec_t));
     memcpy( (*B), BCopy, B_length * sizeof(vec_t));
 
-    // printf("%s:  ", algoName);
-    // printf("%18.10f\n", 1e9*((time/runs) / (float)(C_length)));
+    free(ACopy);
+    free(BCopy);
+
     return time;
 }
 
@@ -349,28 +347,18 @@ float testSort(
     uint32_t runs, const uint32_t splitNumber,
     const char* algoName) {
 
-    //printf("Entering Sort\n");
-
     //setup timing mechanism
     float time = 0.0;
 
-    //printf("1:%i\n", Ct_length);
-
     //store old values
     vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
-    //printf("2\n");
     memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
-    //printf("3\n");
 
     //reset timer
     tic_reset();
 
     //perform actual sort
     Sort((*CUnsorted), C_length, splitNumber);
-
-    // for (uint32_t i = 0; i < Ct_length; i++) {
-    //     printf("CSorted[%i]:%i\n", i,(*CSorted)[i]);
-    // }
 
     //get timing
     time += tic_sincelast();
