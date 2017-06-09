@@ -476,6 +476,9 @@ void parallelIterativeMergeSort(
                 #pragma omp barrier
                 #pragma omp single
                 {
+                    for (uint32_t i = 0; i < 100; i++) {
+                        printf("Array[%i]:%i\n", i, C[i]);
+                    }
                     //pointer swap for C
                     vec_t* tmp = array;
                     array = C;

@@ -106,7 +106,7 @@ uint32_t  OutToFile                    = 0; // 1 if out put to file
 const uint32_t testingEntropies[] = {28, 32};
 const uint32_t testingEntropiesLength = 2;
 const uint32_t testingSizes[] = {1000, 10000, 100000, 1000000, 10000000};
-const uint32_t testingSizesLength = 5;
+const uint32_t testingSizesLength = 3;
 const uint32_t testingThreads[] = {6,8,16,32,36,68,72};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
 const uint32_t testingThreadsLength = 7;
 
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     if (!OutToFile) {
         omp_set_dynamic(0);
-        omp_set_num_threads(8);
+        omp_set_num_threads(36);
 
         initArrays(
             &globalA, h_ui_A_length,
@@ -341,7 +341,7 @@ int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* 
         if(output[i] != sortedData[i]) {
             printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
             printf("    Index:%d, Given Value:%d, Correct "
-            "Value:%d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i]);
+            "Value:%d, ArraySize: %i" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length);
             return 0;
         }
     }
