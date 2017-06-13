@@ -84,6 +84,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
         serialMerge(A,A_length,B,B_length,C,C_length);
         return;
     }
+
     long Aindex = 0,Bindex = 0, Cindex = 0;
     int isA = 0;//, isB;
 

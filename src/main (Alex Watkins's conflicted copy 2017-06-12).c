@@ -94,19 +94,19 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 128;
-uint32_t  h_ui_B_length                = 1;
-uint32_t  h_ui_C_length                = 129; //array to put values in
-uint32_t  h_ui_Ct_length               = 129; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_A_length                = 500000;
+uint32_t  h_ui_B_length                = 500000;
+uint32_t  h_ui_C_length                = 1000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  RUNS                         = 50;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
-const uint32_t testingEntropies[] = {28, 32};
-const uint32_t testingEntropiesLength = 2;
-const uint32_t testingSizes[] = {100, 129, 130, 256, 255, 254, 257, 1000, 10000};
-const uint32_t testingSizesLength = 3;
+const uint32_t testingEntropies[] = {28};
+const uint32_t testingEntropiesLength = 1;
+const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000};
+const uint32_t testingSizesLength = 6;
 const uint32_t testingThreads[] = {6,8,16,32,36,68,72};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
 const uint32_t testingThreadsLength = 7;
 
@@ -139,8 +139,8 @@ int main(int argc, char** argv)
     #endif
 
     if (!OutToFile) {
-        omp_set_dynamic(0);
-        omp_set_num_threads(36);
+        // omp_set_dynamic(0);
+        // omp_set_num_threads(36);
 
         initArrays(
             &globalA, h_ui_A_length,
@@ -518,28 +518,28 @@ void mergeTester(
                 runs, "Serial Merge");
         }
 
-        // if (serialMergeNoBranchTime >= 0.0) {
-        //     serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
-        //         A, A_length, B, B_length,
-        //         C, Ct_length, CSorted,
-        //         runs, "Branchless Merge");
-        // }
-        //
-        // if (bitonicMergeRealTime >= 0.0) {
-        //     bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-        //         A, A_length, B, B_length,
-        //         C, Ct_length, CSorted,
-        //         runs, "Bitonic Merge");
-        // }
-        //
-        // #ifdef AVX512
-        // if (avx512MergeTime >= 0.0) {
-        //     avx512MergeTime += testMerge<avx512Merge>(
-        //         A, A_length, B, B_length,
-        //         C, Ct_length, CSorted,
-        //         runs, "AVX-512 Merge");
-        // }
-        // #endif
+        if (serialMergeNoBranchTime >= 0.0) {
+            serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "Branchless Merge");
+        }
+
+        if (bitonicMergeRealTime >= 0.0) {
+            bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "Bitonic Merge");
+        }
+
+        #ifdef AVX512
+        if (avx512MergeTime >= 0.0) {
+            avx512MergeTime += testMerge<avx512Merge>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "AVX-512 Merge");
+        }
+        #endif
 
         insertData(
             A, A_length,
@@ -744,7 +744,6 @@ void sortTester(
             printf("N/A");
         }
         printf("\n");
-        printfcomma((int)((float)Ct_length/avx512MergeSortTime));printf("\n");
         #endif
         printf("\n\n");
     }
@@ -800,12 +799,12 @@ void parallelTester(
                                                         runs, 64, "Parallel Merge Sort Using Branchless Merge");
         }
 
-        if (bitonicMergeRealParallelSortTime >= 0.0) {
-            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
-                                                    CUnsorted, C_length,
-                                                    CSorted, Ct_length,
-                                                    runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
-        }
+        // if (bitonicMergeRealParallelSortTime >= 0.0) {
+        //     bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
+        //                                             CUnsorted, C_length,
+        //                                             CSorted, Ct_length,
+        //                                             runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
+        // }
 
         #ifdef AVX512
         if (avx512MergeParallelSortTime >= 0.0)
@@ -841,11 +840,43 @@ void parallelTester(
 
         if (!OutToFile) {
             printf("Parallel Sorting Results                         :  Elements per Second\n");
-            printf("Parallel Merge Sort using Serial Merge           :     ");printfcomma((int)((float)Ct_length/serialMergeParallelSortTime));printf("\n");
-            printf("Parallel Merge Sort using Serial Merge Branchless:     ");printfcomma((int)((float)Ct_length/serialMergeNoBranchParallelSortTime));printf("\n");
-            printf("Parallel Merge Sort using Bitonic Merge          :     ");printfcomma((int)((float)Ct_length/bitonicMergeRealParallelSortTime));printf("\n");
+            printf("Parallel Merge Sort using Serial Merge           :     ");
+            if (serialMergeParallelSortTime > 0.0) {
+                printfcomma((int)((float)Ct_length/serialMergeParallelSortTime));
+            } else if (serialMergeParallelSortTime == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
+            printf("Parallel Merge Sort using Serial Merge Branchless:     ");
+            if (serialMergeNoBranchParallelSortTime > 0.0) {
+                printfcomma((int)((float)Ct_length/serialMergeNoBranchParallelSortTime));
+            } else if (serialMergeNoBranchParallelSortTime == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
+            printf("Parallel Merge Sort using Bitonic Merge          :     ");
+            if (bitonicMergeRealParallelSortTime > 0.0) {
+                printfcomma((int)((float)Ct_length/bitonicMergeRealParallelSortTime));
+            } else if (bitonicMergeRealParallelSortTime == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
             #ifdef AVX512
-            printf("Parallel Merge Sort using AVX512 Merge           :     ");printfcomma((int)((float)Ct_length/avx512MergeParallelSortTime));printf("\n");
+            printf("Parallel Merge Sort using AVX512 Merge           :     ");
+            if (avx512MergeParallelSortTime > 0.0) {
+                printfcomma((int)((float)Ct_length/avx512MergeParallelSortTime));
+            } else if (avx512MergeParallelSortTime == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
             #endif
             printf("\n\n");
         }
