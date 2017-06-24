@@ -1,0 +1,4 @@
+Name, Entropy, A Size, B Size, Elements Per Second, Total Time
+Serial Merge, 28, 50, 50, 114598464, 0.00000087261201997535
+Serial Merge Branchless, 28, 50, 50, 169125152, 0.00000059127808071935
+Bitonic Merge, 28, 50, 50, 220752848, 0.00000045299529460863

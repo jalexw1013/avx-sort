@@ -1,0 +1,47 @@
+Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time
+Parallel Merge Sort using Serial Merge, 28, 100, 6, 365440, 0.00027364253764972091
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 6, 818752, 0.00012213707668706775
+Parallel Merge Sort using Bitonic Merge, 28, 100, 6, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 8, 403733, 0.00024768829462118447
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 8, 365198, 0.00027382373809814453
+Parallel Merge Sort using Bitonic Merge, 28, 100, 8, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 16, 350454, 0.00028534411103464663
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 16, 355841, 0.00028102396754547954
+Parallel Merge Sort using Bitonic Merge, 28, 100, 16, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 32, 150390, 0.00066493509802967310
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 32, 165206, 0.00060530187329277396
+Parallel Merge Sort using Bitonic Merge, 28, 100, 32, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 36, 110495, 0.00090501306112855673
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 36, 111699, 0.00089525699149817228
+Parallel Merge Sort using Bitonic Merge, 28, 100, 36, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 68, 50922, 0.00196378235705196857
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 68, 49614, 0.00201553828082978725
+Parallel Merge Sort using Bitonic Merge, 28, 100, 68, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 100, 72, 48464, 0.00206335540860891342
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 72, 46520, 0.00214961054734885693
+Parallel Merge Sort using Bitonic Merge, 28, 100, 72, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 6, 1146736, 0.00008720398182049394
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 6, 990297, 0.00010097980702994391
+Parallel Merge Sort using Bitonic Merge, 32, 100, 6, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 8, 991889, 0.00010081767686642706
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 8, 873194, 0.00011452197941252962
+Parallel Merge Sort using Bitonic Merge, 32, 100, 8, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 16, 348694, 0.00028678416856564581
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 16, 377926, 0.00026460169465281069
+Parallel Merge Sort using Bitonic Merge, 32, 100, 16, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 32, 157095, 0.00063655374106019735
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 32, 152138, 0.00065729615744203329
+Parallel Merge Sort using Bitonic Merge, 32, 100, 32, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 36, 104070, 0.00096088409190997481
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 36, 109543, 0.00091288087423890829
+Parallel Merge Sort using Bitonic Merge, 32, 100, 36, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 68, 48167, 0.00207609659992158413
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 68, 48032, 0.00208194251172244549
+Parallel Merge Sort using Bitonic Merge, 32, 100, 68, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 32, 100, 72, 45391, 0.00220304960384964943
+Parallel Merge Sort using Serial Merge Branchless, 32, 100, 72, 45350, 0.00220506661571562290
+Parallel Merge Sort using Bitonic Merge, 32, 100, 72, -2147483648, 0.00000000000000000000
+Parallel Merge Sort using Serial Merge, 28, 1000, 6, 7660829, 0.00013053417205810547
+Parallel Merge Sort using Serial Merge Branchless, 28, 1000, 6, 7612996, 0.00013135433255229145
+Parallel Merge Sort using Bitonic Merge, 28, 1000, 6, -2147483648, 0.00000000000000000000
+Para

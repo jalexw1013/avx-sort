@@ -104,7 +104,7 @@ uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
 const uint32_t testingEntropies[] = {28, 32};
-const uint32_t testingEntropiesLength = 1;
+const uint32_t testingEntropiesLength = 2;
 const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 const uint32_t testingSizesLength = 7;
 const uint32_t testingThreads[] = {6,8,16,32,36,68,72};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
@@ -114,8 +114,11 @@ const uint32_t testingThreadsLength = 7;
 ////////////////////////////
 int main(int argc, char** argv)
 {
+    printf("0\n");
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
+
+    printf("1\n");
 
     uint32_t seed = time(0);
     srand(seed);
@@ -137,6 +140,9 @@ int main(int argc, char** argv)
         initParallelSortFilePointer(&parallelSortFile);
     }
     #endif
+
+    printf("2\n");
+    //exit(0);
 
     if (!OutToFile) {
         // omp_set_dynamic(0);
@@ -182,8 +188,10 @@ int main(int argc, char** argv)
 
         freeGlobalData();
     } else {
+        printf("3\n");
         omp_set_dynamic(0);
         for (uint32_t i = 0; i < testingSizesLength; i++) {
+            printf("4\n");
             printf("Testing C Size: %i\n", testingSizes[i]);
             initArrays(
                 &globalA, testingSizes[i]/2,
@@ -201,6 +209,7 @@ int main(int argc, char** argv)
                     &CSorted, testingSizes[i],
                     &CUnsorted);
                 #ifdef MERGE
+                printf("Merging\n");
                 mergeTester(
                     &globalA, testingSizes[i]/2,
                     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -209,6 +218,7 @@ int main(int argc, char** argv)
                     &CUnsorted, RUNS);
                 #endif
                 #ifdef SORT
+                printf("Sorting\n");
                 sortTester(
                     &globalA, testingSizes[i]/2,
                     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -220,6 +230,7 @@ int main(int argc, char** argv)
                 for (uint32_t j = 0; j < testingThreadsLength; j++) {
                     printf("Testing Threads: %i\n", testingThreads[j]);
                     omp_set_num_threads(testingThreads[j]);
+                    printf("Parallel Sorting\n");
                     parallelTester(
                         &globalA, testingSizes[i]/2,
                         &globalB, testingSizes[i]/2 + testingSizes[i]%2,
