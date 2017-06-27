@@ -425,12 +425,22 @@ void parallelIterativeMergeSort(
                 uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
                 uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
 
+                if (threadNum == 48) {
+                    MergePathSplitter2(
+                        array + AStartMergePath, arraySizes[arraySizesIndex],
+                        array + BStartMergePath, arraySizes[arraySizesIndex + 1],
+                        C + AStartMergePath, arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1],
+                        numPerMergeThreads,
+                        ASplitters + mergeHeadThreadNum, BSplitters + mergeHeadThreadNum, 1);
+                } else {
+
                 MergePathSplitter(
                     array + AStartMergePath, arraySizes[arraySizesIndex],
                     array + BStartMergePath, arraySizes[arraySizesIndex + 1],
                     C + AStartMergePath, arraySizes[arraySizesIndex] + arraySizes[arraySizesIndex + 1],
                     numPerMergeThreads,
                     ASplitters + mergeHeadThreadNum, BSplitters + mergeHeadThreadNum); //Splitters[subArrayStart thread num] should be index zero
+}
 
                 uint32_t A_start = AStartMergePath + ASplitters[threadNum];
                 uint32_t A_end = AStartMergePath + ASplitters[threadNum + 1];
@@ -451,6 +461,7 @@ void parallelIterativeMergeSort(
                     arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
                     index += 2;
                 }
+
 
                 //Take care of odd sized number of sub arrays
                 //If there is a defered sub array, we need to
@@ -477,6 +488,7 @@ void parallelIterativeMergeSort(
                             deferedSize*sizeof(vec_t));
                     }
                 }
+
 
                 #pragma omp barrier
                 #pragma omp single

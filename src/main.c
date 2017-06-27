@@ -114,11 +114,8 @@ const uint32_t testingThreadsLength = 7;
 ////////////////////////////
 int main(int argc, char** argv)
 {
-    printf("0\n");
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
-
-    printf("1\n");
 
     uint32_t seed = time(0);
     srand(seed);
@@ -140,9 +137,6 @@ int main(int argc, char** argv)
         initParallelSortFilePointer(&parallelSortFile);
     }
     #endif
-
-    printf("2\n");
-    //exit(0);
 
     if (!OutToFile) {
         omp_set_dynamic(0);
@@ -188,11 +182,8 @@ int main(int argc, char** argv)
 
         freeGlobalData();
     } else {
-        printf("3\n");
         omp_set_dynamic(0);
         for (uint32_t i = 0; i < testingSizesLength; i++) {
-            printf("4\n");
-            printf("Testing C Size: %i\n", testingSizes[i]);
             initArrays(
                 &globalA, testingSizes[i]/2,
                 &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -200,7 +191,6 @@ int main(int argc, char** argv)
                 &CSorted, testingSizes[i],
                 &CUnsorted);
             for (uint32_t e = 0; e < testingEntropiesLength; e++) {
-                printf("Testing Entropy: %i\n", testingEntropies[e]);
                 entropy = testingEntropies[e];
                 insertData(
                     &globalA, testingSizes[i]/2,
@@ -209,7 +199,6 @@ int main(int argc, char** argv)
                     &CSorted, testingSizes[i],
                     &CUnsorted);
                 #ifdef MERGE
-                printf("Merging\n");
                 mergeTester(
                     &globalA, testingSizes[i]/2,
                     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -218,7 +207,6 @@ int main(int argc, char** argv)
                     &CUnsorted, RUNS);
                 #endif
                 #ifdef SORT
-                printf("Sorting\n");
                 sortTester(
                     &globalA, testingSizes[i]/2,
                     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -228,9 +216,7 @@ int main(int argc, char** argv)
                 #endif
                 #ifdef PARALLELSORT
                 for (uint32_t j = 0; j < testingThreadsLength; j++) {
-                    printf("Testing Threads: %i\n", testingThreads[j]);
                     omp_set_num_threads(testingThreads[j]);
-                    printf("Parallel Sorting\n");
                     parallelTester(
                         &globalA, testingSizes[i]/2,
                         &globalB, testingSizes[i]/2 + testingSizes[i]%2,
@@ -903,17 +889,26 @@ void MergePathSplitter(
     vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
+    MergePathSplitter2(A, A_length, B, B_length, C, C_length, threads, ASplitters, BSplitters, 0);
+}
+
+void MergePathSplitter2(
+    vec_t * A, uint32_t A_length,
+    vec_t * B, uint32_t B_length,
+    vec_t * C, uint32_t C_length,
+    uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t p)
+{
   for (uint32_t i = 0; i <= threads; i++) {
       ASplitters[i] = A_length;
       BSplitters[i] = B_length;
   }
 
-  uint32_t minLength = A_length > B_length ? B_length : A_length;
+  uint64_t minLength = A_length > B_length ? B_length : A_length;
 
   for (uint32_t thread=0; thread<threads;thread++)
   {
-    uint32_t combinedIndex = thread * (minLength * 2) / threads;
-    uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+    uint64_t combinedIndex = thread * (minLength * 2) / threads;
+    uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
     x_top = combinedIndex > minLength ? minLength : combinedIndex;
     y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
     x_bottom = y_top;
@@ -961,6 +956,7 @@ void MergePathSplitter(
       }
   }
 }
+
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
