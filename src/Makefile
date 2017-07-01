@@ -1,4 +1,4 @@
-CC := g++
+CC := icc
 AVX512 := YES#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := NO#Valid Options are YES or NO
