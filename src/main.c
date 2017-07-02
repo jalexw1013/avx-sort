@@ -498,8 +498,8 @@ void mergeTester(
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        printf("A Size: %" PRIu32 "\n", A_length);
-        printf("B Size: %" PRIu32 "\n", B_length);
+        //printf("A Size: %" PRIu32 "\n", A_length);
+        //printf("B Size: %" PRIu32 "\n", B_length);
         printf("\n");
     }
 
