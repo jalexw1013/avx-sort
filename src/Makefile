@@ -1,4 +1,4 @@
-CC := icc
+CC := icpc
 AVX512 := YES#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := NO#Valid Options are YES or NO
@@ -14,7 +14,9 @@ ifeq ($(CC),g++)
 else ifeq ($(CC),gcc)
 	CCFLAGS += -fopenmp -std=c99 -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),icc)
-	CCFLAGS += -qopenmp -std=c99 -funroll-loops -Wall -pedantic
+	CCFLAGS += -qopenmp -std=c99 -funroll-loops -Wall -pedantic -fkeep-inline-functions
+else ifeq ($(CC),icpc)
+	CCFLAGS += -qopenmp -std=c++11 -funroll-loops -Wall -pedantic -fkeep-inline-functions
 else
     $(error Unknown Compiler Given)
 endif
@@ -51,6 +53,8 @@ else ifeq ($(AVX512),YES)
 	else ifeq ($(CC),gcc)
 		CCFLAGS += -mavx512f -D AVX512
 	else ifeq ($(CC),icc)
+		CCFLAGS += -axMIC-AVX512 -D AVX512
+	else ifeq ($(CC),icpc)
 		CCFLAGS += -axMIC-AVX512 -D AVX512
 	else
 		$(error Unknown Compiler Given)
