@@ -114,6 +114,7 @@ const uint32_t testingThreadsLength = 7;
 ////////////////////////////
 int main(int argc, char** argv)
 {
+    printf("1\n");
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
@@ -138,23 +139,26 @@ int main(int argc, char** argv)
     }
     #endif
 
+    printf("2\n");
+
     if (!OutToFile) {
         omp_set_dynamic(0);
         omp_set_num_threads(16);
-
+printf("3\n");
         initArrays(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted);
-
+printf("4\n");
         insertData(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted);
+            printf("5\n");
         #ifdef MERGE
         mergeTester(
             &globalA, h_ui_A_length,
@@ -162,6 +166,7 @@ int main(int argc, char** argv)
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted, RUNS);
+            printf("6\n");
         #endif
         #ifdef SORT
         sortTester(
