@@ -94,20 +94,20 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 500000;
-uint32_t  h_ui_B_length                = 500000;
-uint32_t  h_ui_C_length                = 1000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 500;
+uint32_t  h_ui_B_length                = 500;
+uint32_t  h_ui_C_length                = 1000; //array to put values in
+uint32_t  h_ui_Ct_length               = 1000; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
-const uint32_t testingEntropies[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
-const uint32_t testingEntropiesLength = 2;
+const uint32_t testingEntropies[] = {28, 32};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
+const uint32_t testingEntropiesLength = 1;
 const uint32_t testingSizes[] = {100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
-const uint32_t testingSizesLength = 7;
-const uint32_t testingThreads[] = /*{6,8,16,32,36,68,72};*/{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
+const uint32_t testingSizesLength = 1;
+const uint32_t testingThreads[] = {6,8,16,32,36,68,72};//*/{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
 const uint32_t testingThreadsLength = 7;
 
 // Host Functions
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     if (!OutToFile) {
         omp_set_dynamic(0);
-        omp_set_num_threads(72);
+        omp_set_num_threads(16);
 
         initArrays(
             &globalA, h_ui_A_length,
@@ -302,11 +302,11 @@ void initMergeFilePointer(FILE** fp) {
     char fileName[50];
     sprintf(fileName, "../results/MergeResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name, Entropy, A Size, B Size, Elements Per Second, Total Time");
+    fprintf((*fp), "Name,Entropy,A Size,B Size,Elements Per Second,Total Time");
 }
 
 void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, float time) {
-    fprintf(mergeFile, "\n%s, %i, %i, %i, %i, %.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
+    fprintf(mergeFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
 }
 #endif
 
@@ -315,11 +315,11 @@ void initSortFilePointer(FILE** fp) {
     char fileName[50];
     sprintf(fileName, "../results/SortResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name, Entropy, C Size, Elements Per Second, Total Time");
+    fprintf((*fp), "Name,Entropy,C Size,Elements Per Second,Total Time");
 }
 
 void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float time) {
-    fprintf(sortFile, "\n%s, %i, %i, %i, %.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
+    fprintf(sortFile, "\n%s,%i,%i,%i,%.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
 }
 #endif
 
@@ -328,11 +328,11 @@ void initParallelSortFilePointer(FILE** fp) {
     char fileName[50];
     sprintf(fileName, "../results/ParallelSortResults.%li.csv", time(0));
     (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time");
+    fprintf((*fp), "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
 }
 
 void writeToParallelSortOut(const char* name, uint32_t entropy, uint32_t CSize, uint32_t numThreads, float time) {
-    fprintf(parallelSortFile, "\n%s, %i, %i, %i, %i, %.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
+    fprintf(parallelSortFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
 }
 #endif
 
@@ -818,12 +818,12 @@ void parallelTester(
                                                         runs, 64, "Parallel Merge Sort Using Branchless Merge");
         }
 
-        // if (bitonicMergeRealParallelSortTime >= 0.0) {
-        //     bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
-        //                                             CUnsorted, C_length,
-        //                                             CSorted, Ct_length,
-        //                                             runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
-        // }
+        if (bitonicMergeRealParallelSortTime >= 0.0) {
+            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
+                                                    CUnsorted, C_length,
+                                                    CSorted, Ct_length,
+                                                    runs, 64, "Parallel Merge Sort Using Bitonic Merge   ");
+        }
 
         #ifdef AVX512
         if (avx512MergeParallelSortTime >= 0.0)

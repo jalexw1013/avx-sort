@@ -81,6 +81,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
                       vec_t* B, uint32_t B_length,
                       vec_t* C, uint32_t C_length)
 {
+    // TODO i think these can be 4s
     if (A_length < 5 || B_length < 5 || C_length < 5) {
         serialMerge(A,A_length,B,B_length,C,C_length);
         return;
@@ -179,12 +180,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
 }
 
 #ifdef AVX512
-
-
-
-
-
-
+#ifdef __INTEL_COMPILER
 inline void bitonicAVX512Merge(vec_t* A, uint32_t A_length,
                             vec_t* B, uint32_t B_length,
                             vec_t* C, uint32_t C_length){
@@ -340,15 +336,7 @@ inline void bitonicAVX512Merge(vec_t* A, uint32_t A_length,
 		memcpy(output + p, B + r, (BSize - r) * sizeof(uint32_t));
 	}
 }
-
-
-
-
-
-
-
-
-
+#endif
 
 inline void avx512Merge(
     vec_t* A, uint32_t A_length,

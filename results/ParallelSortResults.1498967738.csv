@@ -1,0 +1,10 @@
+Name, Entropy, C Size, Number of Threads, Elements Per Second, Total Time
+Parallel Merge Sort using Serial Merge, 28, 100, 6, 313475, 0.00031900405883789062
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 6, 581734, 0.00017189979553222656
+Parallel Merge Sort using Bitonic Merge, 28, 100, 6, 25589, 0.00390791893005371094
+Parallel Merge Sort using Serial Merge, 28, 100, 8, 223220, 0.00044798851013183594
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 8, 105596, 0.00094699859619140625
+Parallel Merge Sort using Bitonic Merge, 28, 100, 8, 19658, 0.00508689880371093750
+Parallel Merge Sort using Serial Merge, 28, 100, 16, 267323, 0.00037407875061035156
+Parallel Merge Sort using Serial Merge Branchless, 28, 100, 16, 355750, 0.00028109550476074219
+Parallel Merge Sort using Bitonic Merge, 28, 100, 16, 54141, 0.00184702873229980469

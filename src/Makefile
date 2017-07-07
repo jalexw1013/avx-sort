@@ -1,5 +1,5 @@
 CC := icpc
-AVX512 := YES#Valid Options are YES or NO
+AVX512 := NO#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := NO#Valid Options are YES or NO
 PARALLELSORT := NO#Valid Options are YES or NO
