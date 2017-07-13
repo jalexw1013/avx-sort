@@ -94,11 +94,11 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 500;
-uint32_t  h_ui_B_length                = 500;
-uint32_t  h_ui_C_length                = 1000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_A_length                = 500000;
+uint32_t  h_ui_B_length                = 500000;
+uint32_t  h_ui_C_length                = 1000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  RUNS                         = 50;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
@@ -114,7 +114,6 @@ const uint32_t testingThreadsLength = 7;
 ////////////////////////////
 int main(int argc, char** argv)
 {
-    printf("1\n");
     // parse langths of A and B if user entered
     hostParseArgs(argc, argv);
 
@@ -139,26 +138,21 @@ int main(int argc, char** argv)
     }
     #endif
 
-    printf("2\n");
-
     if (!OutToFile) {
         omp_set_dynamic(0);
-        omp_set_num_threads(16);
-printf("3\n");
+        omp_set_num_threads(8);
         initArrays(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted);
-printf("4\n");
         insertData(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted);
-            printf("5\n");
         #ifdef MERGE
         mergeTester(
             &globalA, h_ui_A_length,
@@ -166,7 +160,6 @@ printf("4\n");
             &globalC, h_ui_C_length,
             &CSorted, h_ui_Ct_length,
             &CUnsorted, RUNS);
-            printf("6\n");
         #endif
         #ifdef SORT
         sortTester(
@@ -512,9 +505,19 @@ void mergeTester(
     float serialMergeNoBranchTime = 0.0;
     float bitonicMergeRealTime = 0.0;
     #ifdef AVX512
-    float bitonicAVX512MergeTime = 0.0;
+    //float bitonicAVX512MergeTime = 0.0;
     float avx512MergeTime = 0.0;
     #endif
+
+    // for (uint32_t i = 0; i < A_length; i++) {
+    //     printf("A[%i]:%i\n", i, (*A)[i]);
+    // }
+    // for (uint32_t i = 0; i < B_length; i++) {
+    //     printf("B[%i]:%i\n", i, (*B)[i]);
+    // }
+    // for (uint32_t i = 0; i < Ct_length; i++) {
+    //     printf("CSorted[%i]:%i\n", i, (*CSorted)[i]);
+    // }
 
     for (uint32_t run = 0; run < RUNS; run++) {
         if (serialMergeTime >= 0.0) {
@@ -539,12 +542,12 @@ void mergeTester(
         }
 
         #ifdef AVX512
-        if (bitonicAVX512MergeTime >= 0.0) {
-            bitonicAVX512MergeTime += testMerge<bitonicAVX512Merge>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "Bitonic AVX-512 Merge");
-        }
+        // if (bitonicAVX512MergeTime >= 0.0) {
+        //     bitonicAVX512MergeTime += testMerge<bitonicAVX512Merge>(
+        //         A, A_length, B, B_length,
+        //         C, Ct_length, CSorted,
+        //         runs, "Bitonic AVX-512 Merge");
+        // }
 
         if (avx512MergeTime >= 0.0) {
             avx512MergeTime += testMerge<avx512Merge>(
@@ -566,7 +569,7 @@ void mergeTester(
     serialMergeNoBranchTime /= RUNS;
     bitonicMergeRealTime /= RUNS;
     #ifdef AVX512
-    bitonicAVX512MergeTime /= RUNS;
+    //bitonicAVX512MergeTime /= RUNS;
     avx512MergeTime /= RUNS;
     #endif
 
@@ -575,7 +578,7 @@ void mergeTester(
         writeToMergeOut("Serial Merge Branchless", entropy, A_length, B_length, serialMergeNoBranchTime);
         writeToMergeOut("Bitonic Merge", entropy, A_length, B_length, bitonicMergeRealTime);
         #ifdef AVX512
-        writeToMergeOut("Bitonic AVX512 Merge", entropy, A_length, B_length, bitonicAVX512MergeTime);
+        //writeToMergeOut("Bitonic AVX512 Merge", entropy, A_length, B_length, bitonicAVX512MergeTime);
         writeToMergeOut("AVX512 Merge", entropy, A_length, B_length, avx512MergeTime);
         #endif
     } else {
@@ -608,15 +611,15 @@ void mergeTester(
         }
         printf("\n");
         #ifdef AVX512
-        printf("Bitonic AVX512 Merge   :     ");
-        if (bitonicAVX512MergeTime > 0.0) {
-            printfcomma((int)((float)Ct_length/bitonicAVX512MergeTime));
-        } else if (bitonicAVX512MergeTime == 0.0) {
-            printf("∞");
-        } else {
-            printf("N/A");
-        }
-        printf("\n");
+        // printf("Bitonic AVX512 Merge   :     ");
+        // if (bitonicAVX512MergeTime > 0.0) {
+        //     printfcomma((int)((float)Ct_length/bitonicAVX512MergeTime));
+        // } else if (bitonicAVX512MergeTime == 0.0) {
+        //     printf("∞");
+        // } else {
+        //     printf("N/A");
+        // }
+        // printf("\n");
         printf("AVX512 Merge           :     ");
         if (avx512MergeTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeTime));
