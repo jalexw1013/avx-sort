@@ -3,3 +3,5 @@ debug
 sde64
 sde/
 *.jar
+*.java
+*.class

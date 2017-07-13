@@ -1,9 +1,0 @@
-Name, Entropy, C Size, Elements Per Second, Total Time
-Quick Sort, 28, 100, 15756213, 0.00000634670277577243
-Merge Sort using Serial Merge, 28, 100, 11855014, 0.00000843524958327180
-Merge Sort using Serial Merge Branchless, 28, 100, 16358440, 0.00000611305222264491
-Merge Sort using Bitonic Merge, 28, 100, 16710374, 0.00000598430642639869
-Quick Sort, 28, 1000, 13109658, 0.00007627964077983052
-Merge Sort using Serial Merge, 28, 1000, 13446729, 0.00007436752639478073
-Merge Sort using Serial Merge Branchless, 28, 1000, 15599167, 0.00006410598871298134
-Merge Sort using Bitonic Merge, 28, 1000, 18041570, 0.00005542755025089718
