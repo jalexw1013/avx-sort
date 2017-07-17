@@ -1,4 +1,4 @@
-CC := g++
+CC := icpc
 AVX512 := NO#Valid Options are YES or NO
 MERGE := NO#Valid Options are YES or NO
 SORT := YES#Valid Options are YES or NO
@@ -66,7 +66,7 @@ endif
 .PHONY: merge
 merge:
 	rm merge -f
-	$(CC) -O0 -o $@ $(CCFLAGS) $(FILES)
+	$(CC) -O1 -o $@ $(CCFLAGS) $(FILES)
 
 run:
 	make merge
