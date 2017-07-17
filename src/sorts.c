@@ -536,17 +536,17 @@ void parallelIterativeMergeSort(
             uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
             uint32_t currentSubArraySize = arraySizes[threadNum];
 
-            #pragma omp single
-            {
-                printf("%i:Time Before Sort: %i\n", threadNum, tic_sincelast());
-            }
+            // #pragma omp single
+            // {
+            //     printf("%i:Time Before Sort: %i\n", threadNum, tic_sincelast());
+            // }
 
             Sort(array + threadStartIndex, C + threadStartIndex, currentSubArraySize, splitNumber);
 
-            #pragma omp single
-            {
-                printf("%i:Time After Sort: %i\n", threadNum, tic_sincelast());
-            }
+            // #pragma omp single
+            // {
+            //     printf("%i:Time After Sort: %i\n", threadNum, tic_sincelast());
+            // }
 
             uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
 
@@ -557,10 +557,10 @@ void parallelIterativeMergeSort(
                 numberOfSubArrays--;
             }
 
-            #pragma omp single
-            {
-                printf("%i:Time 1: %i\n", threadNum, tic_sincelast());
-            }
+            // #pragma omp single
+            // {
+            //     printf("%i:Time 1: %i\n", threadNum, tic_sincelast());
+            // }
 
             //begin merging
             #pragma omp barrier
@@ -570,10 +570,10 @@ void parallelIterativeMergeSort(
                 numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
                 leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);
 
-                #pragma omp single
-                {
-                    printf("%i:Time 2: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time 2: %i\n", threadNum, tic_sincelast());
+                // }
 
                 leftOverThreadsCounter = leftOverThreads;
                 groupNumber = 0;
@@ -592,10 +592,10 @@ void parallelIterativeMergeSort(
                     groupNumber++;
                 }
 
-                #pragma omp single
-                {
-                    printf("%i:Time 3: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time 3: %i\n", threadNum, tic_sincelast());
+                // }
 
                 arraySizesIndex = groupNumber*2; //points to index of A in array sizes for this thread
 
@@ -609,15 +609,15 @@ void parallelIterativeMergeSort(
                 uint32_t AStartMergePath = arraySum(arraySizes, arraySizesIndex);
                 uint32_t BStartMergePath = AStartMergePath + arraySizes[arraySizesIndex];
 
-                #pragma omp single
-                {
-                    printf("%i:Time 4: %i\n", threadNum, tic_sincelast());
-                }
-
-                #pragma omp single
-                {
-                    printf("%i:Time Before Split: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time 4: %i\n", threadNum, tic_sincelast());
+                // }
+                //
+                // #pragma omp single
+                // {
+                //     printf("%i:Time Before Split: %i\n", threadNum, tic_sincelast());
+                // }
 
                 MergePathSplitter(
                     array + AStartMergePath, arraySizes[arraySizesIndex],
@@ -635,17 +635,17 @@ void parallelIterativeMergeSort(
                 uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
                 uint32_t C_length = A_length + B_length;
 
-                #pragma omp single
-                {
-                    printf("%i:Time Before Merge: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time Before Merge: %i\n", threadNum, tic_sincelast());
+                // }
 
                 Merge(array + A_start, A_length, array + B_start, B_length, C + C_start, C_length);
 
-                #pragma omp single
-                {
-                    printf("%i:Time After Merge: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time After Merge: %i\n", threadNum, tic_sincelast());
+                // }
 
                 //number of sub arrays is now cut in half
                 numberOfSubArrays = numberOfSubArrays/2;
@@ -691,10 +691,10 @@ void parallelIterativeMergeSort(
                     C = tmp;
                     numberOfSwaps++;
                 }
-                #pragma omp single
-                {
-                    printf("%i:Time End While: %i\n", threadNum, tic_sincelast());
-                }
+                // #pragma omp single
+                // {
+                //     printf("%i:Time End While: %i\n", threadNum, tic_sincelast());
+                // }
             }
             //free(ASplitters);
             //free(BSplitters);
