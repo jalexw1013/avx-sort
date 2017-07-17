@@ -500,8 +500,7 @@ float testParallelSort(
 
 void printfcomma(int n) {
     if (n < 0) {
-        printf ("-");
-        printfcomma (-n);
+        printf ("N/A");
         return;
     }
     if (n < 1000) {
