@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     if (!OutToFile) {
         omp_set_dynamic(0);
-        omp_set_num_threads(32);
+        omp_set_num_threads(4);
         initArrays(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
