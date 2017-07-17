@@ -532,6 +532,7 @@ void parallelIterativeMergeSort(
             uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
             uint32_t currentSubArraySize = arraySizes[threadNum];
 
+            // Each thread does its own sort
             Sort(array + threadStartIndex, C + threadStartIndex, currentSubArraySize, splitNumber);
 
             uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
