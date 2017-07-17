@@ -477,6 +477,7 @@ float testParallelSort(
 
     //get timing
     time += tic_sincelast();
+    printf("Timeend:%i\n", time);
 
     //verify output is valid
     if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
