@@ -98,7 +98,7 @@ uint32_t  h_ui_A_length                = 500000;
 uint32_t  h_ui_B_length                = 500000;
 uint32_t  h_ui_C_length                = 1000000; //array to put values in
 uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
-uint32_t  RUNS                         = 50;
+uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
