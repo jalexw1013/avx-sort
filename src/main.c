@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     if (!OutToFile) {
         omp_set_dynamic(0);
-        omp_set_num_threads(70);
+        omp_set_num_threads(22);
         initArrays(
             &globalA, h_ui_A_length,
             &globalB, h_ui_B_length,
@@ -412,11 +412,14 @@ float testSort(
     vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
     memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
+    //allocate Variables
+    vec_t* C = (vec_t*)xcalloc((C_length + 32), sizeof(vec_t));
+
     //reset timer
     tic_reset();
 
     //perform actual sort
-    Sort((*CUnsorted), C_length, splitNumber);
+    Sort((*CUnsorted), C, C_length, splitNumber);
 
     //get timing
     time += tic_sincelast();
@@ -429,6 +432,8 @@ float testSort(
     //restore original values
     memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
 
+    //deallocate variables
+    free(C);
     free(unsortedCopy);
 
     return time;
@@ -448,11 +453,27 @@ float testParallelSort(
     vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
     memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
+    //Check how many threads are running
+    uint32_t numberOfThreads = 0;
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            numberOfThreads = omp_get_num_threads();
+        }
+    }
+
+    //allocate Variables
+    vec_t* C = (vec_t*)xcalloc((C_length + 32), sizeof(vec_t));
+    uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    uint32_t* arraySizes = (uint32_t*)xcalloc(numberOfThreads*numberOfThreads, sizeof(uint32_t));
+
     //reset timer
     tic_reset();
 
     //perform actual sort
-    ParallelSort((*CUnsorted), C_length, splitNumber);
+    ParallelSort((*CUnsorted), C, C_length, splitNumber, ASplitters, BSplitters, arraySizes);
 
     //get timing
     time += tic_sincelast();
@@ -464,7 +485,13 @@ float testParallelSort(
 
     //restore original values
     memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+
+    //deallocate variables
+    free(C);
     free(unsortedCopy);
+    free(ASplitters);
+    free(BSplitters);
+    free(arraySizes);
 
     return time;
 }

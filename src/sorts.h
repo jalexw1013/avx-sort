@@ -40,19 +40,19 @@ extern void avx512Merge(
 /*
  * Sorting Functions
  */
-typedef void (*SortTemplate)(vec_t*, uint32_t, const uint32_t);
+typedef void (*SortTemplate)(vec_t*, vec_t*, uint32_t, const uint32_t);
 
 void quickSort(
-    vec_t* array, uint32_t array_length, const uint32_t splitNumber);
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
 
 template <MergeTemplate Merge>
 void iterativeMergeSort(
-    vec_t* array, uint32_t array_length, const uint32_t splitNumber);
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
 
-typedef void (*ParallelSortTemplate)(vec_t*, uint32_t, const uint32_t);
+typedef void (*ParallelSortTemplate)(vec_t*, vec_t*, uint32_t, const uint32_t, uint32_t*, uint32_t*, uint32_t*);
 
 template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSort(
-    vec_t* array, uint32_t array_length, const uint32_t splitNumber);
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 
 #endif
