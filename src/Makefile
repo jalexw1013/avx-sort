@@ -66,7 +66,7 @@ endif
 .PHONY: merge
 merge:
 	rm merge -f
-	$(CC) -O1 -o $@ $(CCFLAGS) $(FILES)
+	$(CC) -O3 -o $@ $(CCFLAGS) $(FILES)
 
 run:
 	make merge
