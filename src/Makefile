@@ -1,6 +1,6 @@
 CC := icpc
-AVX512 := NO#Valid Options are YES or NO
-MERGE := NO#Valid Options are YES or NO
+AVX512 := YES#Valid Options are YES or NO
+MERGE := YES#Valid Options are YES or NO
 SORT := YES#Valid Options are YES or NO
 PARALLELSORT := YES#Valid Options are YES or NO
 
@@ -66,7 +66,7 @@ endif
 .PHONY: merge
 merge:
 	rm merge -f
-	$(CC) -O1 -o $@ $(CCFLAGS) $(FILES)
+	$(CC) -O2 -o $@ $(CCFLAGS) $(FILES)
 
 run:
 	make merge
