@@ -673,7 +673,7 @@ void sortTester(
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        printf("Array Size: %" PRIu32 "\n", C_length);
+        //printf("Array Size: %" PRIu32 "\n", C_length);
         printf("\n");
     }
 
@@ -825,7 +825,7 @@ void parallelTester(
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        printf("Array Size: %" PRIu32 "\n", C_length);
+        //printf("Array Size: %" PRIu32 "\n", C_length);
         printf("Number of Threads: %i\n", numberOfThreads);
         printf("\n");
     }
