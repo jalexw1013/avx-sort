@@ -655,6 +655,125 @@ void parallelIterativeMergeSort(
     }
 }
 
+template <SortTemplate Sort, MergeTemplate Merge>
+void parallelIterativeMergeSortV2(
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplittersP, uint32_t* BSplittersP, uint32_t* arraySizesP)
+{
+    int earlyEnd = 1; //Set to zero if small sub array or error
+    int numberOfSwaps = 0;
+
+    #pragma omp parallel
+    {
+        //algorithm does not support array_length < num threads
+        //for that case, just quick sort
+        #pragma omp single
+        {
+            if (array_length < (uint32_t)omp_get_num_threads()) {
+                quickSort(array, C, array_length, splitNumber);
+                earlyEnd = 0;
+            }
+        }
+
+        if (earlyEnd) {
+            // Heres whats happening here:
+            // We basically want a private copy of these three variables for each thread
+            // However, if we use the openmp private declaration, it will take longer to create each thread
+            // because of the extra memory allocations. We don't want excess memory allocations to throw off
+            // the timing of the algorithm. Therefore,  we pass in a variable with enough memory space for every
+            // thread. Then we calculate the offset from those pointers.
+            uint32_t* ASplitters = ASplittersP + (omp_get_num_threads() + 1) * omp_get_thread_num();
+            uint32_t* BSplitters = BSplittersP + (omp_get_num_threads() + 1) * omp_get_thread_num();
+            uint32_t* arraySizes = arraySizesP + omp_get_num_threads() * omp_get_thread_num();
+
+            uint32_t threadNum = omp_get_thread_num();
+            uint32_t numberOfSubArrays = omp_get_num_threads();
+            uint32_t initialSubArraySize = array_length / omp_get_num_threads();
+
+            //Calculate the size of each subarray
+            for (uint32_t thread = 0; thread < (uint32_t)omp_get_num_threads(); thread++) {
+                arraySizes[thread] = initialSubArraySize;
+                if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)omp_get_num_threads())) {
+                    arraySizes[thread]++;
+                } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
+                    arraySizes[thread]++;
+                }
+            }
+
+            uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
+            uint32_t currentSubArraySize = arraySizes[threadNum];
+
+            // Each thread does its own sort
+            Sort(array + threadStartIndex, C + threadStartIndex, currentSubArraySize, splitNumber);
+
+            #pragma omp barrier
+            while (currentSubArraySize < array_length && numberOfSubArrays > 1) {
+                for (uint32_t mergeColumnIndex = 0; mergeColumnIndex < numberOfSubArrays;) {
+                    #pragma omp barrier
+                    uint32_t mergeColumnOffset = arraySum(arraySizes, mergeColumnIndex);
+
+                    MergePathSplitter(
+                        array + mergeColumnOffset, arraySizes[mergeColumnIndex],
+                        array + mergeColumnOffset + arraySizes[mergeColumnIndex], arraySizes[mergeColumnIndex + 1],
+                        C + mergeColumnOffset, arraySizes[mergeColumnIndex] + arraySizes[mergeColumnIndex + 1],
+                        omp_get_num_threads(),
+                        ASplitters, BSplitters);
+
+                    uint32_t A_start = mergeColumnOffset + ASplitters[omp_get_thread_num()];
+                    uint32_t A_length = ASplitters[omp_get_thread_num() + 1] - ASplitters[omp_get_thread_num()];
+                    uint32_t B_start = mergeColumnOffset + arraySizes[mergeColumnIndex] + BSplitters[omp_get_thread_num()];
+                    uint32_t B_length = BSplitters[omp_get_thread_num() + 1] - BSplitters[omp_get_thread_num()];
+                    uint32_t C_start = mergeColumnOffset + ASplitters[omp_get_thread_num()] + BSplitters[omp_get_thread_num()];
+                    uint32_t C_length = (ASplitters[omp_get_thread_num() + 1] + BSplitters[omp_get_thread_num() + 1]) - (ASplitters[omp_get_thread_num()] + BSplitters[omp_get_thread_num()]);
+
+                    Merge(array + A_start, A_length, array + B_start, B_length, C + C_start, C_length);
+
+                    if ((numberOfSubArrays - mergeColumnIndex) == 3) {
+                        // We have an odd number of sub arrays
+                        #pragma omp barrier
+                        #pragma omp single
+                        {
+                            memcpy(array + mergeColumnOffset, C + mergeColumnOffset, (arraySizes[mergeColumnIndex] + arraySizes[mergeColumnIndex + 1]) * sizeof(vec_t));
+                        }
+                        arraySizes[mergeColumnIndex] = arraySizes[mergeColumnIndex] + arraySizes[mergeColumnIndex + 1];
+                        arraySizes[mergeColumnIndex + 1] = arraySizes[mergeColumnIndex + 2];
+                        numberOfSubArrays--;
+                    } else {
+                        mergeColumnIndex += 2;
+                    }
+                }
+                #pragma omp barrier
+                //number of sub arrays is now cut in half
+                numberOfSubArrays = numberOfSubArrays/2;
+
+                //Add up array sizes
+                for (uint32_t i = 0, index = 0; i < numberOfSubArrays; i++) {
+                    arraySizes[i] = arraySizes[index] + arraySizes[index + 1];
+                    index += 2;
+                }
+
+                //swap pointers
+                #pragma omp barrier
+                #pragma omp single
+                {
+                    vec_t* tmp = array;
+                    array = C;
+                    C = tmp;
+                    numberOfSwaps++;
+                }
+            }
+
+            //must return original array
+            if (numberOfSwaps > 0 && numberOfSwaps%2 == 1) {
+                memcpy((void*)C,(void*)array, (array_length+32)*sizeof(vec_t));
+                vec_t* tmp = array;
+                array = C;
+                C = tmp;
+            }
+        }
+    }
+}
+
+
 /*
  * Template Instantiations
  */
@@ -671,4 +790,11 @@ template void parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>
 template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #ifdef AVX512
 template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+#endif
+
+template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortV2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+#ifdef AVX512
+template void parallelIterativeMergeSortV2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #endif

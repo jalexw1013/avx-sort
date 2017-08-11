@@ -55,4 +55,8 @@ template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 
+template <SortTemplate Sort, MergeTemplate Merge>
+void parallelIterativeMergeSortV2(
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+
 #endif
