@@ -893,7 +893,7 @@ void parallelTester(
 
         if (OutToFile) {
             writeToParallelSortOut("Parallel Merge Sort using Serial Merge", entropy, C_length, numberOfThreads, serialMergeParallelSortTime);
-            writeToParallelSortOut("Parallel Merge Sort V2 using Serial Merge", entropy, C_length, numberOfThreads, serialMergeParallelSortTime);
+            writeToParallelSortOut("Parallel Merge Sort V2 using Serial Merge", entropy, C_length, numberOfThreads, serialMergeParallelV2SortTime);
             // writeToParallelSortOut("Parallel Merge Sort using Serial Merge Branchless", entropy, C_length, numberOfThreads, serialMergeNoBranchParallelSortTime);
             // writeToParallelSortOut("Parallel Merge Sort using Bitonic Merge", entropy, C_length, numberOfThreads, bitonicMergeRealParallelSortTime);
             // #ifdef AVX512
