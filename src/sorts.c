@@ -401,7 +401,7 @@ inline void avx512Merge(
         micmp = (~exceededBStop | (micmp & exceededAStop));
 
         //copy the elements to the final elements
-        __m512i miCelems = _mm512_mask_add_epi32(miBelems, micmp, miAelems, mizero);
+        __m512i miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
         _mm512_mask_i32scatter_epi32((int *)C, exceededAStop | exceededBStop, vindexC, miCelems, 4);
 
         //increase indexes

@@ -1,4 +1,0 @@
-Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time
-Parallel Merge Sort using AVX512 Merge,4,100,1,33074,0.00302348146215081215
-Parallel Merge Sort using AVX512 Merge,4,100,2,24164,0.00413827877491712570
-Parallel Merge Sort using AVX512 Merge,4,100,4,26494,0.00377430906519293785
