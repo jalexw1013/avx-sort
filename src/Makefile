@@ -1,4 +1,4 @@
-CC := g++
+CC := icpc
 AVX512 := YES#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := NO#Valid Options are YES or NO
@@ -9,6 +9,23 @@ OS = $(shell uname)
 FILES = main.c sorts.c utils/util.c utils/xmalloc.c
 
 #set compiler
+ICPCAVAI := $(shell command -v icpc 2> /dev/null)
+ifeq ($(CC),icpc)
+	ifndef ICPCAVAI
+    	$(warning "icpc is not available, g++ will be used instead")
+		CC = g++
+	endif
+endif
+
+#verify g++ version
+ifeq ($(AVX512),YES)
+	G++VERSIONGTQ4 := $(shell expr `g++ -dumpversion | cut -f1 -d.` \>= 4.9)
+	ifneq "$(G++VERSIONGTQ4)" "1"
+    	$(error "g++ must be version 4.9 or greater to run AVX-512")
+	endif
+endif
+
+#set compiler flags
 ifeq ($(CC),g++)
 	CCFLAGS += -std=c++11 -fopenmp -march=native -funroll-loops -ffp-contract=fast -Wall -pedantic -fkeep-inline-functions
 else ifeq ($(CC),gcc)
