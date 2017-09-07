@@ -669,7 +669,7 @@ void parallelIterativeMergeSortV2(
         //for that case, just quick sort
         #pragma omp single
         {
-            if (array_length < (uint32_t)omp_get_num_threads()) {
+            if (array_length < (uint32_t)numberOfThreads) {
                 quickSort(array, C, array_length, splitNumber);
                 earlyEnd = 0;
             }
