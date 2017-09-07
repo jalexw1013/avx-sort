@@ -511,20 +511,21 @@ void parallelIterativeMergeSort(
         }
 
         if (earlyEnd) {
-            uint32_t* ASplitters = ASplittersP + (omp_get_num_threads() + 1) * omp_get_thread_num();
-            uint32_t* BSplitters = BSplittersP + (omp_get_num_threads() + 1) * omp_get_thread_num();
-            uint32_t* arraySizes = arraySizesP + omp_get_num_threads() * omp_get_thread_num();
-
             uint32_t threadNum = omp_get_thread_num();
-            uint32_t numberOfSubArrays = omp_get_num_threads();
-            uint32_t initialSubArraySize = array_length / omp_get_num_threads();
+            uint32_t numberOfThreads = omp_get_num_threads();
+            uint32_t* ASplitters = ASplittersP + (numberOfThreads + 1) * threadNum;
+            uint32_t* BSplitters = BSplittersP + (numberOfThreads + 1) * threadNum;
+            uint32_t* arraySizes = arraySizesP + numberOfThreads * threadNum;
+
+            uint32_t numberOfSubArrays = numberOfThreads;
+            uint32_t initialSubArraySize = array_length / numberOfThreads;
 
             //Calculate the size of each subarray
-            for (uint32_t thread = 0; thread < (uint32_t)omp_get_num_threads(); thread++) {
+            for (uint32_t thread = 0; thread < (uint32_t)numberOfThreads; thread++) {
                 arraySizes[thread] = initialSubArraySize;
-                if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)omp_get_num_threads())) {
+                if (((thread % 2) == 1) && thread < 2*(array_length % (uint32_t)numberOfThreads)) {
                     arraySizes[thread]++;
-                } else if ((array_length % (uint32_t)omp_get_num_threads()) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)omp_get_num_threads()) - numberOfSubArrays/2)) {
+                } else if ((array_length % (uint32_t)numberOfThreads) > numberOfSubArrays/2 && thread < 2*((array_length % (uint32_t)numberOfThreads) - numberOfSubArrays/2)) {
                     arraySizes[thread]++;
                 }
             }
@@ -548,14 +549,14 @@ void parallelIterativeMergeSort(
             #pragma omp barrier
             while (currentSubArraySize < array_length && (numberOfSubArrays > 1 || deferedSubArray)) {
                 currentSubArraySize = arraySizes[0];
-                numPerMergeThreads = omp_get_num_threads()/(numberOfSubArrays/2);
-                leftOverThreads = omp_get_num_threads()%(numberOfSubArrays/2);
+                numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
+                leftOverThreads = numberOfThreads%(numberOfSubArrays/2);
 
                 //determines which threads will merge which sub arrays
                 leftOverThreadsCounter = leftOverThreads;
                 groupNumber = 0;
                 mergeHeadThreadNum = 0;
-                for (uint32_t i = 0; i < (uint32_t)omp_get_num_threads() && numPerMergeThreads != 0; ) {
+                for (uint32_t i = 0; i < (uint32_t)numberOfThreads && numPerMergeThreads != 0; ) {
                     if (leftOverThreadsCounter) {
                         leftOverThreadsCounter--;
                         i += (numPerMergeThreads + 1);
