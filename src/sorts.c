@@ -704,59 +704,119 @@ void parallelIterativeMergeSortPower2(
 
         uint32_t numberOfSubArrays = numberOfThreads;
 
+        printf("1\n");
+
         // Begin merging
         while (subArraySize < array_length) {
             #pragma omp barrier
+            printf("1\n");
             // Round 1, go into C
-            uint32_t mergeGroupNumber = (numberOfSubArrays/2)%threadNum;
+            #pragma omp single
+            {
+                printf("\n\n\nRound1\n");
+            }
             uint32_t numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
-
+            uint32_t mergeGroupNumber = threadNum/numPerMergeThreads;
+            #pragma omp barrier
+            printf("2\n");
             MergePathSplitter(
-                array + subArraySize*mergeGroupNumber, subArraySize,
-                array + subArraySize*mergeGroupNumber + subArraySize, subArraySize,
-                C + subArraySize*mergeGroupNumber, subArraySize*2,
+                array + subArraySize*mergeGroupNumber*2, subArraySize,
+                array + subArraySize*mergeGroupNumber*2 + subArraySize, subArraySize,
+                C + subArraySize*mergeGroupNumber*2, subArraySize*2,
                 numPerMergeThreads,
                 ASplitters, BSplitters);
-
-            uint32_t A_start = subArraySize*mergeGroupNumber + ASplitters[threadNum%numPerMergeThreads];
-            uint32_t A_end = subArraySize*mergeGroupNumber + ASplitters[threadNum%numPerMergeThreads + 1];
+                #pragma omp barrier
+                printf("3\n");
+            #pragma omp critical
+            {
+                for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
+                    printf("%i:ASplitters[%i]:%i\n", threadNum, i, ASplitters[i]);
+                }
+                for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
+                    printf("%i:BSplitters[%i]:%i\n", threadNum, i, BSplitters[i]);
+                }
+            }
+            uint32_t A_start = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads];
+            uint32_t A_end = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads + 1];
             uint32_t A_length = A_end - A_start;
-            uint32_t B_start = subArraySize*mergeGroupNumber + subArraySize + BSplitters[threadNum%numPerMergeThreads];
-            uint32_t B_end = subArraySize*mergeGroupNumber + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
+            uint32_t B_start = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads];
+            uint32_t B_end = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
             uint32_t B_length = B_end - B_start;
-            uint32_t C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber;
+            uint32_t C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber*2;
             uint32_t C_length = A_length + B_length;
-
+            #pragma omp critical
+            {
+                printf("%i:A_start:%i\n", threadNum, A_start);
+                printf("%i:A_end:%i\n", threadNum, A_end);
+                printf("%i:B_start:%i\n", threadNum, B_start);
+                printf("%i:B_end:%i\n", threadNum, B_end);
+                printf("%i:C_start:%i\n", threadNum, C_start);
+            }
+            #pragma omp barrier
+            printf("4\n");
             Merge(array + A_start, A_length, array + B_start, B_length, C + C_start, C_length);
-
+            #pragma omp barrier
+            printf("5\n");
             numberOfSubArrays /= 2;
             subArraySize *= 2;
-
+            #pragma omp barrier
+            printf("6\n");
             #pragma omp barrier
             // Round 2, go into array
-            mergeGroupNumber = (numberOfSubArrays/2)%threadNum;
+            #pragma omp single
+            {
+                printf("\n\n\nRound2\n");
+            }
             numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
-
+            mergeGroupNumber = threadNum/numPerMergeThreads;
+            #pragma omp critical
+            {
+                printf("%i:numPerMergeThreads:%i\n", threadNum, numPerMergeThreads);
+            }
+            #pragma omp barrier
+            printf("7\n");
             MergePathSplitter(
-                C + subArraySize*mergeGroupNumber, subArraySize,
-                C + subArraySize*mergeGroupNumber + subArraySize, subArraySize,
-                array + subArraySize*mergeGroupNumber, subArraySize*2,
+                C + subArraySize*mergeGroupNumber*2, subArraySize,
+                C + subArraySize*mergeGroupNumber*2 + subArraySize, subArraySize,
+                array + subArraySize*mergeGroupNumber*2, subArraySize*2,
                 numPerMergeThreads,
                 ASplitters, BSplitters);
+                #pragma omp critical
+                {
+                    for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
+                        printf("%i:ASplitters[%i]:%i\n", threadNum, i, ASplitters[i]);
+                    }
+                    for (uint32_t i = 0; i < numPerMergeThreads + 1; i++) {
+                        printf("%i:BSplitters[%i]:%i\n", threadNum, i, BSplitters[i]);
+                    }
+                }
+                #pragma omp barrier
+                printf("8\n");
 
-            A_start = subArraySize*mergeGroupNumber + ASplitters[threadNum%numPerMergeThreads];
-            A_end = subArraySize*mergeGroupNumber + ASplitters[threadNum%numPerMergeThreads + 1];
+            A_start = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads];
+            A_end = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads + 1];
             A_length = A_end - A_start;
-            B_start = subArraySize*mergeGroupNumber + subArraySize + BSplitters[threadNum%numPerMergeThreads];
-            B_end = subArraySize*mergeGroupNumber + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
+            B_start = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads];
+            B_end = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
             B_length = B_end - B_start;
-            C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber;
+            C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber*2;
             C_length = A_length + B_length;
-
+            #pragma omp critical
+            {
+                printf("%i:A_start:%i\n", threadNum, A_start);
+                printf("%i:A_end:%i\n", threadNum, A_end);
+                printf("%i:B_start:%i\n", threadNum, B_start);
+                printf("%i:B_end:%i\n", threadNum, B_end);
+                printf("%i:C_start:%i\n", threadNum, C_start);
+            }
+            #pragma omp barrier
+            printf("9\n");
             Merge(C + A_start, A_length, C + B_start, B_length, array + C_start, C_length);
 
             numberOfSubArrays /= 2;
             subArraySize *= 2;
+            #pragma omp barrier
+            printf("10\n");
         }
     }
 }

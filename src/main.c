@@ -98,7 +98,7 @@ uint32_t  h_ui_A_length                = 8388608;
 uint32_t  h_ui_B_length                = 8388608;
 uint32_t  h_ui_C_length                = 16777216; //array to put values in
 uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
-uint32_t  RUNS                         = 10;
+uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
@@ -859,44 +859,43 @@ void parallelTester(
             }
         }
 
-        if (serialMergeNoBranchParallelSortTime >= 0.0) {
-            temp = serialMergeNoBranchParallelSortTime;
-            serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMergeNoBranch>,serialMergeNoBranch>>(
-                                                        CUnsorted, C_length,
-                                                        CSorted, Ct_length,
-                                                        runs, 64, "Branchless Merge Sort");
-            temp = serialMergeNoBranchParallelSortTime - temp;
-            if (temp < serialMergeNoBranchParallelSortTimeMax) {
-                serialMergeNoBranchParallelSortTimeMax = temp;
-            }
-        }
-
-        if (bitonicMergeRealParallelSortTime >= 0.0) {
-            temp = bitonicMergeRealParallelSortTime;
-            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<bitonicMergeReal>,bitonicMergeReal>>(
-                                                    CUnsorted, C_length,
-                                                    CSorted, Ct_length,
-                                                    runs, 64, "Bitonic Based Merge Sort");
-            temp = bitonicMergeRealParallelSortTime - temp;
-            if (temp < bitonicMergeRealParallelSortTimeMax) {
-                bitonicMergeRealParallelSortTimeMax = temp;
-            }
-        }
-
-        #ifdef AVX512
-        if (avx512MergeParallelSortTime >= 0.0) {
-            temp = avx512MergeParallelSortTime;
-            avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<avx512Merge>,avx512Merge>>(
-                                                CUnsorted, C_length,
-                                                CSorted, Ct_length,
-                                                runs, 64, "AVX-512 Based Merge Sort");
-            temp = avx512MergeParallelSortTime - temp;
-            if (temp < avx512MergeParallelSortTimeMax) {
-                avx512MergeParallelSortTimeMax = temp;
-            }
-        }
-
-        #endif
+        // if (serialMergeNoBranchParallelSortTime >= 0.0) {
+        //     temp = serialMergeNoBranchParallelSortTime;
+        //     serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMergeNoBranch>,serialMergeNoBranch>>(
+        //                                                 CUnsorted, C_length,
+        //                                                 CSorted, Ct_length,
+        //                                                 runs, 64, "Branchless Merge Sort");
+        //     temp = serialMergeNoBranchParallelSortTime - temp;
+        //     if (temp < serialMergeNoBranchParallelSortTimeMax) {
+        //         serialMergeNoBranchParallelSortTimeMax = temp;
+        //     }
+        // }
+        //
+        // if (bitonicMergeRealParallelSortTime >= 0.0) {
+        //     temp = bitonicMergeRealParallelSortTime;
+        //     bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<bitonicMergeReal>,bitonicMergeReal>>(
+        //                                             CUnsorted, C_length,
+        //                                             CSorted, Ct_length,
+        //                                             runs, 64, "Bitonic Based Merge Sort");
+        //     temp = bitonicMergeRealParallelSortTime - temp;
+        //     if (temp < bitonicMergeRealParallelSortTimeMax) {
+        //         bitonicMergeRealParallelSortTimeMax = temp;
+        //     }
+        // }
+        //
+        // #ifdef AVX512
+        // if (avx512MergeParallelSortTime >= 0.0) {
+        //     temp = avx512MergeParallelSortTime;
+        //     avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<avx512Merge>,avx512Merge>>(
+        //                                         CUnsorted, C_length,
+        //                                         CSorted, Ct_length,
+        //                                         runs, 64, "AVX-512 Based Merge Sort");
+        //     temp = avx512MergeParallelSortTime - temp;
+        //     if (temp < avx512MergeParallelSortTimeMax) {
+        //         avx512MergeParallelSortTimeMax = temp;
+        //     }
+        // }
+        // #endif
 
         insertData(
             A, A_length,
