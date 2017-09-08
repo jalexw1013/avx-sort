@@ -849,7 +849,7 @@ void parallelTester(
     for (uint32_t run = 0; run < RUNS; run++) {
         if (serialMergeParallelSortTime >= 0.0) {
             temp = serialMergeParallelSortTime;
-            serialMergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>>(
+            serialMergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMerge>,serialMerge>>(
                                                 CUnsorted, C_length,
                                                 CSorted, Ct_length,
                                                 runs, 64, "Standard Parallel Merge Sort");
@@ -861,7 +861,7 @@ void parallelTester(
 
         if (serialMergeNoBranchParallelSortTime >= 0.0) {
             temp = serialMergeNoBranchParallelSortTime;
-            serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>>(
+            serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMergeNoBranch>,serialMergeNoBranch>>(
                                                         CUnsorted, C_length,
                                                         CSorted, Ct_length,
                                                         runs, 64, "Branchless Merge Sort");
@@ -873,7 +873,7 @@ void parallelTester(
 
         if (bitonicMergeRealParallelSortTime >= 0.0) {
             temp = bitonicMergeRealParallelSortTime;
-            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
+            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<bitonicMergeReal>,bitonicMergeReal>>(
                                                     CUnsorted, C_length,
                                                     CSorted, Ct_length,
                                                     runs, 64, "Bitonic Based Merge Sort");
@@ -886,7 +886,7 @@ void parallelTester(
         #ifdef AVX512
         if (avx512MergeParallelSortTime >= 0.0) {
             temp = avx512MergeParallelSortTime;
-            avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<avx512Merge>,avx512Merge>>(
+            avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSortPower2<avx512Merge>,avx512Merge>>(
                                                 CUnsorted, C_length,
                                                 CSorted, Ct_length,
                                                 runs, 64, "AVX-512 Based Merge Sort");
