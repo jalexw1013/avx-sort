@@ -480,6 +480,34 @@ void iterativeMergeSort(
     //free(C);
 }
 
+/**
+ * sort where array_length must be a power of 2
+ */
+template <MergeTemplate Merge>
+void iterativeMergeSortPower2(
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t startSize)
+{
+    for (uint32_t i = 0; i < array_length; i += startSize) {
+        qsort((void*)(array + i), startSize, sizeof(vec_t), hostBasicCompare);
+    }
+
+    //now do actual iterative merge sort
+    for (uint32_t currentSubArraySize = startSize; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    {
+    	for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * currentSubArraySize)
+    	{
+            Merge(array + A_start, currentSubArraySize, array + A_start + currentSubArraySize, currentSubArraySize, C + A_start, currentSubArraySize * 2);
+    	}
+
+        currentSubArraySize = 2 * currentSubArraySize;
+
+        for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * currentSubArraySize)
+    	{
+            Merge(C + A_start, currentSubArraySize, C + A_start + currentSubArraySize, currentSubArraySize, array + A_start, currentSubArraySize * 2);
+    	}
+    }
+}
+
 /*
  * Sums the values of the array up to and not including the given index
  */
@@ -784,6 +812,13 @@ template void iterativeMergeSort<serialMergeNoBranch>(vec_t* array, vec_t* C, ui
 template void iterativeMergeSort<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
 #ifdef AVX512
 template void iterativeMergeSort<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
+#endif
+
+template void iterativeMergeSortPower2<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSortPower2<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
+template void iterativeMergeSortPower2<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
+#ifdef AVX512
+template void iterativeMergeSortPower2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber);
 #endif
 
 template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);

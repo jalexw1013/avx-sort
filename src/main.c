@@ -94,19 +94,19 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 500000;
-uint32_t  h_ui_B_length                = 500000;
-uint32_t  h_ui_C_length                = 1000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 8388608;
+uint32_t  h_ui_B_length                = 8388608;
+uint32_t  h_ui_C_length                = 16777216; //array to put values in
+uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
 uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
 //These Variables for a full testing run
-const uint32_t testingEntropies[] = {4,8,12,16,20,24,28};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
+const uint32_t testingEntropies[] = {28};//{4,8,12,16,20,24,28};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
 const uint32_t testingEntropiesLength = 7;
-const uint32_t testingSizes[] = {1000, 10000, 100000, 1000000, 10000000};
-const uint32_t testingSizesLength = 5;
+const uint32_t testingSizes[] = {16384, 262144, 1048576, 16777216};
+const uint32_t testingSizesLength = 4;
 const uint32_t testingThreads[] = {1,2,4,8,16,24,32,40,48,64,72,128,144,180,256,270};//*/{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
 const uint32_t testingThreadsLength = 15;
 
@@ -694,21 +694,21 @@ void sortTester(
         }
 
         if (serialMergeSortTime >= 0.0) {
-            serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
+            serialMergeSortTime += testSort<iterativeMergeSortPower2<serialMerge>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
                 runs, 64, "Merge Sort Standard");
         }
 
         if (serialMergeNoBranchSortTime >= 0.0) {
-            serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
+            serialMergeNoBranchSortTime += testSort<iterativeMergeSortPower2<serialMergeNoBranch>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
                 runs, 64, "Branch Avoiding Sort");
         }
 
         if (bitonicMergeRealSortTime >= 0.0) {
-            bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
+            bitonicMergeRealSortTime += testSort<iterativeMergeSortPower2<bitonicMergeReal>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
                 runs, 64, "Bitonic Based Merge Sort");
@@ -716,7 +716,7 @@ void sortTester(
 
         #ifdef AVX512
         if (avx512MergeSortTime >= 0.0) {
-            avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
+            avx512MergeSortTime += testSort<iterativeMergeSortPower2<avx512Merge>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
                 runs, 64, "AVX-512 Merge Sort");
@@ -858,7 +858,7 @@ void parallelTester(
                 serialMergeParallelSortTimeMax = temp;
             }
         }
-       
+
         if (serialMergeNoBranchParallelSortTime >= 0.0) {
             temp = serialMergeNoBranchParallelSortTime;
             serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>>(
@@ -870,7 +870,7 @@ void parallelTester(
                 serialMergeNoBranchParallelSortTimeMax = temp;
             }
         }
-       
+
         if (bitonicMergeRealParallelSortTime >= 0.0) {
             temp = bitonicMergeRealParallelSortTime;
             bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
