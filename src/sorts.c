@@ -491,6 +491,8 @@ void iterativeMergeSortPower2(
         qsort((void*)(array + i), startSize, sizeof(vec_t), hostBasicCompare);
     }
 
+    int numberOfSwaps = 0;
+
     //now do actual iterative merge sort
     for (uint32_t currentSubArraySize = startSize; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
@@ -499,12 +501,18 @@ void iterativeMergeSortPower2(
             Merge(array + A_start, currentSubArraySize, array + A_start + currentSubArraySize, currentSubArraySize, C + A_start, currentSubArraySize * 2);
     	}
 
-        currentSubArraySize = 2 * currentSubArraySize;
+        //pointer swap for C
+        vec_t* tmp = array;
+        array = C;
+        C = tmp;
+        numberOfSwaps++;
+    }
 
-        for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * currentSubArraySize)
-    	{
-            Merge(C + A_start, currentSubArraySize, C + A_start + currentSubArraySize, currentSubArraySize, array + A_start, currentSubArraySize * 2);
-    	}
+    if (numberOfSwaps%2 == 1) {
+        memcpy((void*)C,(void*)array, (array_length)*sizeof(vec_t));
+        vec_t* tmp = array;
+        array = C;
+        C = tmp;
     }
 }
 
@@ -688,6 +696,7 @@ template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSortPower2(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplittersP, uint32_t* BSplittersP, uint32_t* arraySizesP)
 {
+    int numberOfSwaps = 0;
     #pragma omp parallel
     {
         uint32_t threadNum = omp_get_thread_num();
@@ -707,7 +716,6 @@ void parallelIterativeMergeSortPower2(
         // Begin merging
         while (subArraySize < array_length) {
             #pragma omp barrier
-            // Round 1, go into C
             uint32_t numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
             uint32_t mergeGroupNumber = threadNum/numPerMergeThreads;
 
@@ -732,32 +740,24 @@ void parallelIterativeMergeSortPower2(
             numberOfSubArrays /= 2;
             subArraySize *= 2;
 
-            // Round 2, go into array
+            //swap pointers
             #pragma omp barrier
-            numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
-            mergeGroupNumber = threadNum/numPerMergeThreads;
-
-            MergePathSplitter(
-                C + subArraySize*mergeGroupNumber*2, subArraySize,
-                C + subArraySize*mergeGroupNumber*2 + subArraySize, subArraySize,
-                array + subArraySize*mergeGroupNumber*2, subArraySize*2,
-                numPerMergeThreads,
-                ASplitters, BSplitters);
-
-            A_start = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads];
-            A_end = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads + 1];
-            A_length = A_end - A_start;
-            B_start = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads];
-            B_end = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
-            B_length = B_end - B_start;
-            C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber*2;
-            C_length = A_length + B_length;
-
-            Merge(C + A_start, A_length, C + B_start, B_length, array + C_start, C_length);
-
-            numberOfSubArrays /= 2;
-            subArraySize *= 2;
+            #pragma omp single
+            {
+                vec_t* tmp = array;
+                array = C;
+                C = tmp;
+                numberOfSwaps++;
+            }
         }
+    }
+
+    //must return original array
+    if (numberOfSwaps > 0 && numberOfSwaps%2 == 1) {
+        memcpy((void*)C,(void*)array, (array_length+32)*sizeof(vec_t));
+        vec_t* tmp = array;
+        array = C;
+        C = tmp;
     }
 }
 
@@ -905,11 +905,11 @@ template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bi
 template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #endif
 
-template void parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
-template void parallelIterativeMergeSortPower2<iterativeMergeSortPower2<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
-template void parallelIterativeMergeSortPower2<iterativeMergeSortPower2<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #ifdef AVX512
-template void parallelIterativeMergeSortPower2<iterativeMergeSortPower2<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #endif
 
 template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
