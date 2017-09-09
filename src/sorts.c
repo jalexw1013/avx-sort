@@ -345,6 +345,13 @@ inline void avx512Merge(
     MergePathSplitter(A, A_length, B, B_length, C,
         C_length, 16, ASplitters, BSplitters);
 
+    for (uint32_t i = 0; i < 17; i++) {
+        printf("ASplitters[%i] = %i\n", i, ASplitters[i]);
+    }
+    for (uint32_t i = 0; i < 17; i++) {
+        printf("BSplitters[%i] = %i\n", i, BSplitters[i]);
+    }
+
     //start indexes
     __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
                                        ASplitters[13], ASplitters[12],
