@@ -339,6 +339,8 @@ inline void avx512Merge(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length)
 {
+    if (A%64 != 0)
+        printf("UNALIGNED\n");
 
     uint32_t ASplitters[17];
     uint32_t BSplitters[17];
