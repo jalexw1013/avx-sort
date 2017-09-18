@@ -345,51 +345,14 @@ inline void avx512Merge(
     MergePathSplitter(A, A_length, B, B_length, C,
         C_length, 16, ASplitters, BSplitters);
 
-    for (uint32_t i = 0; i < 17; i++) {
-        printf("ASplitters[%i] = %i\n", i, ASplitters[i]);
-    }
-    for (uint32_t i = 0; i < 17; i++) {
-        printf("BSplitters[%i] = %i\n", i, BSplitters[i]);
-    }
-
     //start indexes
-    __m512i vindexA = _mm512_set_epi32(ASplitters[15], ASplitters[14],
-                                       ASplitters[13], ASplitters[12],
-                                       ASplitters[11], ASplitters[10],
-                                       ASplitters[9], ASplitters[8],
-                                       ASplitters[7], ASplitters[6],
-                                       ASplitters[5], ASplitters[4],
-                                       ASplitters[3], ASplitters[2],
-                                       ASplitters[1], ASplitters[0]);
-    __m512i vindexB = _mm512_set_epi32(BSplitters[15], BSplitters[14],
-                                       BSplitters[13], BSplitters[12],
-                                       BSplitters[11], BSplitters[10],
-                                       BSplitters[9], BSplitters[8],
-                                       BSplitters[7], BSplitters[6],
-                                       BSplitters[5], BSplitters[4],
-                                       BSplitters[3], BSplitters[2],
-                                       BSplitters[1], BSplitters[0]);
-    //stop indexes
-    __m512i vindexAStop = _mm512_set_epi32(ASplitters[16],
-                                           ASplitters[15], ASplitters[14],
-                                           ASplitters[13], ASplitters[12],
-                                           ASplitters[11], ASplitters[10],
-                                           ASplitters[9], ASplitters[8],
-                                           ASplitters[7], ASplitters[6],
-                                           ASplitters[5], ASplitters[4],
-                                           ASplitters[3], ASplitters[2],
-                                           ASplitters[1]);
-    __m512i vindexBStop = _mm512_set_epi32(BSplitters[16],
-                                           BSplitters[15], BSplitters[14],
-                                           BSplitters[13], BSplitters[12],
-                                           BSplitters[11], BSplitters[10],
-                                           BSplitters[9], BSplitters[8],
-                                           BSplitters[7], BSplitters[6],
-                                           BSplitters[5], BSplitters[4],
-                                           BSplitters[3], BSplitters[2],
-                                           BSplitters[1]);
-    //vindex start
+    __m512i vindexA = _mm512_load_epi32(ASplitters);
+    __m512i vindexB = _mm512_load_epi32(BSplitters);
     __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
+
+    //stop indexes
+    __m512i vindexAStop = _mm512_load_epi32(ASplitters + 1);
+    __m512i vindexBStop = _mm512_load_epi32(BSplitters + 1);
 
     //other Variables
     const __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
