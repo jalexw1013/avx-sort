@@ -381,6 +381,29 @@ inline void avx512Merge(
         vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
     }
 }
+
+inline void avx512ParallelMerge(
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length)
+{
+    #pragma omp parallel
+    {
+        uint32_t numThreads = omp_get_num_threads();
+        uint32_t * ASplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
+        uint32_t * BSplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
+        MergePathSplitter(A, A_length, B, B_length, C,
+            C_length, numThreads, ASplitters, BSplitters);
+        uint32_t threadNum = omp_get_thread_num();
+        uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
+        uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
+        avx512Merge(A + ASplitters[threadNum], A_length,
+            B + BSplitters[threadNum], B_length,
+            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length);
+        free(ASplitters);
+        free(BSplitters);
+    }
+}
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

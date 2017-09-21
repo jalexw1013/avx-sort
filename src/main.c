@@ -533,6 +533,7 @@ void mergeTester(
     #ifdef AVX512
     //float bitonicAVX512MergeTime = 0.0;
     float avx512MergeTime = 0.0;
+    float avx512ParallelMergeTime = 0.0;
     #endif
 
     // for (uint32_t i = 0; i < A_length; i++) {
@@ -581,6 +582,13 @@ void mergeTester(
                 C, Ct_length, CSorted,
                 runs, "AVX-512 Merge");
         }
+
+        if (avx512ParallelMergeTime >= 0.0) {
+            avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
+                A, A_length, B, B_length,
+                C, Ct_length, CSorted,
+                runs, "AVX-512 Parallel Merge");
+        }
         #endif
 
         insertData(
@@ -597,6 +605,7 @@ void mergeTester(
     #ifdef AVX512
     //bitonicAVX512MergeTime /= RUNS;
     avx512MergeTime /= RUNS;
+    avx512ParallelMergeTime /= RUNS;
     #endif
 
     if (OutToFile) {
@@ -650,6 +659,15 @@ void mergeTester(
         if (avx512MergeTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeTime));
         } else if (avx512MergeTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+        printf("AVX512 Parallel Merge   :     ");
+        if (avx512ParallelMergeTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512ParallelMergeTime));
+        } else if (avx512ParallelMergeTime == 0.0) {
             printf("∞");
         } else {
             printf("N/A");
