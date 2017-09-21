@@ -94,11 +94,11 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 500000;
-uint32_t  h_ui_B_length                = 500000;
-uint32_t  h_ui_C_length                = 1000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 1000000; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_A_length                = 5000000;
+uint32_t  h_ui_B_length                = 5000000;
+uint32_t  h_ui_C_length                = 10000000; //array to put values in
+uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
+uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
@@ -533,7 +533,7 @@ void mergeTester(
     #ifdef AVX512
     //float bitonicAVX512MergeTime = 0.0;
     float avx512MergeTime = 0.0;
-    float avx512ParallelMergeTime = 0.0;
+    double avx512ParallelMergeTime = 0.0;
     #endif
 
     // for (uint32_t i = 0; i < A_length; i++) {
@@ -666,7 +666,7 @@ void mergeTester(
         printf("\n");
         printf("AVX512 Parallel Merge   :     ");
         if (avx512ParallelMergeTime > 0.0) {
-            printfcomma((int)((float)Ct_length/avx512ParallelMergeTime));
+            printfcomma((int)((double)Ct_length/avx512ParallelMergeTime));
         } else if (avx512ParallelMergeTime == 0.0) {
             printf("∞");
         } else {
