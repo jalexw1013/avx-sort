@@ -675,6 +675,14 @@ void mergeTester(
         printf("\n");
         #endif
         printf("\n\n");
+
+        printf("Serial Merge           :     %f\n", serialMergeTime);
+        printf("Serial Merge Branchless:     %f\n", serialMergeNoBranchTime);
+        printf("Bitonic Merge          :     %f\n", bitonicMergeRealTime);
+        #ifdef AVX512
+        printf("AVX512 Merge           :     %f\n", avx512MergeTime);
+        printf("AVX512 Parallel Merge  :     %f\n", avx512ParallelMergeTime);
+        #endif
     }
 }
 #endif
