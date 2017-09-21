@@ -6,40 +6,52 @@
 /*
  * Merging Functions
  */
-typedef void (*MergeTemplate)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t);
+typedef void (*MergeTemplate)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t,double*,uint32_t*, uint32_t*);
 
 extern void serialMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 
 extern void serialMergeNoBranch(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 
 extern void bitonicMergeReal(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 
 #ifdef AVX512
 #ifdef __INTEL_COMPILER
 extern void bitonicAVX512Merge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 #endif
 
 extern void avx512Merge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 
 extern void avx512ParallelMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length);
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP);
 #endif
 
 /*

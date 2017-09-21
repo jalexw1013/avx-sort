@@ -352,7 +352,7 @@ void clearArray(vec_t* array, uint32_t length) {
     }
 }
 
-template <void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t)>
+template <void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t,double*,uint32_t*, uint32_t*)>
 float testMerge(
     vec_t** A, uint32_t A_length,
     vec_t** B, uint32_t B_length,
@@ -367,6 +367,21 @@ float testMerge(
     vec_t* BCopy = (vec_t*)xmalloc((B_length + 8) * sizeof(vec_t));
     memcpy(BCopy, (*B), B_length * sizeof(vec_t));
 
+    //Check how many threads are running
+    uint32_t numberOfThreads = 0;
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            numberOfThreads = omp_get_num_threads();
+        }
+    }
+
+    //allocate Variables
+    uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    double* timeValues = (double*)xcalloc(numberOfThreads, sizeof(double));
+
     //clear out array just to be sure
     clearArray((*C), C_length);
 
@@ -377,10 +392,14 @@ float testMerge(
     tic_reset();
 
     //perform actual merge
-    Merge((*A), A_length, (*B), B_length, (*C), C_length);
+    Merge((*A), A_length, (*B), B_length, (*C), C_length, timeValues, ASplitters, BSplitters);
 
     //get timing
     time = tic_total();
+
+    for (uint32_t i = 0; i < numberOfThreads; i++) {
+        printf("Merge Time For Thread %i: %f\n", i, timeValues[i]);
+    }
 
     //verify output is valid
     if (!verifyOutput((*C), (*CSorted), C_length, algoName)) {
@@ -394,6 +413,7 @@ float testMerge(
 
     free(ACopy);
     free(BCopy);
+    free(timeValues);
 
     return time;
 }
@@ -561,12 +581,12 @@ void mergeTester(
                 runs, "Branchless Merge");
         }
 
-        if (bitonicMergeRealTime >= 0.0) {
-            bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "Bitonic Merge");
-        }
+        // if (bitonicMergeRealTime >= 0.0) {
+        //     bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+        //         A, A_length, B, B_length,
+        //         C, Ct_length, CSorted,
+        //         runs, "Bitonic Merge");
+        // }
 
         #ifdef AVX512
         // if (bitonicAVX512MergeTime >= 0.0) {

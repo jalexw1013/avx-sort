@@ -26,7 +26,9 @@
 inline void serialMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length)
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP)
 {
     uint32_t Aindex = 0;
     uint32_t Bindex = 0;
@@ -42,7 +44,9 @@ inline void serialMerge(
 inline void serialMergeNoBranch(
       vec_t* A, uint32_t A_length,
       vec_t* B, uint32_t B_length,
-      vec_t* C, uint32_t C_length)
+      vec_t* C, uint32_t C_length,
+      double* timePerThreadValues,
+      uint32_t* ASplittersP, uint32_t* BSplittersP)
 {
     uint32_t Aindex = 0;
     uint32_t Bindex = 0;
@@ -84,7 +88,7 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
 {
     // TODO i think these can be 4s
     if (A_length < 5 || B_length < 5 || C_length < 5) {
-        serialMerge(A,A_length,B,B_length,C,C_length);
+        serialMerge(A,A_length,B,B_length,C,C_length, NULL, NULL, NULL);
         return;
     }
 
@@ -192,7 +196,9 @@ void print512_num(__m512i var, const char* text)
 }
 inline void bitonicAVX512Merge(vec_t* A, uint32_t A_length,
                           vec_t* B, uint32_t B_length,
-                          vec_t* C, uint32_t C_length) {
+                          vec_t* C, uint32_t C_length,
+                          double* timePerThreadValues,
+                          uint32_t* ASplittersP, uint32_t* BSplittersP) {
     int l, r, p = 0;
 
     uint32_t* output = C;
@@ -215,7 +221,7 @@ inline void bitonicAVX512Merge(vec_t* A, uint32_t A_length,
 
     /*for short segments*/
     if(ASize < 16 || BSize < 16){
- 	      serialMerge(A, A_length, B, B_length, C, C_length);
+ 	      serialMerge(A, A_length, B, B_length, C, C_length, NULL, NULL, NULL);
 	  	  return;
 	  }
 
@@ -338,7 +344,9 @@ inline void bitonicAVX512Merge(vec_t* A, uint32_t A_length,
 inline void avx512Merge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length)
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP)
 {
     uint32_t ASplitters[17];
     uint32_t BSplitters[17];
@@ -386,39 +394,32 @@ inline void avx512Merge(
 inline void avx512ParallelMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length)
+    vec_t* C, uint32_t C_length,
+    double* timePerThreadValues,
+    uint32_t* ASplittersP, uint32_t* BSplittersP)
 {
-    uint32_t numberOfThreads = 0;
-    #pragma omp parallel
-    {
-        numberOfThreads = omp_get_num_threads();
-    }
-    double * timePerThreadValues = (double *)xcalloc(numberOfThreads, sizeof(double));
     #pragma omp parallel
     {
         struct timeval tv;
         gettimeofday(&tv, NULL);
     	double startTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
+
         uint32_t numThreads = omp_get_num_threads();
-        uint32_t * ASplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
-        uint32_t * BSplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
+        uint32_t threadNum = omp_get_thread_num();
+        uint32_t* ASplitters = ASplittersP + (numThreads + 1) * threadNum;
+        uint32_t* BSplitters = BSplittersP + (numThreads + 1) * threadNum;
         MergePathSplitter(A, A_length, B, B_length, C,
             C_length, numThreads, ASplitters, BSplitters);
-        uint32_t threadNum = omp_get_thread_num();
+
         uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
         uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
         avx512Merge(A + ASplitters[threadNum], A_length,
             B + BSplitters[threadNum], B_length,
-            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length);
-        free(ASplitters);
-        free(BSplitters);
+            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL, NULL, NULL);
         gettimeofday(&tv, NULL);
     	double endTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
         double totalTime = endTime - startTime;
         timePerThreadValues[threadNum] = totalTime;
-    }
-    for (uint32_t i = 0; i < numberOfThreads; i++) {
-        printf("Thread %i time: %f\n", i, timePerThreadValues[i]);
     }
 }
 #endif
@@ -428,7 +429,7 @@ inline void avx512ParallelMerge(
 // Sorting algorithms
 //
 ////////////////////////////////////////////////////////////////////////////////
-
+#ifdef SORT
 void quickSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber)
 {
@@ -926,4 +927,6 @@ template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMergeNoBranc
 template void parallelIterativeMergeSortV2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
 #ifdef AVX512
 template void parallelIterativeMergeSortV2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t* arraySizes);
+#endif
+
 #endif
