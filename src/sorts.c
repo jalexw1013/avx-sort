@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <immintrin.h>
+#include <sys/time.h>
 
 #include "utils/util.h"
 #include "utils/xmalloc.h"
@@ -387,9 +388,17 @@ inline void avx512ParallelMerge(
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length)
 {
+    uint32_t numberOfThreads = 0;
     #pragma omp parallel
     {
-        double startTime = tic_sincelast();
+        numberOfThreads = omp_get_num_threads();
+    }
+    double * timePerThreadValues = (double *)xcalloc(numberOfThreads, sizeof(double));
+    #pragma omp parallel
+    {
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+    	double startTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
         uint32_t numThreads = omp_get_num_threads();
         uint32_t * ASplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
         uint32_t * BSplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
@@ -403,8 +412,13 @@ inline void avx512ParallelMerge(
             C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length);
         free(ASplitters);
         free(BSplitters);
-        double endTime = tic_sincelast();
-        printf("%d:Start:%f End:%f\n", threadNum, startTime, endTime);
+        gettimeofday(&tv, NULL);
+    	double endTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
+        double totalTime = startTime - endTime;
+        timePerThreadValues[threadNum] = totalTime;
+    }
+    for (uint32_t i = 0; i < numberOfThreads; i++) {
+        printf("Thread %i time: %f\n", i, timePerThreadValues[i]);
     }
 }
 #endif
