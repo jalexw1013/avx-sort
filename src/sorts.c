@@ -413,9 +413,9 @@ inline void avx512ParallelMerge(
 
         uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
         uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
-        avx512Merge(A + ASplitters[threadNum], A_length,
-            B + BSplitters[threadNum], B_length,
-            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL, NULL, NULL);
+        // avx512Merge(A + ASplitters[threadNum], A_length,
+        //     B + BSplitters[threadNum], B_length,
+        //     C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL, NULL, NULL);
         gettimeofday(&tv, NULL);
     	double endTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
         double totalTime = endTime - startTime;
