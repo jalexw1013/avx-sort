@@ -414,7 +414,7 @@ inline void avx512ParallelMerge(
         free(BSplitters);
         gettimeofday(&tv, NULL);
     	double endTime = ((double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec);
-        double totalTime = startTime - endTime;
+        double totalTime = endTime - startTime;
         timePerThreadValues[threadNum] = totalTime;
     }
     for (uint32_t i = 0; i < numberOfThreads; i++) {
