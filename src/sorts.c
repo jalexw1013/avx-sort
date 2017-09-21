@@ -389,6 +389,7 @@ inline void avx512ParallelMerge(
 {
     #pragma omp parallel
     {
+        double startTime = tic_sincelast();
         uint32_t numThreads = omp_get_num_threads();
         uint32_t * ASplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
         uint32_t * BSplitters = (uint32_t *)xcalloc(numThreads + 1, sizeof(uint32_t));
@@ -402,6 +403,8 @@ inline void avx512ParallelMerge(
             C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length);
         free(ASplitters);
         free(BSplitters);
+        double endTime = tic_sincelast();
+        printf("%d:Start:%f End:%f\n", threadNum, startTime, endTime);
     }
 }
 #endif
