@@ -352,8 +352,54 @@ void clearArray(vec_t* array, uint32_t length) {
     }
 }
 
-template <void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t,double*,uint32_t*, uint32_t*)>
+template <void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t, struct memPointers*)>
 float testMerge(
+    vec_t** A, uint32_t A_length,
+    vec_t** B, uint32_t B_length,
+    vec_t** C, uint32_t C_length,
+    vec_t** CSorted, uint32_t runs,
+    const char* algoName) {
+
+    //create input copies in case the algorithm acciedently changes the input
+    vec_t* ACopy = (vec_t*)xmalloc((A_length + 8) * sizeof(vec_t));
+    memcpy(ACopy, (*A), A_length * sizeof(vec_t));
+
+    vec_t* BCopy = (vec_t*)xmalloc((B_length + 8) * sizeof(vec_t));
+    memcpy(BCopy, (*B), B_length * sizeof(vec_t));
+
+    //clear out array just to be sure
+    clearArray((*C), C_length);
+
+    //setup timing mechanism
+    float time = 0.0;
+
+    //reset timer
+    tic_reset();
+
+    //perform actual merge
+    Merge((*A), A_length, (*B), B_length, (*C), C_length, NULL);
+
+    //get timing
+    time = tic_total();
+
+    //verify output is valid
+    if (!verifyOutput((*C), (*CSorted), C_length, algoName)) {
+        time = -1.0;
+    }
+
+    //restore original values
+    clearArray((*C), C_length);
+    memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+    memcpy( (*B), BCopy, B_length * sizeof(vec_t));
+
+    free(ACopy);
+    free(BCopy);
+
+    return time;
+}
+
+template <void (*ParallelMerge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t, struct memPointers*)>
+float testParallelMerge(
     vec_t** A, uint32_t A_length,
     vec_t** B, uint32_t B_length,
     vec_t** C, uint32_t C_length,
@@ -380,7 +426,9 @@ float testMerge(
     //allocate Variables
     uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
     uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
-    double* timeValues = (double*)xcalloc(numberOfThreads, sizeof(double));
+    struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
+    pointers->ASplitters = ASplitters;
+    pointers->BSplitters = BSplitters;
 
     //clear out array just to be sure
     clearArray((*C), C_length);
@@ -392,14 +440,10 @@ float testMerge(
     tic_reset();
 
     //perform actual merge
-    Merge((*A), A_length, (*B), B_length, (*C), C_length, timeValues, ASplitters, BSplitters);
+    ParallelMerge((*A), A_length, (*B), B_length, (*C), C_length, pointers);
 
     //get timing
     time = tic_total();
-
-    for (uint32_t i = 0; i < numberOfThreads; i++) {
-        printf("Merge Time For Thread %i: %f\n", i, timeValues[i]);
-    }
 
     //verify output is valid
     if (!verifyOutput((*C), (*CSorted), C_length, algoName)) {
@@ -413,7 +457,9 @@ float testMerge(
 
     free(ACopy);
     free(BCopy);
-    free(timeValues);
+    free(ASplitters);
+    free(BSplitters);
+    free(pointers);
 
     return time;
 }
@@ -439,7 +485,7 @@ float testSort(
     tic_reset();
 
     //perform actual sort
-    Sort((*CUnsorted), C, C_length, splitNumber);
+    Sort((*CUnsorted), C, C_length, splitNumber, NULL);
 
     //get timing
     time += tic_sincelast();
@@ -488,19 +534,23 @@ float testParallelSort(
     uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
     uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
     uint32_t* arraySizes = (uint32_t*)xcalloc(numberOfThreads*numberOfThreads, sizeof(uint32_t));
+    struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
+    pointers->ASplitters = ASplitters;
+    pointers->BSplitters = BSplitters;
+    pointers->arraySizes = arraySizes;
 
     //reset timer
     tic_reset();
 
     //perform actual sort
-    ParallelSort((*CUnsorted), C, C_length, splitNumber, ASplitters, BSplitters, arraySizes);
+    ParallelSort((*CUnsorted), C, C_length, splitNumber, pointers);
 
     //get timing
     time += tic_sincelast();
 
     //verify output is valid
     if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName)) {
-        time = -1.0;
+        //time = -1.0;
     }
 
     //restore original values
@@ -512,6 +562,7 @@ float testParallelSort(
     free(ASplitters);
     free(BSplitters);
     free(arraySizes);
+    free(pointers);
 
     return time;
 }
@@ -538,77 +589,59 @@ void mergeTester(
     vec_t** CSorted, uint32_t Ct_length,
     vec_t** CUnsorted, uint32_t runs)
 {
+    uint32_t numberOfThreads = 0;
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            numberOfThreads = omp_get_num_threads();
+        }
+    }
+
     if (!OutToFile) {
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        //printf("A Size: %" PRIu32 "\n", A_length);
-        //printf("B Size: %" PRIu32 "\n", B_length);
+        printf("A Size: %d\n", A_length);
+        printf("B Size: %d\n", B_length);
+        printf("Number Of Threads: %d\n", numberOfThreads);
         printf("\n");
     }
 
-    float serialMergeTime = 0.0;
-    float serialMergeNoBranchTime = 0.0;
-    float bitonicMergeRealTime = 0.0;
+    double serialMergeTime = 0.0;
+    double serialMergeNoBranchTime = 0.0;
+    double bitonicMergeRealTime = 0.0;
     #ifdef AVX512
-    //float bitonicAVX512MergeTime = 0.0;
-    float avx512MergeTime = 0.0;
+    double avx512MergeTime = 0.0;
     double avx512ParallelMergeTime = 0.0;
     #endif
 
-    // for (uint32_t i = 0; i < A_length; i++) {
-    //     printf("A[%i]:%i\n", i, (*A)[i]);
-    // }
-    // for (uint32_t i = 0; i < B_length; i++) {
-    //     printf("B[%i]:%i\n", i, (*B)[i]);
-    // }
-    // for (uint32_t i = 0; i < Ct_length; i++) {
-    //     printf("CSorted[%i]:%i\n", i, (*CSorted)[i]);
-    // }
-
     for (uint32_t run = 0; run < RUNS; run++) {
-        if (serialMergeTime >= 0.0) {
-            serialMergeTime += testMerge<serialMerge>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "Serial Merge");
-        }
+        serialMergeTime += testMerge<serialMerge>(
+            A, A_length, B, B_length,
+            C, Ct_length, CSorted,
+            runs, "Serial Merge");
 
-        if (serialMergeNoBranchTime >= 0.0) {
-            serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "Branchless Merge");
-        }
+        serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
+            A, A_length, B, B_length,
+            C, Ct_length, CSorted,
+            runs, "Branchless Merge");
 
-        // if (bitonicMergeRealTime >= 0.0) {
-        //     bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-        //         A, A_length, B, B_length,
-        //         C, Ct_length, CSorted,
-        //         runs, "Bitonic Merge");
-        // }
+        bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+            A, A_length, B, B_length,
+            C, Ct_length, CSorted,
+            runs, "Bitonic Merge");
 
         #ifdef AVX512
-        // if (bitonicAVX512MergeTime >= 0.0) {
-        //     bitonicAVX512MergeTime += testMerge<bitonicAVX512Merge>(
-        //         A, A_length, B, B_length,
-        //         C, Ct_length, CSorted,
-        //         runs, "Bitonic AVX-512 Merge");
-        // }
+        avx512MergeTime += testMerge<avx512Merge>(
+            A, A_length, B, B_length,
+            C, Ct_length, CSorted,
+            runs, "AVX-512 Merge");
 
-        if (avx512MergeTime >= 0.0) {
-            avx512MergeTime += testMerge<avx512Merge>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "AVX-512 Merge");
-        }
-
-        if (avx512ParallelMergeTime >= 0.0) {
-            avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
-                A, A_length, B, B_length,
-                C, Ct_length, CSorted,
-                runs, "AVX-512 Parallel Merge");
-        }
+        avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
+            A, A_length, B, B_length,
+            C, Ct_length, CSorted,
+            runs, "AVX-512 Parallel Merge");
         #endif
 
         insertData(
@@ -623,7 +656,6 @@ void mergeTester(
     serialMergeNoBranchTime /= RUNS;
     bitonicMergeRealTime /= RUNS;
     #ifdef AVX512
-    //bitonicAVX512MergeTime /= RUNS;
     avx512MergeTime /= RUNS;
     avx512ParallelMergeTime /= RUNS;
     #endif
@@ -633,8 +665,8 @@ void mergeTester(
         writeToMergeOut("Serial Merge Branchless", entropy, A_length, B_length, serialMergeNoBranchTime);
         writeToMergeOut("Bitonic Merge", entropy, A_length, B_length, bitonicMergeRealTime);
         #ifdef AVX512
-        //writeToMergeOut("Bitonic AVX512 Merge", entropy, A_length, B_length, bitonicAVX512MergeTime);
         writeToMergeOut("AVX512 Merge", entropy, A_length, B_length, avx512MergeTime);
+        writeToMergeOut("AVX512 Parallel Merge", entropy, A_length, B_length, avx512ParallelMergeTime);
         #endif
     } else {
         printf("Merging Results        :  Elements per Second\n");
@@ -666,15 +698,6 @@ void mergeTester(
         }
         printf("\n");
         #ifdef AVX512
-        // printf("Bitonic AVX512 Merge   :     ");
-        // if (bitonicAVX512MergeTime > 0.0) {
-        //     printfcomma((int)((float)Ct_length/bitonicAVX512MergeTime));
-        // } else if (bitonicAVX512MergeTime == 0.0) {
-        //     printf("∞");
-        // } else {
-        //     printf("N/A");
-        // }
-        // printf("\n");
         printf("AVX512 Merge           :     ");
         if (avx512MergeTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeTime));
