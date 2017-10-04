@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <rdmgr>
+  <timestamp type="u64_t">1506378915</timestamp>
+  <hostname type="string">caesarea.cc.gatech.edu</hostname>
+  <os type="string">linux</os>
+  <product type="string">Intel® VTune™ Amplifier XE 2017 Update 3</product>
+  <buildNumber type="s32_t">510739</buildNumber>
+  <logicalCPUCount type="s32_t">256</logicalCPUCount>
+  <CPUFrequency type="s64_t">1300000000</CPUFrequency>
+  <CPUFamily type="s32_t">6</CPUFamily>
+  <CPUModel type="s32_t">87</CPUModel>
+  <CPUStepping type="s32_t">1</CPUStepping>
+  <CPUBrandName type="string">Intel(R) Xeon Phi(TM) CPU 7210 @ 1.30GHz</CPUBrandName>
+  <isa type="string">avx2</isa>
+  <collectionTimeBegin type="u64_t">1506378915</collectionTimeBegin>
+  <collectionTimeEnd type="u64_t">1506379024</collectionTimeEnd>
+  <variables>
+   <at type="string">macc</at>
+  </variables>
+ </rdmgr>
+</root>

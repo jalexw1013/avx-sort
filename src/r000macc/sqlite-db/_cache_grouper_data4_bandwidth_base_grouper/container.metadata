@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<bag xmlns:unsignedLong="http://www.w3.org/2001/XMLSchema#unsignedLong">
+ <entry path="grouper" unsignedLong:size="10427">
+  <indexFields>
+   <field path="dd_thread"/>
+   <field path="bandwidth_utilization_data_attr_bin"/>
+   <field path="bandwidth_utilization_data_scale"/>
+   <field path="pmu_data_attr_callsite_bottom_user_cs_code_loc_func_range_func_inst"/>
+   <field path="pmu_data_attr_callsite_bottom_user_cs_code_loc_mod_seg_mod_file"/>
+   <field path="pmu_data_attr_callsite_bottom_user_cs_type"/>
+   <field path="pmu_data_attr_callsite_type_cs_code_loc_func_range_func_inst_function_subtype"/>
+   <field path="pmu_data_attr_callsite_type_cs_code_loc_func_range_func_inst_function_type"/>
+   <field path="pmu_data_attr_cpu_core"/>
+   <field path="pmu_data_attr_event_type"/>
+   <field path="pmu_data_scale"/>
+   <field path="pmu_mem_data_attr"/>
+   <field path="pmu_mem_data_scale"/>
+  </indexFields>
+  <int64Fields>
+   <field path="pmu_data_count"/>
+   <field path="pmu_data_inst_count"/>
+  </int64Fields>
+  <doubleFields/>
+ </entry>
+</bag>

@@ -190,8 +190,15 @@ inline void avx512Merge(
     vec_t* C, uint32_t C_length,
     struct memPointers* pointers)
 {
+    //struct timeval tv;
+    //double time = 0.0;
     uint32_t ASplitters[17];
     uint32_t BSplitters[17];
+    
+    //int iterCount = 0;
+    //gettimeofday(&tv, NULL);
+    //double itime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+    //printf("Time1: %f\n", itime);
     MergePathSplitter(A, A_length, B, B_length, C,
         C_length, 16, ASplitters, BSplitters);
 
@@ -211,18 +218,48 @@ inline void avx512Merge(
     __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
     __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
+    //gettimeofday(&tv, NULL);
+    //time  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - itime - time;
+    //printf("Time2: %f\n", time);
+
+    //double gatherTime = 0.0, igatherTime = 0.0, compareTime = 0.0, icompareTime = 0.0, scatterTime = 0.0, iscatterTime = 0.0, indexTime = 0.0, iindexTime = 0.0;
+
+
     while ((exceededAStop | exceededBStop) != 0) {
-        //get the current elements
+      //  gettimeofday(&tv, NULL);
+      //  igatherTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+        
+       //get the current elements
         __m512i miAelems = _mm512_mask_i32gather_epi32(mizero, exceededAStop, vindexA, (const int *)A, 4);
         __m512i miBelems = _mm512_mask_i32gather_epi32(mizero, exceededBStop, vindexB, (const int *)B, 4);
+
+      // gettimeofday(&tv, NULL);
+      //  gatherTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - igatherTime;
+
+      //  gettimeofday(&tv, NULL);
+      //  icompareTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 
         //compare the elements
         __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
         micmp = (~exceededBStop | (micmp & exceededAStop));
 
+       // gettimeofday(&tv, NULL);
+       // compareTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - icompareTime;
+
+       // gettimeofday(&tv, NULL);
+       // iscatterTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+
+
         //copy the elements to the final elements
         __m512i miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
         _mm512_mask_i32scatter_epi32((int *)C, exceededAStop | exceededBStop, vindexC, miCelems, 4);
+
+       // gettimeofday(&tv, NULL);
+       // scatterTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - iscatterTime;
+
+       // gettimeofday(&tv, NULL);
+       // iindexTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+
 
         //increase indexes
         vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
@@ -230,7 +267,16 @@ inline void avx512Merge(
         exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
         exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
         vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
+
+        //gettimeofday(&tv, NULL);
+        //indexTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - iindexTime;
+//iterCount++;
     }
+    //printf("Gather Time %f\n", gatherTime);
+    //printf("Compare Time %f\n", compareTime);
+    //printf("Scatter Time %f\n", scatterTime);
+    //printf("Index Time %f\n", indexTime);
+    //printf("iterCount %d\n", iterCount);
 }
 
 inline void avx512ParallelMerge(
@@ -303,7 +349,7 @@ void iterativeMergeSort(
             uint32_t A_length = A_end - A_start;
             uint32_t B_length = B_end - B_start;
 
-            Merge(array + A_start, A_length, array + B_start, B_length, C + A_start, A_length + B_length, NULL);
+           Merge(array + A_start, A_length, array + B_start, B_length, C + A_start, A_length + B_length, NULL);
     	}
         //pointer swap for C
         vec_t* tmp = array;
