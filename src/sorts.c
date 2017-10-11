@@ -194,7 +194,7 @@ inline void avx512Merge(
     //double time = 0.0;
     uint32_t ASplitters[17];
     uint32_t BSplitters[17];
-    
+
     //int iterCount = 0;
     //gettimeofday(&tv, NULL);
     //double itime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
@@ -228,7 +228,7 @@ inline void avx512Merge(
     while ((exceededAStop | exceededBStop) != 0) {
       //  gettimeofday(&tv, NULL);
       //  igatherTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-        
+
        //get the current elements
         __m512i miAelems = _mm512_mask_i32gather_epi32(mizero, exceededAStop, vindexA, (const int *)A, 4);
         __m512i miBelems = _mm512_mask_i32gather_epi32(mizero, exceededBStop, vindexB, (const int *)B, 4);
@@ -378,6 +378,8 @@ void iterativeMergeSortPower2(
     for (uint32_t i = 0; i < array_length; i += startSize) {
         qsort((void*)(array + i), startSize, sizeof(vec_t), hostBasicCompare);
     }
+
+    return;
 
     int numberOfSwaps = 0;
 
