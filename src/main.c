@@ -367,6 +367,12 @@ float testMerge(
     vec_t* BCopy = (vec_t*)xmalloc((B_length + 8) * sizeof(vec_t));
     memcpy(BCopy, (*B), B_length * sizeof(vec_t));
 
+    uint32_t* ASplitters = (uint32_t*)xcalloc(17, sizeof(uint32_t));
+    uint32_t* BSplitters = (uint32_t*)xcalloc(17, sizeof(uint32_t));
+    struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
+    pointers->ASplitters = ASplitters;
+    pointers->BSplitters = BSplitters;
+
     //clear out array just to be sure
     clearArray((*C), C_length);
 
@@ -377,7 +383,7 @@ float testMerge(
     tic_reset();
 
     //perform actual merge
-    Merge((*A), A_length, (*B), B_length, (*C), C_length, NULL);
+    Merge((*A), A_length, (*B), B_length, (*C), C_length, pointers);
 
     //get timing
     time = tic_total();
@@ -394,6 +400,9 @@ float testMerge(
 
     free(ACopy);
     free(BCopy);
+    free(ASplitters);
+    free(BSplitters);
+    free(pointers);
 
     return time;
 }

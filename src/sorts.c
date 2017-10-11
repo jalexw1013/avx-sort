@@ -184,23 +184,15 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
 }
 
 #ifdef AVX512
-inline void avx512Merge(
+
+inline void avx512MergeNoMergePath(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length,
     struct memPointers* pointers)
 {
-    //struct timeval tv;
-    //double time = 0.0;
-    uint32_t ASplitters[17];
-    uint32_t BSplitters[17];
-
-    //int iterCount = 0;
-    //gettimeofday(&tv, NULL);
-    //double itime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-    //printf("Time1: %f\n", itime);
-    MergePathSplitter(A, A_length, B, B_length, C,
-        C_length, 16, ASplitters, BSplitters);
+    uint32_t* ASplitters = pointers->ASplitters;
+    uint32_t* BSplitters = pointers->BSplitters;
 
     //start indexes
     __m512i vindexA = _mm512_load_epi32(ASplitters);
@@ -208,58 +200,28 @@ inline void avx512Merge(
     __m512i vindexC = _mm512_add_epi32(vindexA, vindexB);
 
     //stop indexes
-    __m512i vindexAStop = _mm512_load_epi32(ASplitters + 1);
-    __m512i vindexBStop = _mm512_load_epi32(BSplitters + 1);
+    const __m512i vindexAStop = _mm512_load_epi32(ASplitters + 1);
+    const __m512i vindexBStop = _mm512_load_epi32(BSplitters + 1);
 
     //other Variables
-    const __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-    const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+    static const __m512i mizero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+    static const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
     __mmask16 exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
     __mmask16 exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
 
-    //gettimeofday(&tv, NULL);
-    //time  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - itime - time;
-    //printf("Time2: %f\n", time);
-
-    //double gatherTime = 0.0, igatherTime = 0.0, compareTime = 0.0, icompareTime = 0.0, scatterTime = 0.0, iscatterTime = 0.0, indexTime = 0.0, iindexTime = 0.0;
-
-
     while ((exceededAStop | exceededBStop) != 0) {
-      //  gettimeofday(&tv, NULL);
-      //  igatherTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-
        //get the current elements
         __m512i miAelems = _mm512_mask_i32gather_epi32(mizero, exceededAStop, vindexA, (const int *)A, 4);
         __m512i miBelems = _mm512_mask_i32gather_epi32(mizero, exceededBStop, vindexB, (const int *)B, 4);
-
-      // gettimeofday(&tv, NULL);
-      //  gatherTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - igatherTime;
-
-      //  gettimeofday(&tv, NULL);
-      //  icompareTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 
         //compare the elements
         __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
         micmp = (~exceededBStop | (micmp & exceededAStop));
 
-       // gettimeofday(&tv, NULL);
-       // compareTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - icompareTime;
-
-       // gettimeofday(&tv, NULL);
-       // iscatterTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-
-
         //copy the elements to the final elements
         __m512i miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
         _mm512_mask_i32scatter_epi32((int *)C, exceededAStop | exceededBStop, vindexC, miCelems, 4);
-
-       // gettimeofday(&tv, NULL);
-       // scatterTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - iscatterTime;
-
-       // gettimeofday(&tv, NULL);
-       // iindexTime  = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-
 
         //increase indexes
         vindexA = _mm512_mask_add_epi32(vindexA, exceededAStop & micmp, vindexA, mione);
@@ -267,16 +229,23 @@ inline void avx512Merge(
         exceededAStop = _mm512_cmpgt_epi32_mask(vindexAStop, vindexA);
         exceededBStop = _mm512_cmpgt_epi32_mask(vindexBStop, vindexB);
         vindexC = _mm512_mask_add_epi32(vindexC, exceededAStop | exceededBStop, vindexC, mione);
-
-        //gettimeofday(&tv, NULL);
-        //indexTime += (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec - iindexTime;
-//iterCount++;
     }
-    //printf("Gather Time %f\n", gatherTime);
-    //printf("Compare Time %f\n", compareTime);
-    //printf("Scatter Time %f\n", scatterTime);
-    //printf("Index Time %f\n", indexTime);
-    //printf("iterCount %d\n", iterCount);
+}
+
+inline void avx512Merge(
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    struct memPointers* pointers)
+{
+    MergePathSplitter(A, A_length, B, B_length, C,
+        C_length, 16, pointers->ASplitters, pointers->BSplitters);
+
+    avx512MergeNoMergePath(
+        A, A_length,
+        B, B_length,
+        C, C_length,
+        pointers);
 }
 
 inline void avx512ParallelMerge(

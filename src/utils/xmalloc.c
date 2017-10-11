@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <errno.h>
 // #include <malloc.h>
-#include <hbwmalloc.h>
 #include "xmalloc.h"
 
 void *
