@@ -94,11 +94,11 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 512;
-uint32_t  h_ui_B_length                = 512;
-uint32_t  h_ui_C_length                = 1024; //array to put values in
-uint32_t  h_ui_Ct_length               = 1024; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_A_length                = 8388608;
+uint32_t  h_ui_B_length                = 8388608;
+uint32_t  h_ui_C_length                = 16777216; //array to put values in
+uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
+uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
 
@@ -768,7 +768,10 @@ void sortTester(
     float serialMergeNoBranchSortTime = 0.0;
     float bitonicMergeRealSortTime = 0.0;
     #ifdef AVX512
-    float avx512SortNoMergePathTime = 0.0;
+    float avx512SortNoMergePathSerialTime = 0.0;
+    float avx512SortNoMergePathBranchlessTime = 0.0;
+    float avx512SortNoMergePathBitonicTime = 0.0;
+    float avx512SortNoMergePathavxTime = 0.0;
     float avx512MergeSortTime = 0.0;
     #endif
 
@@ -803,11 +806,32 @@ void sortTester(
 
         #ifdef AVX512
 
-        if (avx512SortNoMergePathTime >= 0.0) {
-            avx512SortNoMergePathTime += testSort<avx512SortNoMergePath>(
+        if (avx512SortNoMergePathSerialTime >= 0.0) {
+            avx512SortNoMergePathSerialTime += testSort<avx512SortNoMergePath<serialMerge>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
-                runs, 64, "AVX-512 Sort Without Merge Path");
+                runs, 64, "AVX-512 Sort Without Merge Path Serial");
+        }
+
+        if (avx512SortNoMergePathBranchlessTime >= 0.0) {
+            avx512SortNoMergePathBranchlessTime += testSort<avx512SortNoMergePath<serialMergeNoBranch>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "AVX-512 Sort Without Merge Path Branchless");
+        }
+
+        if (avx512SortNoMergePathBitonicTime >= 0.0) {
+            avx512SortNoMergePathBitonicTime += testSort<avx512SortNoMergePath<bitonicMergeReal>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "AVX-512 Sort Without Merge Path Bitonic");
+        }
+
+        if (avx512SortNoMergePathavxTime >= 0.0) {
+            avx512SortNoMergePathavxTime += testSort<avx512SortNoMergePath<avx512Merge>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "AVX-512 Sort Without Merge Path AVX");
         }
 
         if (avx512MergeSortTime >= 0.0) {
@@ -831,7 +855,10 @@ void sortTester(
     serialMergeNoBranchSortTime /= RUNS;
     bitonicMergeRealSortTime /= RUNS;
     #ifdef AVX512
-    avx512SortNoMergePathTime /= RUNS;
+    avx512SortNoMergePathSerialTime /= RUNS;
+    avx512SortNoMergePathBranchlessTime /= RUNS;
+    avx512SortNoMergePathBitonicTime /= RUNS;
+    avx512SortNoMergePathavxTime /= RUNS;
     avx512MergeSortTime /= RUNS;
     #endif
 
@@ -884,10 +911,37 @@ void sortTester(
         }
         printf("\n");
         #ifdef AVX512
-        printf("AVX-512 Sort Without Merge Path         :     ");
-        if (avx512SortNoMergePathTime > 0.0) {
-            printfcomma((int)((float)Ct_length/avx512SortNoMergePathTime));
-        } else if (avx512SortNoMergePathTime == 0.0) {
+        printf("AVX-512 Sort Without Merge Path Serial   :     ");
+        if (avx512SortNoMergePathSerialTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathSerialTime));
+        } else if (avx512SortNoMergePathSerialTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+        printf("AVX-512 Sort Without Merge Path Branchless:     ");
+        if (avx512SortNoMergePathBranchlessTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathBranchlessTime));
+        } else if (avx512SortNoMergePathBranchlessTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+        printf("AVX-512 Sort Without Merge Path Bitonic   :     ");
+        if (avx512SortNoMergePathBitonicTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathBitonicTime));
+        } else if (avx512SortNoMergePathBitonicTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+        printf("AVX-512 Sort Without Merge Path AVX       :     ");
+        if (avx512SortNoMergePathavxTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathavxTime));
+        } else if (avx512SortNoMergePathavxTime == 0.0) {
             printf("∞");
         } else {
             printf("N/A");
@@ -910,7 +964,10 @@ void sortTester(
         printf("Serial Merge Branchless:     %f\n", serialMergeNoBranchSortTime);
         printf("Bitonic Merge          :     %f\n", bitonicMergeRealSortTime);
         #ifdef AVX512
-        printf("AVX512 Sort W/O MP     :     %f\n", avx512SortNoMergePathTime);
+        printf("AVX512 Sort W/O MPS    :     %f\n", avx512SortNoMergePathSerialTime);
+        printf("AVX512 Sort W/O MPB    :     %f\n", avx512SortNoMergePathBranchlessTime);
+        printf("AVX512 Sort W/O MPBi   :     %f\n", avx512SortNoMergePathBitonicTime);
+        printf("AVX512 Sort W/O MPA    :     %f\n", avx512SortNoMergePathavxTime);
         printf("AVX512 Merge           :     %f\n", avx512MergeSortTime);
         #endif
     }
