@@ -94,10 +94,10 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 5000000;
-uint32_t  h_ui_B_length                = 5000000;
-uint32_t  h_ui_C_length                = 10000000; //array to put values in
-uint32_t  h_ui_Ct_length               = 10000000; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 512;
+uint32_t  h_ui_B_length                = 512;
+uint32_t  h_ui_C_length                = 1024; //array to put values in
+uint32_t  h_ui_Ct_length               = 1024; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if out put to file
@@ -489,12 +489,17 @@ float testSort(
 
     //allocate Variables
     vec_t* C = (vec_t*)xcalloc((C_length + 32), sizeof(vec_t));
+    uint32_t* ASplitters = (uint32_t*)xcalloc(17, sizeof(uint32_t));
+    uint32_t* BSplitters = (uint32_t*)xcalloc(17, sizeof(uint32_t));
+    struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
+    pointers->ASplitters = ASplitters;
+    pointers->BSplitters = BSplitters;
 
     //reset timer
     tic_reset();
 
     //perform actual sort
-    Sort((*CUnsorted), C, C_length, splitNumber, NULL);
+    Sort((*CUnsorted), C, C_length, splitNumber, pointers);
 
     //get timing
     time += tic_sincelast();
@@ -510,6 +515,9 @@ float testSort(
     //deallocate variables
     free(C);
     free(unsortedCopy);
+    free(ASplitters);
+    free(BSplitters);
+    free(pointers);
 
     return time;
 }
@@ -760,39 +768,48 @@ void sortTester(
     float serialMergeNoBranchSortTime = 0.0;
     float bitonicMergeRealSortTime = 0.0;
     #ifdef AVX512
+    float avx512SortNoMergePathTime = 0.0;
     float avx512MergeSortTime = 0.0;
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        // if (quickSortTime >= 0.0) {
-        //     quickSortTime += testSort<quickSort>(
-        //         CUnsorted, C_length,
-        //         CSorted, Ct_length,
-        //         runs, 64, "Quick Sort");
-        // }
-        //
-        // if (serialMergeSortTime >= 0.0) {
-        //     serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
-        //         CUnsorted, C_length,
-        //         CSorted, Ct_length,
-        //         runs, 64, "Merge Sort Standard");
-        // }
-        //
-        // if (serialMergeNoBranchSortTime >= 0.0) {
-        //     serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
-        //         CUnsorted, C_length,
-        //         CSorted, Ct_length,
-        //         runs, 64, "Branch Avoiding Sort");
-        // }
-        //
-        // if (bitonicMergeRealSortTime >= 0.0) {
-        //     bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
-        //         CUnsorted, C_length,
-        //         CSorted, Ct_length,
-        //         runs, 64, "Bitonic Based Merge Sort");
-        // }
+        if (quickSortTime >= 0.0) {
+            quickSortTime += testSort<quickSort>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Quick Sort");
+        }
+
+        if (serialMergeSortTime >= 0.0) {
+            serialMergeSortTime += testSort<iterativeMergeSort<serialMerge>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Merge Sort Standard");
+        }
+
+        if (serialMergeNoBranchSortTime >= 0.0) {
+            serialMergeNoBranchSortTime += testSort<iterativeMergeSort<serialMergeNoBranch>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Branch Avoiding Sort");
+        }
+
+        if (bitonicMergeRealSortTime >= 0.0) {
+            bitonicMergeRealSortTime += testSort<iterativeMergeSort<bitonicMergeReal>>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "Bitonic Based Merge Sort");
+        }
 
         #ifdef AVX512
+
+        if (avx512SortNoMergePathTime >= 0.0) {
+            avx512SortNoMergePathTime += testSort<avx512SortNoMergePath>(
+                CUnsorted, C_length,
+                CSorted, Ct_length,
+                runs, 64, "AVX-512 Sort Without Merge Path");
+        }
+
         if (avx512MergeSortTime >= 0.0) {
             avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
                 CUnsorted, C_length,
@@ -814,6 +831,7 @@ void sortTester(
     serialMergeNoBranchSortTime /= RUNS;
     bitonicMergeRealSortTime /= RUNS;
     #ifdef AVX512
+    avx512SortNoMergePathTime /= RUNS;
     avx512MergeSortTime /= RUNS;
     #endif
 
@@ -866,6 +884,15 @@ void sortTester(
         }
         printf("\n");
         #ifdef AVX512
+        printf("AVX-512 Sort Without Merge Path         :     ");
+        if (avx512SortNoMergePathTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathTime));
+        } else if (avx512SortNoMergePathTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
         printf("AVX-512 Merge Sort                      :     ");
         if (avx512MergeSortTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeSortTime));
@@ -883,6 +910,7 @@ void sortTester(
         printf("Serial Merge Branchless:     %f\n", serialMergeNoBranchSortTime);
         printf("Bitonic Merge          :     %f\n", bitonicMergeRealSortTime);
         #ifdef AVX512
+        printf("AVX512 Sort W/O MP     :     %f\n", avx512SortNoMergePathTime);
         printf("AVX512 Merge           :     %f\n", avx512MergeSortTime);
         #endif
     }

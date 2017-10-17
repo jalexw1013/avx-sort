@@ -56,6 +56,9 @@ typedef void (*SortTemplate)(vec_t*, vec_t*, uint32_t, const uint32_t, struct me
 void quickSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 
+void avx512SortNoMergePath(
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+
 template <MergeTemplate Merge>
 void iterativeMergeSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
