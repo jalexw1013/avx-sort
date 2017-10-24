@@ -98,9 +98,9 @@ uint32_t  h_ui_A_length                = 8388608;
 uint32_t  h_ui_B_length                = 8388608;
 uint32_t  h_ui_C_length                = 16777216; //array to put values in
 uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
-uint32_t  RUNS                         = 10;
+uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
-uint32_t  OutToFile                    = 0; // 1 if out put to file
+uint32_t  OutToFile                    = 0; // 1 if output to file
 
 //These Variables for a full testing run
 const uint32_t testingEntropies[] = {28};//{4,8,12,16,20,24,28};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
@@ -769,6 +769,7 @@ void sortTester(
     float bitonicMergeRealSortTime = 0.0;
     #ifdef AVX512
     float avx512SortNoMergePathSerialTime = 0.0;
+    float avx512SortNoMergePathV2SerialTime = 0.0;
     float avx512SortNoMergePathBranchlessTime = 0.0;
     float avx512SortNoMergePathBitonicTime = 0.0;
     float avx512SortNoMergePathavxTime = 0.0;
@@ -813,26 +814,33 @@ void sortTester(
                 runs, 64, "AVX-512 Sort Without Merge Path Serial");
         }
 
-        if (avx512SortNoMergePathBranchlessTime >= 0.0) {
-            avx512SortNoMergePathBranchlessTime += testSort<avx512SortNoMergePath<serialMergeNoBranch>>(
+        if (avx512SortNoMergePathV2SerialTime >= 0.0) {
+            avx512SortNoMergePathV2SerialTime += testSort<avx512SortNoMergePathV2<serialMerge>>(
                 CUnsorted, C_length,
                 CSorted, Ct_length,
-                runs, 64, "AVX-512 Sort Without Merge Path Branchless");
+                runs, 64, "AVX-512 Sort Without Merge Path V2 Serial");
         }
 
-        if (avx512SortNoMergePathBitonicTime >= 0.0) {
-            avx512SortNoMergePathBitonicTime += testSort<avx512SortNoMergePath<bitonicMergeReal>>(
-                CUnsorted, C_length,
-                CSorted, Ct_length,
-                runs, 64, "AVX-512 Sort Without Merge Path Bitonic");
-        }
-
-        if (avx512SortNoMergePathavxTime >= 0.0) {
-            avx512SortNoMergePathavxTime += testSort<avx512SortNoMergePath<avx512Merge>>(
-                CUnsorted, C_length,
-                CSorted, Ct_length,
-                runs, 64, "AVX-512 Sort Without Merge Path AVX");
-        }
+        // if (avx512SortNoMergePathBranchlessTime >= 0.0) {
+        //     avx512SortNoMergePathBranchlessTime += testSort<avx512SortNoMergePath<serialMergeNoBranch>>(
+        //         CUnsorted, C_length,
+        //         CSorted, Ct_length,
+        //         runs, 64, "AVX-512 Sort Without Merge Path Branchless");
+        // }
+        //
+        // if (avx512SortNoMergePathBitonicTime >= 0.0) {
+        //     avx512SortNoMergePathBitonicTime += testSort<avx512SortNoMergePath<bitonicMergeReal>>(
+        //         CUnsorted, C_length,
+        //         CSorted, Ct_length,
+        //         runs, 64, "AVX-512 Sort Without Merge Path Bitonic");
+        // }
+        //
+        // if (avx512SortNoMergePathavxTime >= 0.0) {
+        //     avx512SortNoMergePathavxTime += testSort<avx512SortNoMergePath<avx512Merge>>(
+        //         CUnsorted, C_length,
+        //         CSorted, Ct_length,
+        //         runs, 64, "AVX-512 Sort Without Merge Path AVX");
+        // }
 
         if (avx512MergeSortTime >= 0.0) {
             avx512MergeSortTime += testSort<iterativeMergeSort<avx512Merge>>(
@@ -856,6 +864,7 @@ void sortTester(
     bitonicMergeRealSortTime /= RUNS;
     #ifdef AVX512
     avx512SortNoMergePathSerialTime /= RUNS;
+    avx512SortNoMergePathV2SerialTime /= RUNS;
     avx512SortNoMergePathBranchlessTime /= RUNS;
     avx512SortNoMergePathBitonicTime /= RUNS;
     avx512SortNoMergePathavxTime /= RUNS;
@@ -920,33 +929,42 @@ void sortTester(
             printf("N/A");
         }
         printf("\n");
-        printf("AVX-512 Sort Without Merge Path Branchless:     ");
-        if (avx512SortNoMergePathBranchlessTime > 0.0) {
-            printfcomma((int)((float)Ct_length/avx512SortNoMergePathBranchlessTime));
-        } else if (avx512SortNoMergePathBranchlessTime == 0.0) {
+        printf("AVX-512 Sort Without Merge Path V2 Serial :     ");
+        if (avx512SortNoMergePathV2SerialTime > 0.0) {
+            printfcomma((int)((float)Ct_length/avx512SortNoMergePathV2SerialTime));
+        } else if (avx512SortNoMergePathV2SerialTime == 0.0) {
             printf("∞");
         } else {
             printf("N/A");
         }
         printf("\n");
-        printf("AVX-512 Sort Without Merge Path Bitonic   :     ");
-        if (avx512SortNoMergePathBitonicTime > 0.0) {
-            printfcomma((int)((float)Ct_length/avx512SortNoMergePathBitonicTime));
-        } else if (avx512SortNoMergePathBitonicTime == 0.0) {
-            printf("∞");
-        } else {
-            printf("N/A");
-        }
-        printf("\n");
-        printf("AVX-512 Sort Without Merge Path AVX       :     ");
-        if (avx512SortNoMergePathavxTime > 0.0) {
-            printfcomma((int)((float)Ct_length/avx512SortNoMergePathavxTime));
-        } else if (avx512SortNoMergePathavxTime == 0.0) {
-            printf("∞");
-        } else {
-            printf("N/A");
-        }
-        printf("\n");
+        // printf("AVX-512 Sort Without Merge Path Branchless:     ");
+        // if (avx512SortNoMergePathBranchlessTime > 0.0) {
+        //     printfcomma((int)((float)Ct_length/avx512SortNoMergePathBranchlessTime));
+        // } else if (avx512SortNoMergePathBranchlessTime == 0.0) {
+        //     printf("∞");
+        // } else {
+        //     printf("N/A");
+        // }
+        // printf("\n");
+        // printf("AVX-512 Sort Without Merge Path Bitonic   :     ");
+        // if (avx512SortNoMergePathBitonicTime > 0.0) {
+        //     printfcomma((int)((float)Ct_length/avx512SortNoMergePathBitonicTime));
+        // } else if (avx512SortNoMergePathBitonicTime == 0.0) {
+        //     printf("∞");
+        // } else {
+        //     printf("N/A");
+        // }
+        // printf("\n");
+        // printf("AVX-512 Sort Without Merge Path AVX       :     ");
+        // if (avx512SortNoMergePathavxTime > 0.0) {
+        //     printfcomma((int)((float)Ct_length/avx512SortNoMergePathavxTime));
+        // } else if (avx512SortNoMergePathavxTime == 0.0) {
+        //     printf("∞");
+        // } else {
+        //     printf("N/A");
+        // }
+        // printf("\n");
         printf("AVX-512 Merge Sort                      :     ");
         if (avx512MergeSortTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeSortTime));

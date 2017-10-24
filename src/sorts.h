@@ -61,6 +61,10 @@ void avx512SortNoMergePath(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 
 template <MergeTemplate Merge>
+void avx512SortNoMergePathV2(
+    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+
+template <MergeTemplate Merge>
 void iterativeMergeSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 
