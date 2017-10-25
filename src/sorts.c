@@ -320,7 +320,7 @@ void avx512SortNoMergePath(
 
     uint32_t sortedArraySize = 2;
     for (; sortedArraySize < array_length / 32; sortedArraySize <<= 1) {
-        if (sortedArraySize >= 4) return;
+        //if (sortedArraySize >= 4) return;
         //printf("\n\n\n\n\n\n");
         //printf("Sorted Size %d\n", sortedArraySize);
         vindexA = _mm512_slli_epi32(vindexA, 1);
@@ -506,6 +506,188 @@ void avx512SortNoMergePathV2(
         printf("Segment Sort Array must be divisible by 32");
     }
 
+    // __m512i vindexA = _mm512_set_epi32(30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0);
+    // __m512i vindexB = _mm512_set_epi32(31, 29, 27, 25, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1);
+    // __m512i vindexBStop = _mm512_set_epi32(32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2);
+
+    // Round one, take unsorted array into sub arrays of size 2
+    for (uint32_t index = 0; index < array_length; index += 32) {
+        // Get Elements
+        __m512i miAelems = _mm512_load_epi32(array + index);
+        __m512i miBelems = _mm512_load_epi32(array + index + 16);
+
+        //compare the elements
+        __mmask16 micmp = _mm512_cmple_epi32_mask(miAelems, miBelems);
+
+        //copy the elements to the final elements
+        __m512i miC1elems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
+        __m512i miC2elems = _mm512_mask_blend_epi32(micmp, miAelems, miBelems);
+
+        _mm512_store_epi32((int *)array + index, miC1elems);
+        _mm512_store_epi32((int *)array + index + 16, miC2elems);
+    }
+
+    __m512i roundMax = _mm512_set_epi32(2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2);
+    static const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+    static const __m512i miZero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+
+
+    __m512i Aelems[array_length/32];
+    __m512i Belems[array_length/32];
+
+    uint32_t sortedArraySize = 2;
+    for (; sortedArraySize < array_length / 64; sortedArraySize <<= 1) {
+        //if (sortedArraySize >= 4) break;
+        for (uint32_t index = 0; index < array_length; index += 32 * sortedArraySize) {
+            __m512i ACount = miZero;
+            __m512i BCount = miZero;
+
+            // First Elements
+            for (uint32_t i = 0; i < sortedArraySize; i++) {
+                Aelems[i] = _mm512_load_epi32(array + index + 16 * i);
+                Belems[i] = _mm512_load_epi32(array + index + sortedArraySize * 16 + 16 * i);
+            }
+            __mmask16 micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+            __m512i Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+            _mm512_store_epi32((int *)array + index, Celems);
+
+            // Elements up to sub array size
+            uint32_t subIndex = 16;
+            for (;subIndex < 16 * sortedArraySize; subIndex += 16) {
+                ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
+                BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
+                for (int32_t i = sortedArraySize - 2; i >= 0; i--) {
+                    Aelems[i] = _mm512_mask_blend_epi32(micmp, Aelems[i], Aelems[i + 1]);
+                    Belems[i] = _mm512_mask_blend_epi32(micmp, Belems[i + 1], Belems[i]);
+                }
+                micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+                Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+                _mm512_store_epi32((int *)array + index + subIndex, Celems);
+            }
+
+            // Remaining Elements
+            for (;subIndex < 32 * sortedArraySize; subIndex += 16) {
+                ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
+                BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
+                for (int32_t i = sortedArraySize - 2; i >= 0; i--) {
+                    Aelems[i] = _mm512_mask_blend_epi32(micmp, Aelems[i], Aelems[i + 1]);
+                    Belems[i] = _mm512_mask_blend_epi32(micmp, Belems[i + 1], Belems[i]);
+                }
+                micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+                micmp &= _mm512_cmplt_epi32_mask(ACount, roundMax);
+                micmp |= _mm512_cmpge_epi32_mask(BCount, roundMax);
+                Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+                _mm512_store_epi32((int *)array + index + subIndex, Celems);
+            }
+        }
+        roundMax = _mm512_slli_epi32(roundMax, 1);
+    }
+
+    for (uint32_t i = 0; i < 100; i += 32) {
+        for (uint32_t j = i; j < 16; j++) {
+            printf("array[%d]:%d\n", j, array[j]);
+            printf("array[%d]:%d\n", j + 16, array[j + 16]);
+            printf("array[%d]:%d\n", j + 32, array[j + 32]);
+            printf("array[%d]:%d\n", j + 48, array[j + 48]);
+            printf("array[%d]:%d\n", j + 64, array[j + 64]);
+            printf("array[%d]:%d\n", j + 80, array[j + 80]);
+            printf("array[%d]:%d\n", j + 96, array[j + 96]);
+            printf("array[%d]:%d\n", j + 112, array[j + 112]);
+        }
+    }
+
+    printf("\n\n\n\n\n\n");
+
+    __m512i Cindex = _mm512_set_epi32(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+    Cindex = _mm512_slli_epi32(Cindex, __builtin_ctz(array_length / 32));
+
+    // Last Round, Must scatter for merge
+        __m512i ACount = miZero;
+        __m512i BCount = miZero;
+
+        // First Elements
+        for (uint32_t i = 0; i < sortedArraySize; i++) {
+            Aelems[i] = _mm512_load_epi32(array + 16 * i);
+            Belems[i] = _mm512_load_epi32(array + sortedArraySize * 16 + 16 * i);
+        }
+        __mmask16 micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+        __m512i Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+        print512_num("Celems", Celems);
+        _mm512_i32scatter_epi32((int *)array, Cindex, Celems, 4);
+
+        // Elements up to sub array size
+        uint32_t subIndex = 16;
+        for (;subIndex < 16 * sortedArraySize; subIndex += 16) {
+            Cindex = _mm512_add_epi32(Cindex, mione);
+            ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
+            BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
+            for (int32_t i = sortedArraySize - 2; i >= 0; i--) {
+                Aelems[i] = _mm512_mask_blend_epi32(micmp, Aelems[i], Aelems[i + 1]);
+                Belems[i] = _mm512_mask_blend_epi32(micmp, Belems[i + 1], Belems[i]);
+            }
+            micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+            Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+            print512_num("Celems", Celems);
+            _mm512_i32scatter_epi32((int *)array, Cindex, Celems, 4);
+        }
+
+        // Remaining Elements
+        for (;subIndex < 32 * sortedArraySize; subIndex += 16) {
+            Cindex = _mm512_add_epi32(Cindex, mione);
+            ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
+            BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
+            for (int32_t i = sortedArraySize - 2; i >= 0; i--) {
+                Aelems[i] = _mm512_mask_blend_epi32(micmp, Aelems[i], Aelems[i + 1]);
+                Belems[i] = _mm512_mask_blend_epi32(micmp, Belems[i + 1], Belems[i]);
+            }
+            micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+            micmp &= _mm512_cmplt_epi32_mask(ACount, roundMax);
+            micmp |= _mm512_cmpge_epi32_mask(BCount, roundMax);
+            Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
+            print512_num("Celems", Celems);
+            _mm512_i32scatter_epi32((int *)array, Cindex, Celems, 4);
+        }
+
+    for (uint32_t i = 0; i < 200; i++) {
+        printf("C[%d]:%d\n", i, array[i]);
+    }
+
+    // for (uint32_t i = 0; i < 100; i += 32) {
+    //     for (uint32_t j = i; j < 16; j++) {
+    //         printf("array[%d]:%d\n", j, array[j]);
+    //         printf("array[%d]:%d\n", j + 16, array[j + 16]);
+    //         printf("array[%d]:%d\n", j + 32, array[j + 32]);
+    //         printf("array[%d]:%d\n", j + 48, array[j + 48]);
+    //         printf("array[%d]:%d\n", j + 64, array[j + 64]);
+    //         printf("array[%d]:%d\n", j + 80, array[j + 80]);
+    //         printf("array[%d]:%d\n", j + 96, array[j + 96]);
+    //         printf("array[%d]:%d\n", j + 112, array[j + 112]);
+    //     }
+    // }
+
+    return;
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if (array_length % 32 != 0) {
+        printf("Segment Sort Array must be divisible by 32");
+    }
+
     __m512i vindexA = _mm512_set_epi32(30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0);
     __m512i vindexB = _mm512_set_epi32(31, 29, 27, 25, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1);
     __m512i vindexBStop = _mm512_set_epi32(32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2);
@@ -527,50 +709,58 @@ void avx512SortNoMergePathV2(
         _mm512_store_epi32((int *)array + index + 16, miC2elems);
     }
 
-    static const __m512i roundTwoMax = _mm512_set_epi32(2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2);
+    static const __m512i roundMax = _mm512_set_epi32(2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2);
     static const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
     static const __m512i miZero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
-    for (uint32_t index = 0; index < array_length; index += 64) {
+    __m512i Aelems[array_length/32];
+    __m512i Belems[array_length/32];
+
+    uint32_t sortedArraySize = 2;
+    //for (; sortedArraySize < array_length / 32; sortedArraySize <<= 1)
+    for (uint32_t index = 0; index < array_length; index += 32 * sortedArraySize) {
         __m512i ACount = miZero;
         __m512i BCount = miZero;
         // print512_num("ACount", ACount);
         // print512_num("BCount", BCount);
         // Get Elements
-        __m512i miA0elems = _mm512_load_epi32(array + index);
-        __m512i miA1elems = _mm512_load_epi32(array + index + 16);
-        __m512i miB0elems = _mm512_load_epi32(array + index + 32);
-        __m512i miB1elems = _mm512_load_epi32(array + index + 48);
+        for (uint32_t i = 0; i < sortedArraySize; i++) {
+            Aelems[i] = _mm512_load_epi32(array + index + 16 * i);
+            Belems[i] = _mm512_load_epi32(array + index + sortedArraySize * 16 + 16 * i);
+        }
 
         // print512_num("miA0elems", miA0elems);
         // print512_num("miA1elems", miA1elems);
         // print512_num("miB0elems", miB0elems);
         // print512_num("miB1elems", miB1elems);
 
-        __mmask16 micmp = _mm512_cmple_epi32_mask(miA0elems, miB0elems);
-        __m512i miC0elems = _mm512_mask_blend_epi32(micmp, miB0elems, miA0elems);
+        __mmask16 micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+        __m512i Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
 
         // print512_num("miC0elems", miC0elems);
         // print512_num("miA0elems", miA0elems);
         // print512_num("miB0elems", miB0elems);
 
 
-        _mm512_store_epi32((int *)array + index, miC0elems);
+        _mm512_store_epi32((int *)array + index, Celems);
         ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
         BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
         // printmmask16("micmp", micmp);
         // print512_num("ACount", ACount);
         // print512_num("BCount", BCount);
-        miA0elems = _mm512_mask_blend_epi32(micmp, miA0elems, miA1elems);
-        miB0elems = _mm512_mask_blend_epi32(micmp, miB1elems, miB0elems);
-        micmp = _mm512_cmple_epi32_mask(miA0elems, miB0elems);
-        __m512i miC1elems = _mm512_mask_blend_epi32(micmp, miB0elems, miA0elems);
+        for (uint32_t i = sortedArraySize - 2; i >= 0; i--) {
+            Aelems[i] = _mm512_mask_blend_epi32(micmp, Aelems[i], Aelems[i + 1]);
+            Belems[i] = _mm512_mask_blend_epi32(micmp, Belems[i + 1], Belems[i]);
+        }
+
+        micmp = _mm512_cmple_epi32_mask(Aelems[0], Belems[0]);
+        Celems = _mm512_mask_blend_epi32(micmp, Belems[0], Aelems[0]);
 
         // print512_num("miC1elems", miC1elems);
         // print512_num("miA0elems", miA0elems);
         // print512_num("miB0elems", miB0elems);
 
-        _mm512_store_epi32((int *)array + index + 16, miC1elems);
+        _mm512_store_epi32((int *)array + index + 16, Celems);
         ACount = _mm512_mask_add_epi32(ACount, micmp, ACount, mione);
         BCount = _mm512_mask_add_epi32(BCount, ~micmp, BCount, mione);
         // printmmask16("micmp", micmp);
@@ -925,7 +1115,7 @@ void avx512SortNoMergePathV2(
 
     // for (uint32_t i = 0; i < 1024; i++) {
     //     printf("C[%d]:%d\n", i, array[i]);
-    // }
+    // }*/
 
 }
 

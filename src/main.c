@@ -94,10 +94,10 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 8388608;
-uint32_t  h_ui_B_length                = 8388608;
-uint32_t  h_ui_C_length                = 16777216; //array to put values in
-uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
+uint32_t  h_ui_A_length                = 512;//8388608;
+uint32_t  h_ui_B_length                = 512;//8388608;
+uint32_t  h_ui_C_length                = 1024;//16777216; //array to put values in
+uint32_t  h_ui_Ct_length               = 1024;//16777216; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
