@@ -98,7 +98,7 @@ uint32_t  h_ui_A_length                = 512;//8388608;
 uint32_t  h_ui_B_length                = 512;//8388608;
 uint32_t  h_ui_C_length                = 1024;//16777216; //array to put values in
 uint32_t  h_ui_Ct_length               = 1024;//16777216; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  RUNS                         = 1000;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
@@ -858,18 +858,18 @@ void sortTester(
             CUnsorted);
     }
 
-    quickSortTime /= RUNS;
-    serialMergeSortTime /= RUNS;
-    serialMergeNoBranchSortTime /= RUNS;
-    bitonicMergeRealSortTime /= RUNS;
-    #ifdef AVX512
-    avx512SortNoMergePathSerialTime /= RUNS;
-    avx512SortNoMergePathV2SerialTime /= RUNS;
-    avx512SortNoMergePathBranchlessTime /= RUNS;
-    avx512SortNoMergePathBitonicTime /= RUNS;
-    avx512SortNoMergePathavxTime /= RUNS;
-    avx512MergeSortTime /= RUNS;
-    #endif
+    // quickSortTime /= RUNS;
+    // serialMergeSortTime /= RUNS;
+    // serialMergeNoBranchSortTime /= RUNS;
+    // bitonicMergeRealSortTime /= RUNS;
+    // #ifdef AVX512
+    // avx512SortNoMergePathSerialTime /= RUNS;
+    // avx512SortNoMergePathV2SerialTime /= RUNS;
+    // avx512SortNoMergePathBranchlessTime /= RUNS;
+    // avx512SortNoMergePathBitonicTime /= RUNS;
+    // avx512SortNoMergePathavxTime /= RUNS;
+    // avx512MergeSortTime; /= RUNS;
+    // #endif
 
     if (OutToFile) {
         writeToSortOut("Quick Sort", entropy, C_length, quickSortTime);
@@ -983,9 +983,10 @@ void sortTester(
         printf("Bitonic Merge          :     %f\n", bitonicMergeRealSortTime);
         #ifdef AVX512
         printf("AVX512 Sort W/O MPS    :     %f\n", avx512SortNoMergePathSerialTime);
-        printf("AVX512 Sort W/O MPB    :     %f\n", avx512SortNoMergePathBranchlessTime);
-        printf("AVX512 Sort W/O MPBi   :     %f\n", avx512SortNoMergePathBitonicTime);
-        printf("AVX512 Sort W/O MPA    :     %f\n", avx512SortNoMergePathavxTime);
+        printf("AVX512 Sort V2 W/O MPS :     %f\n", avx512SortNoMergePathV2SerialTime);
+        // printf("AVX512 Sort W/O MPB    :     %f\n", avx512SortNoMergePathBranchlessTime);
+        // printf("AVX512 Sort W/O MPBi   :     %f\n", avx512SortNoMergePathBitonicTime);
+        // printf("AVX512 Sort W/O MPA    :     %f\n", avx512SortNoMergePathavxTime);
         printf("AVX512 Merge           :     %f\n", avx512MergeSortTime);
         #endif
     }
