@@ -1024,6 +1024,7 @@ void parallelTester(
     float serialMergeNoBranchParallelSortTime = 0.0;
     float bitonicMergeRealParallelSortTime = 0.0;
     #ifdef AVX512
+    float avx512MergeParallelSortNewTime = 0.0;
     float avx512MergeParallelSortTime = 0.0;
     #endif
 
@@ -1031,15 +1032,17 @@ void parallelTester(
     float serialMergeNoBranchParallelSortTimeMax = FLT_MAX;
     float bitonicMergeRealParallelSortTimeMax = FLT_MAX;
     #ifdef AVX512
+    float avx512MergeParallelSortNewTimeMax = FLT_MAX;
     float avx512MergeParallelSortTimeMax = FLT_MAX;
     #endif
 
     float temp = 0.0;
 
     for (uint32_t run = 0; run < RUNS; run++) {
+        printf("1\n");
         if (serialMergeParallelSortTime >= 0.0) {
             temp = serialMergeParallelSortTime;
-            serialMergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>>(
+            serialMergeParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>>(
                                                 CUnsorted, C_length,
                                                 CSorted, Ct_length,
                                                 runs, 64, "Standard Parallel Merge Sort");
@@ -1048,10 +1051,10 @@ void parallelTester(
                 serialMergeParallelSortTimeMax = temp;
             }
         }
-
+        printf("2\n");
         if (serialMergeNoBranchParallelSortTime >= 0.0) {
             temp = serialMergeNoBranchParallelSortTime;
-            serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>>(
+            serialMergeNoBranchParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>>(
                                                         CUnsorted, C_length,
                                                         CSorted, Ct_length,
                                                         runs, 64, "Branchless Merge Sort");
@@ -1060,10 +1063,10 @@ void parallelTester(
                 serialMergeNoBranchParallelSortTimeMax = temp;
             }
         }
-
+        printf("3\n");
         if (bitonicMergeRealParallelSortTime >= 0.0) {
             temp = bitonicMergeRealParallelSortTime;
-            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
+            bitonicMergeRealParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>>(
                                                     CUnsorted, C_length,
                                                     CSorted, Ct_length,
                                                     runs, 64, "Bitonic Based Merge Sort");
@@ -1072,19 +1075,32 @@ void parallelTester(
                 bitonicMergeRealParallelSortTimeMax = temp;
             }
         }
-
+        printf("4\n");
         #ifdef AVX512
         if (avx512MergeParallelSortTime >= 0.0) {
-            temp = avx512MergeParallelSortTime;
-            avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSortPower2<iterativeMergeSort<avx512Merge>,avx512Merge>>(
+            temp = avx512MergeParallelSortNewTime;
+            avx512MergeParallelSortNewTime += testParallelSort<parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>>(
                                                 CUnsorted, C_length,
                                                 CSorted, Ct_length,
-                                                runs, 64, "AVX-512 Based Merge Sort");
-            temp = avx512MergeParallelSortTime - temp;
-            if (temp < avx512MergeParallelSortTimeMax) {
-                avx512MergeParallelSortTimeMax = temp;
+                                                runs, 64, "AVX-512 Based Merge Sort New");
+            temp = avx512MergeParallelSortNewTime - temp;
+            if (temp < avx512MergeParallelSortNewTimeMax) {
+                avx512MergeParallelSortNewTimeMax = temp;
             }
         }
+        printf("5\n");
+        // if (avx512MergeParallelSortTime >= 0.0) {
+        //     temp = avx512MergeParallelSortTime;
+        //     avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>>(
+        //                                         CUnsorted, C_length,
+        //                                         CSorted, Ct_length,
+        //                                         runs, 64, "AVX-512 Based Merge Sort");
+        //     temp = avx512MergeParallelSortTime - temp;
+        //     if (temp < avx512MergeParallelSortTimeMax) {
+        //         avx512MergeParallelSortTimeMax = temp;
+        //     }
+        // }
+        printf("6\n");
         #endif
 
         insertData(
@@ -1099,6 +1115,7 @@ void parallelTester(
         serialMergeNoBranchParallelSortTime /= RUNS;
         bitonicMergeRealParallelSortTime /= RUNS;
         #ifdef AVX512
+        avx512MergeParallelSortNewTime /= RUNS;
         avx512MergeParallelSortTime /= RUNS;
         #endif
 
@@ -1149,6 +1166,15 @@ void parallelTester(
             printf("\n");
             #ifdef AVX512
             printf("AVX-512 Based Merge Sort:     ");
+            if (avx512MergeParallelSortNewTime > 0.0) {
+                printfcomma((int)((float)Ct_length/avx512MergeParallelSortNewTime));
+            } else if (avx512MergeParallelSortNewTime == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
+            printf("AVX-512 Based Merge Sort:     ");
             if (avx512MergeParallelSortTime > 0.0) {
                 printfcomma((int)((float)Ct_length/avx512MergeParallelSortTime));
             } else if (avx512MergeParallelSortTime == 0.0) {
@@ -1189,6 +1215,15 @@ void parallelTester(
             }
             printf("\n");
             #ifdef AVX512
+            printf("AVX-512 Based Merge Sort Max:     ");
+            if (avx512MergeParallelSortNewTimeMax > 0.0) {
+                printfcomma((int)((float)Ct_length/avx512MergeParallelSortNewTimeMax));
+            } else if (avx512MergeParallelSortNewTimeMax == 0.0) {
+                printf("∞");
+            } else {
+                printf("N/A");
+            }
+            printf("\n");
             printf("AVX-512 Based Merge Sort Max:     ");
             if (avx512MergeParallelSortTime > 0.0) {
                 printfcomma((int)((float)Ct_length/avx512MergeParallelSortTimeMax));
