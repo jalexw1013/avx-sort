@@ -287,10 +287,10 @@ template <MergeTemplate Merge>
 void avx512SortNoMergePath(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
-    // Checks, can be removed for performance testing
-    if (array_length % 32 != 0) {
-        printf("Segment Sort Array must be divisible by 32");
-    }
+    // // Checks, can be removed for performance testing
+    // if (array_length % 32 != 0) {
+    //     printf("Segment Sort Array must be divisible by 32");
+    // }
 
     __m512i vindexA = _mm512_set_epi32(30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0);
     __m512i vindexB = _mm512_set_epi32(31, 29, 27, 25, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1);
@@ -519,11 +519,12 @@ void avx512SortNoMergePathV2(
     }
 
     __m512i roundTwoMax = _mm512_set_epi32(2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2);
-    __m512i Cindex = _mm512_set_epi32(60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4, 0);
+    __m512i CindexOriginal = _mm512_set_epi32(60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4, 0);
     static const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
     static const __m512i miZero = _mm512_set_epi32(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
     for (uint32_t index = 0; index < array_length; index += 64) {
+        __m512i Cindex = CindexOriginal;
         __m512i ACount = miZero;
         __m512i BCount = miZero;
         __m512i miA0elems = _mm512_load_epi32(array + index);
@@ -563,10 +564,18 @@ void avx512SortNoMergePathV2(
         _mm512_i32scatter_epi32((int *)array + index, Cindex, miC3elems, 4);
     }
 
+    // for (uint32_t i = 0; i < 1024; i += 4) {
+    //     for (uint32_t j = 0; j < 3; j++) {
+    //         //printf("Array[%d]:%d\n", i + j, array[i+j]);
+    //         assert(array[i + j] < array[i + j + 1]);
+    //     }
+    //     //printf("\n");
+    // }
+
     //static const __m512i mione = _mm512_set_epi32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
     __m512i vindexA = _mm512_set_epi32(60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4, 0);
-    __m512i vindexB = _mm512_set_epi32(60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4, 0);
-    __m512i vindexBStop = _mm512_set_epi32(32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2);
+    __m512i vindexB = _mm512_set_epi32(62, 58, 54, 50, 46, 42, 38, 34, 30, 26, 22, 18, 14, 10, 6, 2);
+    __m512i vindexBStop = _mm512_set_epi32(64, 60, 56, 52, 48, 44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4);
 
     __m512i vindexAInner, vindexBInner, vindexCInner;
     __m512i miAelems, miBelems, miCelems;
@@ -590,6 +599,7 @@ void avx512SortNoMergePathV2(
             //copy the elements to the final elements
             miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
             _mm512_i32scatter_epi32((int *)C + index, vindexCInner, miCelems, 4);
+            // print512_num("C", miCelems);
 
             // increase indexes
             vindexAInner = _mm512_mask_add_epi32(vindexAInner, micmp, vindexAInner, mione);
@@ -607,6 +617,7 @@ void avx512SortNoMergePathV2(
                 //copy the elements to the final elements
                 miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
                 _mm512_i32scatter_epi32((int *)C + index, vindexCInner, miCelems, 4);
+                // print512_num("C", miCelems);
 
                 // increase indexes
                 vindexAInner = _mm512_mask_add_epi32(vindexAInner, micmp, vindexAInner, mione);
@@ -624,13 +635,30 @@ void avx512SortNoMergePathV2(
             micmp |= ~maskB;
             miCelems = _mm512_mask_blend_epi32(micmp, miBelems, miAelems);
             _mm512_i32scatter_epi32((int *)C + index, vindexCInner, miCelems, 4);
+            // print512_num("C", miCelems);
+            // printf("\n\n");
         }
         // Pointer Swap
         vec_t* tmp = array;
         array = C;
         C = tmp;
         numberOfSwaps++;
+        // for (uint32_t i = 0; i < 32; i += 32) {
+        //     for (uint32_t j = 0; j < 31; j++) {
+        //         printf("array[%d]:%d\n", i+j, array[i+j]);
+        //         //assert(array[i + j] < array[i + j + 1]);
+        //     }
+        // }
+        // assert(1==0);
     }
+
+    // for (uint32_t i = 0; i < 1024; i += 32) {
+    //     for (uint32_t j = 0; j < 31; j++) {
+    //         //printf("array[%d]:%d\n", i+j, array[i+j]);
+    //         assert(array[i + j] < array[i + j + 1]);
+    //     }
+    // }
+    //assert(1==0);
 
     for (; sortedArraySize < array_length; sortedArraySize <<= 1) {
         for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
@@ -655,6 +683,7 @@ void avx512SortNoMergePathV2(
         vec_t* tmp = array;
         array = C;
         C = tmp;
+        //printf("yo\n");
     }
 
 return;
