@@ -1110,7 +1110,7 @@ void parallelTester(
             writeToParallelSortOut("Branchless Merge Sort", entropy, C_length, numberOfThreads, serialMergeNoBranchParallelSortTime);
             writeToParallelSortOut("Bitonic Based Merge Sort", entropy, C_length, numberOfThreads, bitonicMergeRealParallelSortTime);
             #ifdef AVX512
-            writeToParallelSortOut("AVX-512 Based Merge Sort", entropy, C_length, numberOfThreads, avx512MergeParallelSortTime);
+            writeToParallelSortOut("AVX-512 Based Merge Sort", entropy, C_length, numberOfThreads, avx512MergeParallelSortNewTime);
             #endif
 
             // writeToParallelSortOut("Standard Merge Sort Max", entropy, C_length, numberOfThreads, serialMergeParallelSortTimeMax);
