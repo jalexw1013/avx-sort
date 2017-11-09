@@ -1713,6 +1713,215 @@ inline uint32_t arraySum(uint32_t* array, uint32_t sumToIndex) {
     return sum;
 }
 
+/*// Intel's code, does not apply to our copyright
+//#include <stdlib.h>
+//#include <iostream>
+//#include <fstream>
+//#include <algorithm>
+// #include <tbb/tick_count.h>
+// #include <tbb/task.h>
+// #include <tbb/task_scheduler_init.h>
+// #include <omp.h>
+
+// template <typename T>
+// typename remove_reference<T>::type&& move(T&& arg)
+// {
+//   return static_cast<typename remove_reference<T>::type&&>(arg);
+// }
+//
+// template<typename T> void swap(T& t1, T& t2) {
+//     T temp = move(t1); // or T temp(std::move(t1));
+//     t1 = move(t2);
+//     t2 = move(temp);
+// }
+
+//compare-exchange primitive - ascending order
+#define CMPXCHG_A(i,j) if(A[i]>A[j])swap(A[i],A[j]);
+//compare-exchange primitive - descending order
+#define CMPXCHG_D(i,j) if(A[i]<A[j])swap(A[i],A[j]);
+//parametric compare-exchange
+#define CMPXCHG(i,j,Direction) CMPXCHG_##Direction(i,j)
+//generate two sorting functions - for ascending and descending order
+#define EXPANDBATCHER(Size) void BatcherSort_A_##Size(unsigned* A){BATCHER_##Size(A) };void BatcherSort_D_##Size(unsigned* A){BATCHER_##Size(D)};
+
+
+//Batcher's sorting for length-1 arrays
+#define BATCHER_1(Direction)
+//Batcher's sorting for length-2 arrays
+#define BATCHER_2(Direction) CMPXCHG(0,1,Direction)
+//Batcher's sorting for length-3 arrays
+#define BATCHER_3(Direction) CMPXCHG(0,2,Direction);CMPXCHG(0,1,Direction);CMPXCHG(1,2,Direction);
+//Batcher's sorting for length-4 arrays
+#define BATCHER_4(Direction) CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(1,2,Direction);
+//Batcher's sorting for length-5 arrays
+#define BATCHER_5(Direction) CMPXCHG(0,4,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(2,4,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(1,4,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);
+//Batcher's sorting for length-6 arrays
+#define BATCHER_6(Direction) CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(1,4,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);
+//Batcher's sorting for length-7 arrays
+#define BATCHER_7(Direction) CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);
+//Batcher's sorting for length-8 arrays
+#define BATCHER_8(Direction) CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction)
+//Batcher's sorting for length-9 arrays
+#define BATCHER_9(Direction) CMPXCHG(0,8,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(4,8,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(2,8,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(1,8,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);
+//Batcher's sorting for length-10 arrays
+#define BATCHER_10(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(1,8,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);
+//Batcher's sorting for length-11 arrays
+#define BATCHER_11(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);
+//Batcher's sorting for length-12 arrays
+#define BATCHER_12(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(3,11,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(7,11,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(9,11,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(10,11,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);
+//Batcher's sorting for length-13 arrays
+#define BATCHER_13(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(3,11,Direction);CMPXCHG(4,12,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(8,12,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(7,11,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(9,11,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(6,12,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(10,12,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(10,11,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(5,12,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(9,12,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);CMPXCHG(11,12,Direction);
+//Batcher's sorting for length-14 arrays
+#define BATCHER_14(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(3,11,Direction);CMPXCHG(4,12,Direction);CMPXCHG(5,13,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(8,12,Direction);CMPXCHG(9,13,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(7,11,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(9,11,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(6,12,Direction);CMPXCHG(7,13,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(10,12,Direction);CMPXCHG(11,13,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(10,11,Direction);CMPXCHG(12,13,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(5,12,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(9,12,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);CMPXCHG(11,12,Direction);
+//Batcher's sorting for length-15 arrays
+#define BATCHER_15(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(3,11,Direction);CMPXCHG(4,12,Direction);CMPXCHG(5,13,Direction);CMPXCHG(6,14,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(8,12,Direction);CMPXCHG(9,13,Direction);CMPXCHG(10,14,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(7,11,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(9,11,Direction);CMPXCHG(12,14,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(6,12,Direction);CMPXCHG(7,13,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(10,12,Direction);CMPXCHG(11,13,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(10,11,Direction);CMPXCHG(12,13,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(5,12,Direction);CMPXCHG(7,14,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(9,12,Direction);CMPXCHG(11,14,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);CMPXCHG(11,12,Direction);CMPXCHG(13,14,Direction);
+//Batcher's sorting for length-16 arrays
+#define BATCHER_16(Direction) CMPXCHG(0,8,Direction);CMPXCHG(1,9,Direction);CMPXCHG(2,10,Direction);CMPXCHG(3,11,Direction);CMPXCHG(4,12,Direction);CMPXCHG(5,13,Direction);CMPXCHG(6,14,Direction);CMPXCHG(7,15,Direction);CMPXCHG(0,4,Direction);CMPXCHG(1,5,Direction);CMPXCHG(2,6,Direction);CMPXCHG(3,7,Direction);CMPXCHG(8,12,Direction);CMPXCHG(9,13,Direction);CMPXCHG(10,14,Direction);CMPXCHG(11,15,Direction);CMPXCHG(4,8,Direction);CMPXCHG(5,9,Direction);CMPXCHG(6,10,Direction);CMPXCHG(7,11,Direction);CMPXCHG(0,2,Direction);CMPXCHG(1,3,Direction);CMPXCHG(4,6,Direction);CMPXCHG(5,7,Direction);CMPXCHG(8,10,Direction);CMPXCHG(9,11,Direction);CMPXCHG(12,14,Direction);CMPXCHG(13,15,Direction);CMPXCHG(2,8,Direction);CMPXCHG(3,9,Direction);CMPXCHG(6,12,Direction);CMPXCHG(7,13,Direction);CMPXCHG(2,4,Direction);CMPXCHG(3,5,Direction);CMPXCHG(6,8,Direction);CMPXCHG(7,9,Direction);CMPXCHG(10,12,Direction);CMPXCHG(11,13,Direction);CMPXCHG(0,1,Direction);CMPXCHG(2,3,Direction);CMPXCHG(4,5,Direction);CMPXCHG(6,7,Direction);CMPXCHG(8,9,Direction);CMPXCHG(10,11,Direction);CMPXCHG(12,13,Direction);CMPXCHG(14,15,Direction);CMPXCHG(1,8,Direction);CMPXCHG(3,10,Direction);CMPXCHG(5,12,Direction);CMPXCHG(7,14,Direction);CMPXCHG(1,4,Direction);CMPXCHG(3,6,Direction);CMPXCHG(5,8,Direction);CMPXCHG(7,10,Direction);CMPXCHG(9,12,Direction);CMPXCHG(11,14,Direction);CMPXCHG(1,2,Direction);CMPXCHG(3,4,Direction);CMPXCHG(5,6,Direction);CMPXCHG(7,8,Direction);CMPXCHG(9,10,Direction);CMPXCHG(11,12,Direction);CMPXCHG(13,14,Direction);
+
+EXPANDBATCHER(1)
+EXPANDBATCHER(2)
+EXPANDBATCHER(3)
+EXPANDBATCHER(4)
+EXPANDBATCHER(5)
+EXPANDBATCHER(6)
+EXPANDBATCHER(7)
+EXPANDBATCHER(8)
+EXPANDBATCHER(9)
+EXPANDBATCHER(10)
+EXPANDBATCHER(11)
+EXPANDBATCHER(12)
+EXPANDBATCHER(13)
+EXPANDBATCHER(14)
+EXPANDBATCHER(15)
+EXPANDBATCHER(16)
+
+//maximal length of array sortable by Batcher's algorithm
+#define MAXBATCHER 16
+
+#define BatcherSort_A_Max BatcherSort_A_16
+#define BatcherSort_D_Max BatcherSort_D_16
+
+typedef void (*Batcher)(unsigned* A);
+Batcher AscendingSort[MAXBATCHER]={BatcherSort_A_1,BatcherSort_A_2,BatcherSort_A_3,BatcherSort_A_4,BatcherSort_A_5,BatcherSort_A_6,BatcherSort_A_7,BatcherSort_A_8,BatcherSort_A_9,BatcherSort_A_10,BatcherSort_A_11,BatcherSort_A_12,BatcherSort_A_13,BatcherSort_A_14,BatcherSort_A_15,BatcherSort_A_16};
+Batcher DescendingSort[MAXBATCHER]={BatcherSort_D_1,BatcherSort_D_2,BatcherSort_D_3,BatcherSort_D_4,BatcherSort_D_5,BatcherSort_D_6,BatcherSort_D_7,BatcherSort_D_8,BatcherSort_D_9,BatcherSort_D_10,BatcherSort_D_11,BatcherSort_D_12,BatcherSort_D_13,BatcherSort_D_14,BatcherSort_D_15,BatcherSort_D_16};
+
+
+//two-path merge sort combined with Batcher's presorting for small pieces of the array
+void TwoPathMerge(unsigned N,unsigned*&pInput,unsigned*& pTemp)
+{
+
+    if (N<=1) return;
+    if (N<=MAXBATCHER)
+    {
+        AscendingSort[N-1](pInput);
+        return;
+    };
+    unsigned NumOfSections=N/MAXBATCHER;
+    int I,J;
+    for ( I=0;I<MAXBATCHER*(NumOfSections-NumOfSections/2);I+=MAXBATCHER)
+        BatcherSort_A_Max(pInput+I);
+    if (N%MAXBATCHER)
+    {
+        if (NumOfSections&1)
+            DescendingSort[(N%MAXBATCHER)-1](pInput+I);
+        else
+            AscendingSort[(N%MAXBATCHER)-1](pInput+I);
+        I+=N%MAXBATCHER;
+    };
+    for (J=N-MAXBATCHER;J>=I;J-=MAXBATCHER)
+        BatcherSort_D_Max(pInput+J);
+
+    int p=MAXBATCHER;
+
+
+    //based on Knuth's algorithm S
+    int d,r,q;
+    unsigned *i,*j,*l,*k,s;
+    //step 1
+    s=0;
+       //step 2
+Step2:;
+       if (s==0)
+       {
+           i=pInput;j=pInput+N-1;
+           k=pTemp-1;l=pTemp+N;
+       }else
+       {
+           i=pTemp;j=pTemp+N-1;
+           k=pInput-1;l=pInput+N;
+       };
+       d=1;q=p;r=p;
+       //step 3
+Step3:;
+       if (*i>*j) goto Step8;
+       //step 4
+       k=k+d;*k=*i;
+       //step 5
+       i++;q--;
+       if (q>0) goto Step3;
+       //step 6
+Step6:; k+=d;if(k==l) goto Step13;else *k=*j;
+       //step 7
+       j--;r--;if (r>0) goto Step6;else goto Step12;
+Step8:;
+       k+=d;*k=*j;
+       //step 9
+       j--;r--;if (r>0) goto Step3;
+       //step 10
+Step10:;
+       k+=d;if (k==l) goto Step13;else*k=*i;
+       //step 11
+       i++;q--;if (q>0) goto Step10;
+       //step 12
+Step12:;
+        q=p;r=p;d=-d;swap(k,l);
+        if(j-i<p) goto Step10;else goto Step3;
+        //step 13
+Step13:;
+        p+=p;
+        if (p<N)
+        {
+            s=1-s;goto Step2;
+        }else if(s==0)
+            swap(pInput,pTemp);
+
+
+};*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template <SortTemplate Sort, MergeTemplate Merge>
 void parallelIterativeMergeSort(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
