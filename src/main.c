@@ -94,11 +94,11 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 8388608;
-uint32_t  h_ui_B_length                = 8388608;
-uint32_t  h_ui_C_length                = 16777216; //array to put values in
-uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
-uint32_t  RUNS                         = 10;
+uint32_t  h_ui_A_length                = 512;//8388608;
+uint32_t  h_ui_B_length                = 512;//8388608;
+uint32_t  h_ui_C_length                = 1024;//16777216; //array to put values in
+uint32_t  h_ui_Ct_length               = 1024;//16777216; //for unsorted and sorted
+uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
@@ -376,6 +376,11 @@ float testMerge(
     //clear out array just to be sure
     clearArray((*C), C_length);
 
+    // Lastly, clear cache for fair results
+    // FILE *fp = fopen ("/proc/sys/vm/drop_caches", "w");
+    // fprintf (fp, "3");
+    // fclose (fp);
+
     //setup timing mechanism
     float time = 0.0;
 
@@ -398,11 +403,11 @@ float testMerge(
     memcpy( (*A), ACopy, A_length * sizeof(vec_t));
     memcpy( (*B), BCopy, B_length * sizeof(vec_t));
 
-    free(ACopy);
-    free(BCopy);
-    free(ASplitters);
-    free(BSplitters);
-    free(pointers);
+    // free(ACopy);
+    // free(BCopy);
+    // free(ASplitters);
+    // free(BSplitters);
+    // free(pointers);
 
     return time;
 }
@@ -774,6 +779,7 @@ void sortTester(
     float avx512SortNoMergePathBitonicTime = 0.0;
     float avx512SortNoMergePathavxTime = 0.0;
     float avx512MergeSortTime = 0.0;
+    float ippSortTime = 0.0;
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
@@ -848,6 +854,10 @@ void sortTester(
                 CSorted, Ct_length,
                 runs, 64, "AVX-512 Merge Sort");
         }
+        // ippSortTime += testSort<ippSort>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Ipp Sort");
         #endif
 
         insertData(
@@ -858,18 +868,19 @@ void sortTester(
             CUnsorted);
     }
 
-    // quickSortTime /= RUNS;
-    // serialMergeSortTime /= RUNS;
-    // serialMergeNoBranchSortTime /= RUNS;
-    // bitonicMergeRealSortTime /= RUNS;
-    // #ifdef AVX512
-    // avx512SortNoMergePathSerialTime /= RUNS;
-    // avx512SortNoMergePathV2SerialTime /= RUNS;
-    // avx512SortNoMergePathBranchlessTime /= RUNS;
-    // avx512SortNoMergePathBitonicTime /= RUNS;
-    // avx512SortNoMergePathavxTime /= RUNS;
-    // avx512MergeSortTime; /= RUNS;
-    // #endif
+    quickSortTime /= RUNS;
+    serialMergeSortTime /= RUNS;
+    serialMergeNoBranchSortTime /= RUNS;
+    bitonicMergeRealSortTime /= RUNS;
+    #ifdef AVX512
+    avx512SortNoMergePathSerialTime /= RUNS;
+    avx512SortNoMergePathV2SerialTime /= RUNS;
+    avx512SortNoMergePathBranchlessTime /= RUNS;
+    avx512SortNoMergePathBitonicTime /= RUNS;
+    avx512SortNoMergePathavxTime /= RUNS;
+    avx512MergeSortTime /= RUNS;
+    ippSortTime /= RUNS;
+    #endif
 
     if (OutToFile) {
         writeToSortOut("Quick Sort", entropy, C_length, quickSortTime);
@@ -961,6 +972,15 @@ void sortTester(
         if (avx512MergeSortTime > 0.0) {
             printfcomma((int)((float)Ct_length/avx512MergeSortTime));
         } else if (avx512MergeSortTime == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+        printf("ippSort                                 :     ");
+        if (ippSortTime > 0.0) {
+            printfcomma((int)((float)Ct_length/ippSortTime));
+        } else if (ippSortTime == 0.0) {
             printf("∞");
         } else {
             printf("N/A");
