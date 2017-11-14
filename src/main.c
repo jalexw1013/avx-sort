@@ -94,11 +94,11 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 512;//8388608;
-uint32_t  h_ui_B_length                = 512;//8388608;
-uint32_t  h_ui_C_length                = 1024;//16777216; //array to put values in
-uint32_t  h_ui_Ct_length               = 1024;//16777216; //for unsorted and sorted
-uint32_t  RUNS                         = 1;
+uint32_t  h_ui_A_length                = 8388608;
+uint32_t  h_ui_B_length                = 8388608;
+uint32_t  h_ui_C_length                = 16777216; //array to put values in
+uint32_t  h_ui_Ct_length               = 16777216; //for unsorted and sorted
+uint32_t  RUNS                         = 10;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
@@ -639,39 +639,39 @@ void mergeTester(
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        serialMergeTime += testMerge<serialMerge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Serial Merge");
-
-        serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Branchless Merge");
-
-        bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Bitonic Merge");
-
-        #ifdef AVX512
-        avx512MergeTime += testMerge<avx512Merge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "AVX-512 Merge");
-
-        /*avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "AVX-512 Parallel Merge");*/
-        #endif
-
-        insertData(
-            A, A_length,
-            B, B_length,
-            C, C_length,
-            CSorted, Ct_length,
-            CUnsorted);
+        // serialMergeTime += testMerge<serialMerge>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Serial Merge");
+        //
+        // serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Branchless Merge");
+        //
+        // bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Bitonic Merge");
+        //
+        // #ifdef AVX512
+        // avx512MergeTime += testMerge<avx512Merge>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "AVX-512 Merge");
+        //
+        // /*avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "AVX-512 Parallel Merge");*/
+        // #endif
+        //
+        // insertData(
+        //     A, A_length,
+        //     B, B_length,
+        //     C, C_length,
+        //     CSorted, Ct_length,
+        //     CUnsorted);
     }
 
     serialMergeTime /= RUNS;
