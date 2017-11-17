@@ -23,4 +23,6 @@ void print16intarray(char *text, int *val);
 void printmmask16(char *text, __mmask16 mask);
 #endif
 
+int isPowerOfTwo(uint32_t n);
+
 #endif

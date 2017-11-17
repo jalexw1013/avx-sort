@@ -55,3 +55,17 @@ void printmmask16(char *text, __mmask16 mask) {
 		BYTE_TO_BINARY(mask>>8), BYTE_TO_BINARY(mask));
 }
 #endif
+
+int isPowerOfTwo(uint32_t n)
+{
+    if (n == 0) {
+        return 0;
+	}
+    while (n != 1) {
+        if (n%2 != 0) {
+            return 0;
+		}
+        n = n/2;
+    }
+    return 1;
+}
