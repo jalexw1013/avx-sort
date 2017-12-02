@@ -72,7 +72,7 @@ else ifeq ($(AVX512),YES)
 	else ifeq ($(CC),icc)
 		CCFLAGS += -axMIC-AVX512 -D AVX512
 	else ifeq ($(CC),icpc)
-		CCFLAGS += -axMIC-AVX512 -D AVX512 -I $IPPROOT/include -L $IPPROOT/lib/intel64 -lippi -lipps -lippcore -Wl,-rpath,$IPPROOT/lib/intel64
+		CCFLAGS += -axMIC-AVX512 -D AVX512 -I $IPPROOT/include -L $IPPROOT/lib/intel64 -lippi -lipps -lippcore -Wl,-rpath,$IPPROOT/lib/intel64 -lpthread
 	else
 		$(error Unknown Compiler Given)
 	endif

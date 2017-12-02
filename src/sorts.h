@@ -48,6 +48,13 @@ extern void avx512ParallelMerge(
     struct memPointers* pointers);
 #endif
 
+template <MergeTemplate Merge>
+void parallelMerge(
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    struct memPointers* pointers);
+
 /*
  * Sorting Functions
  */

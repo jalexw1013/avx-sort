@@ -267,6 +267,29 @@ inline void avx512ParallelMerge(
 }
 #endif
 
+template <MergeTemplate Merge>
+void parallelMerge(
+    vec_t* A, uint32_t A_length,
+    vec_t* B, uint32_t B_length,
+    vec_t* C, uint32_t C_length,
+    struct memPointers* pointers)
+{
+    #pragma omp parallel
+    {
+        uint32_t numThreads = omp_get_num_threads();
+        uint32_t threadNum = omp_get_thread_num();
+        uint32_t* ASplitters = pointers->ASplitters + (numThreads + 1) * threadNum;
+        uint32_t* BSplitters = pointers->BSplitters + (numThreads + 1) * threadNum;
+        MergePathSplitter(A, A_length, B, B_length, C,
+            C_length, numThreads, ASplitters, BSplitters);
+        uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
+        uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
+        Merge(A + ASplitters[threadNum], A_length,
+            B + BSplitters[threadNum], B_length,
+            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL);
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Sorting algorithms
@@ -2219,6 +2242,12 @@ void parallelIterativeMergeSortV2(
 /*
  * Template Instantiations
  */
+
+ template void parallelMerge<serialMerge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+ template void parallelMerge<bitonicMergeReal>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+ #ifdef AVX512
+ template void parallelMerge<avx512Merge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+ #endif
 
 template void iterativeMergeSort<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 template void iterativeMergeSort<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
