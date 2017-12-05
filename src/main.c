@@ -105,10 +105,10 @@ FILE *sortFile;
 #ifdef PARALLELSORT
 FILE *parallelSortFile;
 #endif
-uint32_t  h_ui_A_length                = 50000000;//32768;//8388608;
-uint32_t  h_ui_B_length                = 50000000;//32768;//8388608;
-uint32_t  h_ui_C_length                = 100000000;//65536;//16777216; //array to put values in
-uint32_t  h_ui_Ct_length               = 100000000;//65536;//16777216; //for unsorted and sorted
+uint64_t  h_ui_A_length                = 2147483648;
+uint64_t  h_ui_B_length                = 2147483648;
+uint64_t  h_ui_C_length                = 4294967296; //array to put values in
+uint64_t  h_ui_Ct_length               = 4294967296; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
@@ -264,16 +264,16 @@ int hostBasicCompare(const void * a, const void * b) {
 /**
  * Allocates the arrays A,B,C,CSorted, and CUnsorted
  */
-void initArrays(vec_t** A, uint32_t A_length,
-          vec_t** B, uint32_t B_length,
-          vec_t** C, uint32_t C_length,
-          vec_t** CSorted, uint32_t Ct_length,
+void initArrays(vec_t** A, uint64_t A_length,
+          vec_t** B, uint64_t B_length,
+          vec_t** C, uint64_t C_length,
+          vec_t** CSorted, uint64_t Ct_length,
           vec_t** CUnsorted)
 {
-    (*A)  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
-    (*B)  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
-    (*C)  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
-    (*CSorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
+    //(*A)  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
+    //(*B)  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
+    //(*C)  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
+    //(*CSorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
     (*CUnsorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
 }
 
@@ -281,23 +281,25 @@ void initArrays(vec_t** A, uint32_t A_length,
  * inserts the data into the arrays A,B,CUnsorted, and CSorted.
  * This can be called over and over to re randomize the data
  */
-void insertData(vec_t** A, uint32_t A_length,
-                vec_t** B, uint32_t B_length,
-                vec_t** C, uint32_t C_length,
-                vec_t** CSorted, uint32_t Ct_length,
+void insertData(vec_t** A, uint64_t A_length,
+                vec_t** B, uint64_t B_length,
+                vec_t** C, uint64_t C_length,
+                vec_t** CSorted, uint64_t Ct_length,
                 vec_t** CUnsorted)
 {
-    for(uint32_t i = 0; i < A_length; ++i) {
-        (*A)[i] = rand() % (1 << (entropy - 1));
-        (*CUnsorted)[i] = (*A)[i];
+    for(uint64_t i = 0; i < A_length; ++i) {
+        (*CUnsorted)[i] = rand() % (1 << (entropy - 1));
+        //(*CUnsorted)[i] = (*A)[i];
     }
 
-    for(uint32_t i = 0; i < B_length; ++i) {
-        (*B)[i] = rand() % (1 << (entropy - 1));
-        (*CUnsorted)[i+A_length] = (*B)[i];
+    for(uint64_t i = 0; i < B_length; ++i) {
+        (*CUnsorted)[i+A_length] = rand() % (1 << (entropy - 1));
+        //(*CUnsorted)[i+A_length] = (*B)[i];
     }
 
-    qsort((*A), A_length, sizeof(vec_t), hostBasicCompare);
+    return;
+
+    /*qsort((*A), A_length, sizeof(vec_t), hostBasicCompare);
     qsort((*B), B_length, sizeof(vec_t), hostBasicCompare);
 
     for(int i = 0; i < 8; ++i) {
@@ -310,14 +312,14 @@ void insertData(vec_t** A, uint32_t A_length,
         (*CSorted)[ci++] = (*A)[ai] < (*B)[bi] ? (*A)[ai++] : (*B)[bi++];
     }
     while(ai < A_length) (*CSorted)[ci++] = (*A)[ai++];
-    while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];
+    while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];*/
 }
 
 void freeGlobalData() {
-      free(globalA);
-      free(globalB);
-      free(globalC);
-      free(CSorted);
+      //free(globalA);
+      //free(globalB);
+      //free(globalC);
+      //free(CSorted);
       free(CUnsorted);
 }
 
@@ -329,7 +331,7 @@ void initMergeFilePointer(FILE** fp) {
     fprintf((*fp), "Name,Entropy,A Size,B Size,Elements Per Second,Total Time");
 }
 
-void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, float time) {
+void writeToMergeOut(const char* name, uint32_t entropy, uint64_t ASize, uint64_t BSize, float time) {
     fprintf(mergeFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
 }
 
@@ -340,7 +342,7 @@ void initParallelMergeFilePointer(FILE** fp) {
     fprintf((*fp), "Name,Entropy,A Size,B Size,Number of Threads,Elements Per Second,Total Time");
 }
 
-void writeToParallelMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, uint32_t numThreads,float time) {
+void writeToParallelMergeOut(const char* name, uint32_t entropy, uint64_t ASize, uint64_t BSize, uint32_t numThreads,float time) {
     fprintf(parallelMergeFile, "\n%s,%i,%i,%i,%i,%i,%.20f", name, entropy, ASize, BSize, numThreads,(int)((float)(ASize + BSize)/time), time);
 }
 #endif
@@ -353,7 +355,7 @@ void initSortFilePointer(FILE** fp) {
     fprintf((*fp), "Name,Entropy,C Size,Elements Per Second,Total Time");
 }
 
-void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float time) {
+void writeToSortOut(const char* name, uint32_t entropy, uint64_t CSize, float time) {
     fprintf(sortFile, "\n%s,%i,%i,%i,%.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
 }
 #endif
@@ -366,13 +368,13 @@ void initParallelSortFilePointer(FILE** fp) {
     fprintf((*fp), "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
 }
 
-void writeToParallelSortOut(const char* name, uint32_t entropy, uint32_t CSize, uint32_t numThreads, float time) {
+void writeToParallelSortOut(const char* name, uint64_t entropy, uint64_t CSize, uint32_t numThreads, float time) {
     fprintf(parallelSortFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
 }
 #endif
 
-int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name, uint32_t numThreads) {
-    for(uint32_t i = 0; i < length; i++) {
+int verifyOutput(vec_t* output, vec_t* sortedData, uint64_t length, const char* name, uint32_t numThreads) {
+    for(uint64_t i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
             printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
             printf("    Index:%d, Given Value:%d, Correct "
@@ -383,8 +385,8 @@ int verifyOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* 
     return 1;
 }
 
-int verifySignedOutput(int32_t* output, int32_t* sortedData, uint32_t length, const char* name, uint32_t numThreads) {
-    for(uint32_t i = 0; i < length; i++) {
+int verifySignedOutput(int32_t* output, int32_t* sortedData, uint64_t length, const char* name, uint32_t numThreads) {
+    for(uint64_t i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
             printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
             printf("    Index:%d, Given Value:%d, Correct "
@@ -395,8 +397,8 @@ int verifySignedOutput(int32_t* output, int32_t* sortedData, uint32_t length, co
     return 1;
 }
 
-void clearArray(vec_t* array, uint32_t length) {
-    for (uint32_t i = 0; i < length; i++) {
+void clearArray(vec_t* array, uint64_t length) {
+    for (uint64_t i = 0; i < length; i++) {
         array[i] = 0;
     }
 }
@@ -405,11 +407,11 @@ int hostBasicCompare2(const void * a, const void * b) {
     return (int) (*(int32_t *)a - *(int32_t *)b);
 }
 
-template <void (*Merge)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t, struct memPointers*)>
+template <void (*Merge)(vec_t*,uint64_t,vec_t*,uint64_t,vec_t*,uint64_t, struct memPointers*)>
 float testMerge(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
     vec_t** CSorted, uint32_t runs,
     const char* algoName, int testOutput) {
 
@@ -469,9 +471,9 @@ float testMerge(
 
 template <ParallelMergeTemplate ParallelMerge>
 float testParallelMerge(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
     vec_t** CSorted, uint32_t runs,
     const char* algoName) {
 
@@ -535,8 +537,8 @@ float testParallelMerge(
 
 template <SortTemplate Sort>
 float testSort(
-    vec_t** CUnsorted, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
+    vec_t** CUnsorted, uint64_t C_length,
+    vec_t** CSorted, uint64_t Ct_length,
     uint32_t runs, const uint32_t splitNumber,
     const char* algoName, int isSigned, int checkResults) {
 
@@ -597,8 +599,8 @@ float testSort(
 
 template <ParallelSortTemplate ParallelSort>
 float testParallelSort(
-    vec_t** CUnsorted, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
+    vec_t** CUnsorted, uint64_t C_length,
+    vec_t** CSorted, uint64_t Ct_length,
     uint32_t runs, const uint32_t splitNumber,
     const char* algoName) {
 
@@ -606,8 +608,8 @@ float testParallelSort(
     float time = 0.0;
 
     //store old values
-    vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
-    memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
+    //vec_t* unsortedCopy = (vec_t*)xmalloc(Ct_length * sizeof(vec_t));
+    //memcpy(unsortedCopy, (*CUnsorted), Ct_length * sizeof(vec_t));
 
     //Check how many threads are running
     uint32_t numberOfThreads = 0;
@@ -639,16 +641,16 @@ float testParallelSort(
     time += tic_sincelast();
 
     //verify output is valid
-    if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName, numberOfThreads)) {
+    //if (!verifyOutput((*CUnsorted), (*CSorted), C_length, algoName, numberOfThreads)) {
         //time = -1.0;
-    }
+    //}
 
     //restore original values
-    memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+    //memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
 
     //deallocate variables
     free(C);
-    free(unsortedCopy);
+    //free(unsortedCopy);
     free(ASplitters);
     free(BSplitters);
     free(arraySizes);
@@ -672,9 +674,9 @@ void printfcomma(int n) {
 
 #ifdef MERGE
 void mergeTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
     vec_t** CSorted, uint32_t Ct_length,
     vec_t** CUnsorted, uint32_t runs)
 {
@@ -810,10 +812,10 @@ void mergeTester(
 }
 
 void parallelMergeTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
+    vec_t** CSorted, uint64_t Ct_length,
     vec_t** CUnsorted, uint32_t runs)
 {
     return;
@@ -925,12 +927,13 @@ void libinfo(void) {
 
 #ifdef SORT
 void sortTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
+    vec_t** CSorted, uint64_t Ct_length,
     vec_t** CUnsorted, uint32_t runs)
 {
+    return;
     libinfo();
     if (!OutToFile) {
         printf("Parameters\n");
@@ -1177,13 +1180,12 @@ void sortTester(
 
 #ifdef PARALLELSORT
 void parallelTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
+    vec_t** A, uint64_t A_length,
+    vec_t** B, uint64_t B_length,
+    vec_t** C, uint64_t C_length,
+    vec_t** CSorted, uint64_t Ct_length,
     vec_t** CUnsorted, uint32_t runs)
 {
-    return;
     uint32_t numberOfThreads = 0;
     //Check how many threads are running
     #pragma omp parallel
@@ -1422,18 +1424,18 @@ void parallelTester(
 #endif
 
 void MergePathSplitter(
-    vec_t * A, uint32_t A_length,
-    vec_t * B, uint32_t B_length,
-    vec_t * C, uint32_t C_length,
+    vec_t * A, uint64_t A_length,
+    vec_t * B, uint64_t B_length,
+    vec_t * C, uint64_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
     MergePathSplitter2(A, A_length, B, B_length, C, C_length, threads, ASplitters, BSplitters, 0);
 }
 
 void MergePathSplitter2(
-    vec_t * A, uint32_t A_length,
-    vec_t * B, uint32_t B_length,
-    vec_t * C, uint32_t C_length,
+    vec_t * A, uint64_t A_length,
+    vec_t * B, uint64_t B_length,
+    vec_t * C, uint64_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t p)
 {
   for (uint32_t i = 0; i <= threads; i++) {

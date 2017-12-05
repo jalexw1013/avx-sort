@@ -25,9 +25,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 inline void serialMerge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
+    vec_t* A, uint64_t A_length,
+    vec_t* B, uint64_t B_length,
+    vec_t* C, uint64_t C_length,
     struct memPointers* pointers)
 {
     uint32_t Aindex = 0;
@@ -42,9 +42,9 @@ inline void serialMerge(
 }
 
 inline void serialMergeNoBranch(
-      vec_t* A, uint32_t A_length,
-      vec_t* B, uint32_t B_length,
-      vec_t* C, uint32_t C_length,
+      vec_t* A, uint64_t A_length,
+      vec_t* B, uint64_t B_length,
+      vec_t* C, uint64_t C_length,
       struct memPointers* pointers)
 {
     uint32_t Aindex = 0;
@@ -81,9 +81,9 @@ const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
 const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
 const uint8_t m1001 = (1<<6)                   | 1;
 
-inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
-                      vec_t* B, uint32_t B_length,
-                      vec_t* C, uint32_t C_length,
+inline void bitonicMergeReal(vec_t* A, uint64_t A_length,
+                      vec_t* B, uint64_t B_length,
+                      vec_t* C, uint64_t C_length,
                       struct memPointers* pointers)
 {
     // TODO i think these can be 4s
@@ -187,9 +187,9 @@ inline void bitonicMergeReal(vec_t* A, uint32_t A_length,
 #ifdef AVX512
 
 inline void avx512Merge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
+    vec_t* A, uint64_t A_length,
+    vec_t* B, uint64_t B_length,
+    vec_t* C, uint64_t C_length,
     struct memPointers* pointers)
 {
     uint32_t ASplitters[17];
@@ -245,9 +245,9 @@ inline void avx512Merge(
 // }
 
 inline void avx512ParallelMerge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
+    vec_t* A, uint64_t A_length,
+    vec_t* B, uint64_t B_length,
+    vec_t* C, uint64_t C_length,
     struct memPointers* pointers)
 {
     #pragma omp parallel
@@ -269,9 +269,9 @@ inline void avx512ParallelMerge(
 
 template <MergeTemplate Merge>
 void parallelMerge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
+    vec_t* A, uint64_t A_length,
+    vec_t* B, uint64_t B_length,
+    vec_t* C, uint64_t C_length,
     struct memPointers* pointers)
 {
     #pragma omp parallel
@@ -297,20 +297,20 @@ void parallelMerge(
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef SORT
 void quickSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     qsort((void*)array, array_length, sizeof(vec_t), hostBasicCompare);
 }
 
 void ippSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     ippsSortAscend_32s_I((Ipp32s*)array, array_length);
 }
 
 template <MergeTemplate Merge>
 void avx512SortNoMergePath(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     // // Checks, can be removed for performance testing
     // if (array_length % 32 != 0) {
@@ -322,7 +322,7 @@ void avx512SortNoMergePath(
     __m512i vindexBStop = _mm512_set_epi32(32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2);
 
     // Round one, take unsorted array into sub arrays of size 2
-    for (uint32_t index = 0; index < array_length; index += 32) {
+    for (uint64_t index = 0; index < array_length; index += 32) {
         // Get Elements
         __m512i miAelems = _mm512_load_epi32(array + index);
         __m512i miBelems = _mm512_load_epi32(array + index + 16);
@@ -351,7 +351,7 @@ void avx512SortNoMergePath(
         vindexA = _mm512_slli_epi32(vindexA, 1);
         vindexB = _mm512_slli_epi32(vindexB, 1);
         vindexBStop = _mm512_slli_epi32(vindexBStop, 1);
-        for (uint32_t index = 0; index < array_length; index += 32 * sortedArraySize) {
+        for (uint64_t index = 0; index < array_length; index += 32 * sortedArraySize) {
             vindexAInner = vindexA;
             vindexBInner = vindexB;
             vindexCInner = vindexA;
@@ -479,13 +479,13 @@ void avx512SortNoMergePath(
 
     uint32_t numberOfSwaps = 0;
     for (; sortedArraySize < array_length; sortedArraySize <<= 1) {
-        for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
+        for (uint64_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
     	{
-            uint32_t A_end = min(A_start + sortedArraySize, array_length - 1);
-    		uint32_t B_start = A_end;
-    		uint32_t B_end = min(A_start + 2 * sortedArraySize, array_length);
-            uint32_t A_length = A_end - A_start;
-            uint32_t B_length = B_end - B_start;
+            uint64_t A_end = min(A_start + sortedArraySize, array_length - 1);
+    		uint64_t B_start = A_end;
+    		uint64_t B_end = min(A_start + 2 * sortedArraySize, array_length);
+            uint64_t A_length = A_end - A_start;
+            uint64_t B_length = B_end - B_start;
 
             // printf("A_start:%d\n", A_start);
             // printf("A_end:%d\n", A_end);
@@ -524,10 +524,10 @@ void avx512SortNoMergePath(
 
 template <MergeTemplate Merge>
 void avx512SortNoMergePathV2(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     // Round one, take unsorted array into sub arrays of size 2
-    for (uint32_t index = 0; index < array_length; index += 32) {
+    for (uint64_t index = 0; index < array_length; index += 32) {
         // Get Elements
         __m512i miAelems = _mm512_load_epi32(array + index);
         __m512i miBelems = _mm512_load_epi32(array + index + 16);
@@ -607,12 +607,12 @@ void avx512SortNoMergePathV2(
     __mmask16 maskA = (__mmask16)0xFFFF, maskB = (__mmask16)0xFFFF, micmp;
     uint32_t numberOfSwaps = 0;
 
-    uint32_t sortedArraySize = 4;
+    uint64_t sortedArraySize = 4;
     for (; sortedArraySize < array_length / 32; sortedArraySize <<= 1) {
         vindexA = _mm512_slli_epi32(vindexA, 1);
         vindexB = _mm512_slli_epi32(vindexB, 1);
         vindexBStop = _mm512_slli_epi32(vindexBStop, 1);
-        for (uint32_t index = 0; index < array_length; index += 32 * sortedArraySize) {
+        for (uint64_t index = 0; index < array_length; index += 32 * sortedArraySize) {
             vindexAInner = vindexA;
             vindexBInner = vindexB;
             vindexCInner = vindexA;
@@ -630,7 +630,7 @@ void avx512SortNoMergePathV2(
             vindexAInner = _mm512_mask_add_epi32(vindexAInner, micmp, vindexAInner, mione);
             vindexBInner = _mm512_mask_add_epi32(vindexBInner, ~micmp, vindexBInner, mione);
             vindexCInner = _mm512_add_epi32(vindexCInner, mione);
-            uint32_t l1Index = index + 16;
+            uint64_t l1Index = index + 16;
             for (; l1Index < index + 32 * sortedArraySize - 16; l1Index += 16) {
                 maskA = _mm512_cmplt_epi32_mask(vindexAInner, vindexB);
                 maskB = _mm512_cmplt_epi32_mask(vindexBInner, vindexBStop);
@@ -687,13 +687,13 @@ void avx512SortNoMergePathV2(
     //assert(1==0);
 
     for (; sortedArraySize < array_length; sortedArraySize <<= 1) {
-        for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
+        for (uint64_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
     	{
-            uint32_t A_end = min(A_start + sortedArraySize, array_length - 1);
-    		uint32_t B_start = A_end;
-    		uint32_t B_end = min(A_start + 2 * sortedArraySize, array_length);
-            uint32_t A_length = A_end - A_start;
-            uint32_t B_length = B_end - B_start;
+            uint64_t A_end = min(A_start + sortedArraySize, array_length - 1);
+    		uint64_t B_start = A_end;
+    		uint64_t B_end = min(A_start + 2 * sortedArraySize, array_length);
+            uint64_t A_length = A_end - A_start;
+            uint64_t B_length = B_end - B_start;
 
             Merge(array + A_start, A_length, array + B_start, B_length, C + A_start, A_length + B_length, pointers);
     	}
@@ -1450,10 +1450,10 @@ return;
 
 template <MergeTemplate Merge>
 void avx512SortNoMergePathV2Partial(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     // Round one, take unsorted array into sub arrays of size 2
-    for (uint32_t index = 0; index < array_length; index += 32) {
+    for (uint64_t index = 0; index < array_length; index += 32) {
         // Get Elements
         __m512i miAelems = _mm512_load_epi32(array + index);
         __m512i miBelems = _mm512_load_epi32(array + index + 16);
@@ -1524,7 +1524,7 @@ void avx512SortNoMergePathV2Partial(
     __mmask16 maskA = (__mmask16)0xFFFF, maskB = (__mmask16)0xFFFF, micmp;
     uint32_t numberOfSwaps = 0;
 
-    uint32_t sortedArraySize = 4;
+    uint64_t sortedArraySize = 4;
     for (; sortedArraySize < array_length / 32; sortedArraySize <<= 1) {
         vindexA = _mm512_slli_epi32(vindexA, 1);
         vindexB = _mm512_slli_epi32(vindexB, 1);
@@ -1547,7 +1547,7 @@ void avx512SortNoMergePathV2Partial(
             vindexAInner = _mm512_mask_add_epi32(vindexAInner, micmp, vindexAInner, mione);
             vindexBInner = _mm512_mask_add_epi32(vindexBInner, ~micmp, vindexBInner, mione);
             vindexCInner = _mm512_add_epi32(vindexCInner, mione);
-            uint32_t l1Index = index + 16;
+            uint64_t l1Index = index + 16;
             for (; l1Index < index + 32 * sortedArraySize - 16; l1Index += 16) {
                 maskA = _mm512_cmplt_epi32_mask(vindexAInner, vindexB);
                 maskB = _mm512_cmplt_epi32_mask(vindexBInner, vindexBStop);
@@ -1595,10 +1595,10 @@ void avx512SortNoMergePathV2Partial(
 
 template <MergeTemplate Merge>
 void avx512SortNoMergePathV2NonP2(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     // Round one, take unsorted array into sub arrays of size 2
-    for (uint32_t index = 0; index < array_length; index += 32) {
+    for (uint64_t index = 0; index < array_length; index += 32) {
         // Get Elements
         __m512i miAelems = _mm512_load_epi32(array + index);
         __m512i miBelems = _mm512_load_epi32(array + index + 16);
@@ -1678,12 +1678,12 @@ void avx512SortNoMergePathV2NonP2(
     __mmask16 maskA = (__mmask16)0xFFFF, maskB = (__mmask16)0xFFFF, micmp;
     uint32_t numberOfSwaps = 0;
 
-    uint32_t sortedArraySize = 4;
+    uint64_t sortedArraySize = 4;
     for (; sortedArraySize < array_length / 32; sortedArraySize <<= 1) {
         vindexA = _mm512_slli_epi32(vindexA, 1);
         vindexB = _mm512_slli_epi32(vindexB, 1);
         vindexBStop = _mm512_slli_epi32(vindexBStop, 1);
-        for (uint32_t index = 0; index < array_length; index += 32 * sortedArraySize) {
+        for (uint64_t index = 0; index < array_length; index += 32 * sortedArraySize) {
             vindexAInner = vindexA;
             vindexBInner = vindexB;
             vindexCInner = vindexA;
@@ -1701,7 +1701,7 @@ void avx512SortNoMergePathV2NonP2(
             vindexAInner = _mm512_mask_add_epi32(vindexAInner, micmp, vindexAInner, mione);
             vindexBInner = _mm512_mask_add_epi32(vindexBInner, ~micmp, vindexBInner, mione);
             vindexCInner = _mm512_add_epi32(vindexCInner, mione);
-            uint32_t l1Index = index + 16;
+            uint64_t l1Index = index + 16;
             for (; l1Index < index + 32 * sortedArraySize - 16; l1Index += 16) {
                 maskA = _mm512_cmplt_epi32_mask(vindexAInner, vindexB);
                 maskB = _mm512_cmplt_epi32_mask(vindexBInner, vindexBStop);
@@ -1757,13 +1757,13 @@ void avx512SortNoMergePathV2NonP2(
     //assert(1==0);
 
     for (; sortedArraySize < array_length; sortedArraySize <<= 1) {
-        for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
+        for (uint64_t A_start = 0; A_start < array_length; A_start += 2 * sortedArraySize)
     	{
-            uint32_t A_end = min(A_start + sortedArraySize, array_length - 1);
-    		uint32_t B_start = A_end;
-    		uint32_t B_end = min(A_start + 2 * sortedArraySize, array_length);
-            uint32_t A_length = A_end - A_start;
-            uint32_t B_length = B_end - B_start;
+            uint64_t A_end = min(A_start + sortedArraySize, array_length - 1);
+    		uint64_t B_start = A_end;
+    		uint64_t B_end = min(A_start + 2 * sortedArraySize, array_length);
+            uint64_t A_length = A_end - A_start;
+            uint64_t B_length = B_end - B_start;
 
             Merge(array + A_start, A_length, array + B_start, B_length, C + A_start, A_length + B_length, pointers);
     	}
@@ -1785,7 +1785,7 @@ void avx512SortNoMergePathV2NonP2(
 
 template <MergeTemplate Merge>
 void iterativeMergeSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
+    vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
     //vec_t* C = (vec_t*)xcalloc((array_length + 32), sizeof(vec_t));
 
@@ -1808,11 +1808,11 @@ void iterativeMergeSort(
     }
 
     //now do actual iterative merge sort
-    for (uint32_t currentSubArraySize = start; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
+    for (uint64_t currentSubArraySize = start; currentSubArraySize < array_length; currentSubArraySize = 2 * currentSubArraySize)
     {
-    	for (uint32_t A_start = 0; A_start < array_length; A_start += 2 * currentSubArraySize)
+    	for (uint64_t A_start = 0; A_start < array_length; A_start += 2 * currentSubArraySize)
     	{
-            uint32_t A_end = min(A_start + currentSubArraySize, array_length - 1);
+            uint64_t A_end = min(A_start + currentSubArraySize, array_length - 1);
     		uint32_t B_start = A_end;
     		uint32_t B_end = min(A_start + 2 * currentSubArraySize, array_length);
             uint32_t A_length = A_end - A_start;
