@@ -15,38 +15,18 @@ struct memPointers {
 
 typedef void (*MergeTemplate)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t, struct memPointers*);
 typedef void (*ParallelMergeTemplate)(vec_t*,uint32_t,vec_t*,uint32_t,vec_t*,uint32_t, struct memPointers*);
+typedef void (*AlgoTemplate)(struct AlgoArgs*);
 
-extern void serialMerge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
-    struct memPointers* pointers);
-
-extern void serialMergeNoBranch(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
-    struct memPointers* pointers);
-
-extern void bitonicMergeReal(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
-    struct memPointers* pointers);
-
-#ifdef AVX512
-extern void avx512Merge(
-    vec_t* A, uint32_t A_length,
-    vec_t* B, uint32_t B_length,
-    vec_t* C, uint32_t C_length,
-    struct memPointers* pointers);
+extern void serialMerge(struct AlgoArgs *args);
+extern void serialMergeNoBranch(struct AlgoArgs *args);
+extern void bitonicMergeReal(struct AlgoArgs *args);
+extern void avx512Merge(struct AlgoArgs *args);
 
 extern void avx512ParallelMerge(
     vec_t* A, uint32_t A_length,
     vec_t* B, uint32_t B_length,
     vec_t* C, uint32_t C_length,
     struct memPointers* pointers);
-#endif
 
 template <MergeTemplate Merge>
 void parallelMerge(

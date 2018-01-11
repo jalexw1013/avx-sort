@@ -24,12 +24,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-inline void serialMerge(
-    vec_t* A, uint64_t A_length,
-    vec_t* B, uint64_t B_length,
-    vec_t* C, uint64_t C_length,
-    struct memPointers* pointers)
-{
+inline void serialMerge(struct AlgoArgs *args) {
+    vec_t* A = args->A;
+    uint64_t A_length = args->A_length;
+    vec_t* B = args->B;
+    uint64_t B_length = args->B_length;
+    vec_t* C = args->C;
     uint32_t Aindex = 0;
     uint32_t Bindex = 0;
     uint32_t Cindex = 0;
@@ -41,12 +41,12 @@ inline void serialMerge(
     while(Bindex < B_length) C[Cindex++] = B[Bindex++];
 }
 
-inline void serialMergeNoBranch(
-      vec_t* A, uint64_t A_length,
-      vec_t* B, uint64_t B_length,
-      vec_t* C, uint64_t C_length,
-      struct memPointers* pointers)
-{
+inline void serialMergeNoBranch(struct AlgoArgs *args) {
+    vec_t* A = args->A;
+    uint64_t A_length = args->A_length;
+    vec_t* B = args->B;
+    uint64_t B_length = args->B_length;
+    vec_t* C = args->C;
     uint32_t Aindex = 0;
     uint32_t Bindex = 0;
     uint32_t Cindex = 0;
@@ -81,14 +81,17 @@ const uint8_t m2103 = (2<<6) | (1<<4) | (0<<2) | 3;
 const uint8_t m0213 = (0<<6) | (2<<4) | (1<<2) | 3;
 const uint8_t m1001 = (1<<6)                   | 1;
 
-inline void bitonicMergeReal(vec_t* A, uint64_t A_length,
-                      vec_t* B, uint64_t B_length,
-                      vec_t* C, uint64_t C_length,
-                      struct memPointers* pointers)
-{
-    // TODO i think these can be 4s
+inline void bitonicMergeReal(struct AlgoArgs *args) {
+    vec_t* A = args->A;
+    uint64_t A_length = args->A_length;
+    vec_t* B = args->B;
+    uint64_t B_length = args->B_length;
+    vec_t* C = args->C;
+    uint64_t C_length = args->C_length;
+
+    // TODO I think these can be 4s
     if (A_length < 5 || B_length < 5 || C_length < 5) {
-        serialMerge(A,A_length,B,B_length,C,C_length,NULL);
+        serialMerge(args);
         return;
     }
 
@@ -184,14 +187,13 @@ inline void bitonicMergeReal(vec_t* A, uint64_t A_length,
     return;
 }
 
-#ifdef AVX512
-
-inline void avx512Merge(
-    vec_t* A, uint64_t A_length,
-    vec_t* B, uint64_t B_length,
-    vec_t* C, uint64_t C_length,
-    struct memPointers* pointers)
-{
+inline void avx512Merge(struct AlgoArgs *args) {
+    vec_t* A = args->A;
+    uint64_t A_length = args->A_length;
+    vec_t* B = args->B;
+    uint64_t B_length = args->B_length;
+    vec_t* C = args->C;
+    uint64_t C_length = args->C_length;
     uint32_t ASplitters[17];
     uint32_t BSplitters[17];
 
@@ -244,28 +246,28 @@ inline void avx512Merge(
 //         pointers);
 // }
 
-inline void avx512ParallelMerge(
-    vec_t* A, uint64_t A_length,
-    vec_t* B, uint64_t B_length,
-    vec_t* C, uint64_t C_length,
-    struct memPointers* pointers)
-{
-    #pragma omp parallel
-    {
-        uint32_t numThreads = omp_get_num_threads();
-        uint32_t threadNum = omp_get_thread_num();
-        uint32_t* ASplitters = pointers->ASplitters + (numThreads + 1) * threadNum;
-        uint32_t* BSplitters = pointers->BSplitters + (numThreads + 1) * threadNum;
-        MergePathSplitter(A, A_length, B, B_length, C,
-            C_length, numThreads, ASplitters, BSplitters);
-        uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
-        uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
-        avx512Merge(A + ASplitters[threadNum], A_length,
-            B + BSplitters[threadNum], B_length,
-            C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL);
-    }
-}
-#endif
+// inline void avx512ParallelMerge(
+//     vec_t* A, uint64_t A_length,
+//     vec_t* B, uint64_t B_length,
+//     vec_t* C, uint64_t C_length,
+//     struct memPointers* pointers)
+// {
+//     #pragma omp parallel
+//     {
+//         uint32_t numThreads = omp_get_num_threads();
+//         uint32_t threadNum = omp_get_thread_num();
+//         uint32_t* ASplitters = pointers->ASplitters + (numThreads + 1) * threadNum;
+//         uint32_t* BSplitters = pointers->BSplitters + (numThreads + 1) * threadNum;
+//         MergePathSplitter(A, A_length, B, B_length, C,
+//             C_length, numThreads, ASplitters, BSplitters);
+//         uint32_t A_length = ASplitters[threadNum + 1] - ASplitters[threadNum];
+//         uint32_t B_length = BSplitters[threadNum + 1] - BSplitters[threadNum];
+//         avx512Merge(A + ASplitters[threadNum], A_length,
+//             B + BSplitters[threadNum], B_length,
+//             C + ASplitters[threadNum] + BSplitters[threadNum], A_length + B_length, NULL);
+//     }
+// }
+// #endif
 
 template <MergeTemplate Merge>
 void parallelMerge(
@@ -295,7 +297,6 @@ void parallelMerge(
 // Sorting algorithms
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef SORT
 void quickSort(
     vec_t* array, vec_t* C, uint64_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
 {
@@ -2243,62 +2244,62 @@ void parallelIterativeMergeSortV2(
  * Template Instantiations
  */
 
- template void parallelMerge<serialMerge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
- template void parallelMerge<bitonicMergeReal>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
- #ifdef AVX512
- template void parallelMerge<avx512Merge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
- #endif
-
-template void iterativeMergeSort<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void iterativeMergeSort<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void iterativeMergeSort<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void iterativeMergeSort<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-template void avx512SortNoMergePath<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void avx512SortNoMergePath<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void avx512SortNoMergePath<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void avx512SortNoMergePath<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-template void avx512SortNoMergePathV2<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void avx512SortNoMergePathV2<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void avx512SortNoMergePathV2<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void avx512SortNoMergePathV2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-template void iterativeMergeSortPower2<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void iterativeMergeSortPower2<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void iterativeMergeSortPower2<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void iterativeMergeSortPower2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-
-
-template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-template void parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#ifdef AVX512
-template void parallelIterativeMergeSortPower2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-#endif
-
-template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
-template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
-template void parallelIterativeMergeSortV2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
-#ifdef AVX512
-template void parallelIterativeMergeSortV2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
-#endif
-
-#endif
+//  //template void parallelMerge<serialMerge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+//  template void parallelMerge<bitonicMergeReal>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+//  #ifdef AVX512
+//  template void parallelMerge<avx512Merge>(vec_t* A, uint32_t A_length,vec_t* B, uint32_t B_length,vec_t* C, uint32_t C_length,struct memPointers* pointers);
+//  #endif
+//
+// // template void iterativeMergeSort<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void iterativeMergeSort<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void iterativeMergeSort<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void iterativeMergeSort<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+// // template void avx512SortNoMergePath<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void avx512SortNoMergePath<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void avx512SortNoMergePath<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void avx512SortNoMergePath<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+// // template void avx512SortNoMergePathV2<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void avx512SortNoMergePathV2<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void avx512SortNoMergePathV2<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void avx512SortNoMergePathV2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+// // template void iterativeMergeSortPower2<serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void iterativeMergeSortPower2<serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void iterativeMergeSortPower2<bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void iterativeMergeSortPower2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+// // template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+//
+//
+// // template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// template void parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #ifdef AVX512
+// template void parallelIterativeMergeSortPower2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+// #endif
+//
+// // template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
+// template void parallelIterativeMergeSortV2<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
+// template void parallelIterativeMergeSortV2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
+// #ifdef AVX512
+// template void parallelIterativeMergeSortV2<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers*);
+// #endif
+//
+// #endif

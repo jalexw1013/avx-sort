@@ -3,6 +3,7 @@ AVX512 := YES#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := YES#Valid Options are YES or NO
 PARALLELSORT := YES#Valid Options are YES or NO
+VERIFYOUTPUT := NO#Valid Options are YES or NO
 
 OS = $(shell uname)
 
@@ -59,6 +60,14 @@ else ifeq ($(PARALLELSORT),YES)
 	CCFLAGS += -D PARALLELSORT
 else
     $(error Invalid value for variable PARALLELSORT. Valid values are YES or NO)
+endif
+
+ifeq ($(VERIFYOUTPUT),NO)
+
+else ifeq ($(VERIFYOUTPUT),YES)
+	CCFLAGS += -D VERIFYOUTPUT
+else
+    $(error Invalid value for variable VERIFYOUTPUT. Valid values are YES or NO)
 endif
 
 #check for AVX512

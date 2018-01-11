@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <immintrin.h>
+#include <stdbool.h>
 
 #include "utils/util.h"
 #include "utils/xmalloc.h"
@@ -91,106 +92,36 @@ void initParallelSortFilePointer(FILE** fp);
 // Global Host Variables
 ////////////////////////////
 vec_t*    globalA;
+uint64_t  globalALength;
 vec_t*    globalB;
+uint64_t  globalBLength;
 vec_t*    globalC;
+uint64_t  globalCLength;
 vec_t*    CSorted;
 vec_t*    CUnsorted;
-#ifdef MERGE
+
 FILE *mergeFile;
 FILE *parallelMergeFile;
-#endif
-#ifdef SORT
 FILE *sortFile;
-#endif
-#ifdef PARALLELSORT
 FILE *parallelSortFile;
-#endif
-uint64_t  h_ui_A_length                = 2147483648;
-uint64_t  h_ui_B_length                = 2147483648;
-uint64_t  h_ui_C_length                = 4294967296; //array to put values in
-uint64_t  h_ui_Ct_length               = 4294967296; //for unsorted and sorted
+
+uint64_t  h_ui_A_length                = 0;
+uint64_t  h_ui_B_length                = 0;
+uint64_t  h_ui_C_length                = 0; //array to put values in
+uint64_t  h_ui_Ct_length               = 0; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
-uint32_t  verifyOutput                 = 1; // 1 if verify output of algorithms is correct
 
 uint32_t testingEntropies[] = {28};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {100000, 1000000, 10000000};
-uint32_t testingSizesLength = 3;
-uint32_t testingThreads[] = {2,4,8,16,32,64,128,256};
+uint32_t testingSizes[] = {1000000};
+uint32_t testingSizesLength = 1;
+uint32_t testingThreads[] = {64};
 uint32_t testingThreadsLength = 1;
 
 // Host Functions
 ////////////////////////////
-int main(int argc, char** argv)
-{
-    // parse langths of A and B if user entered
-    hostParseArgs(argc, argv);
-
-    uint32_t seed = time(0);
-    srand(seed);
-
-    if (OutToFile) {
-        initMergeFilePointer(&mergeFile);
-    }
-    if (OutToFile) {
-        initParallelMergeFilePointer(&parallelMergeFile);
-    }
-    if (OutToFile) {
-        initSortFilePointer(&sortFile);
-    }
-    if (OutToFile) {
-        initParallelSortFilePointer(&parallelSortFile);
-    }
-
-    omp_set_dynamic(0);
-    for (uint32_t i = 0; i < testingSizesLength; i++) {
-        initArrays(
-            &globalA, testingSizes[i]/2,
-            &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-            &globalC, testingSizes[i],
-            &CSorted, testingSizes[i],
-            &CUnsorted);
-        for (uint32_t e = 0; e < testingEntropiesLength; e++) {
-            entropy = testingEntropies[e];
-            insertData(
-                &globalA, testingSizes[i]/2,
-                &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                &globalC, testingSizes[i],
-                &CSorted, testingSizes[i],
-                &CUnsorted);
-            mergeTester(
-                &globalA, testingSizes[i]/2,
-                &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                &globalC, testingSizes[i],
-                &CSorted, testingSizes[i],
-                &CUnsorted, RUNS);
-            sortTester(
-                &globalA, testingSizes[i]/2,
-                &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                &globalC, testingSizes[i],
-                &CSorted, testingSizes[i],
-                &CUnsorted, RUNS);
-            for (uint32_t j = 0; j < testingThreadsLength; j++) {
-                omp_set_num_threads(testingThreads[j]);
-                parallelMergeTester(
-                    &globalA, testingSizes[i]/2,
-                    &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                    &globalC, testingSizes[i],
-                    &CSorted, testingSizes[i],
-                    &CUnsorted, RUNS);
-                parallelTester(
-                    &globalA, testingSizes[i]/2,
-                    &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                    &globalC, testingSizes[i],
-                    &CSorted, testingSizes[i],
-                    &CUnsorted, RUNS);
-            }
-        }
-        freeGlobalData();
-    }
-}
 
 int hostBasicCompare(const void * a, const void * b) {
     return (int) (*(vec_t *)a - *(vec_t *)b);
@@ -208,9 +139,9 @@ void initArrays(vec_t** A, uint64_t A_length,
     (*A)  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
     (*B)  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
     (*C)  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
-    if (verifyOutput) {
-        (*CSorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
-    }
+    #ifdef VERIFYOUTPUT
+    (*CSorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
+    #endif
     (*CUnsorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
 }
 
@@ -230,7 +161,7 @@ void insertData(vec_t** A, uint64_t A_length,
     }
 
     for(uint64_t i = 0; i < B_length; ++i) {
-        (*B)[i+A_length] = rand() % (1 << (entropy - 1));
+        (*B)[i] = rand() % (1 << (entropy - 1));
         (*CUnsorted)[i+A_length] = (*B)[i];
     }
 
@@ -241,24 +172,24 @@ void insertData(vec_t** A, uint64_t A_length,
         (*A)[A_length + i] = INFINITY_VALUE; (*B)[B_length + i] = INFINITY_VALUE;
     }
 
-    if (verifyOutput) {
-        // reference 'CORRECT' results
-        uint32_t ai = 0,bi = 0,ci = 0;
-        while(ai < A_length && bi < B_length) {
-            (*CSorted)[ci++] = (*A)[ai] < (*B)[bi] ? (*A)[ai++] : (*B)[bi++];
-        }
-        while(ai < A_length) (*CSorted)[ci++] = (*A)[ai++];
-        while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];
+    // reference 'CORRECT' results
+    #ifdef VERIFYOUTPUT
+    uint32_t ai = 0,bi = 0,ci = 0;
+    while(ai < A_length && bi < B_length) {
+        (*CSorted)[ci++] = (*A)[ai] < (*B)[bi] ? (*A)[ai++] : (*B)[bi++];
     }
+    while(ai < A_length) (*CSorted)[ci++] = (*A)[ai++];
+    while(bi < B_length) (*CSorted)[ci++] = (*B)[bi++];
+    #endif
 }
 
 void freeGlobalData() {
       free(globalA);
       free(globalB);
       free(globalC);
-      if (verifyOutput) {
-          free(CSorted);
-      }
+      #ifdef VERIFYOUTPUT
+      free(CSorted);
+      #endif
       free(CUnsorted);
 }
 
@@ -270,7 +201,7 @@ void initMergeFilePointer(FILE** fp) {
 }
 
 void writeToMergeOut(const char* name, uint32_t entropy, uint64_t ASize, uint64_t BSize, float time) {
-    fprintf(mergeFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
+    fprintf(mergeFile, "\n%s,%i,%lu,%lu,%i,%.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
 }
 
 void initParallelMergeFilePointer(FILE** fp) {
@@ -281,7 +212,7 @@ void initParallelMergeFilePointer(FILE** fp) {
 }
 
 void writeToParallelMergeOut(const char* name, uint32_t entropy, uint64_t ASize, uint64_t BSize, uint32_t numThreads,float time) {
-    fprintf(parallelMergeFile, "\n%s,%i,%i,%i,%i,%i,%.20f", name, entropy, ASize, BSize, numThreads,(int)((float)(ASize + BSize)/time), time);
+    fprintf(parallelMergeFile, "\n%s,%i,%lu,%lu,%i,%i,%.20f", name, entropy, ASize, BSize, numThreads,(int)((float)(ASize + BSize)/time), time);
 }
 
 void initSortFilePointer(FILE** fp) {
@@ -292,7 +223,7 @@ void initSortFilePointer(FILE** fp) {
 }
 
 void writeToSortOut(const char* name, uint32_t entropy, uint64_t CSize, float time) {
-    fprintf(sortFile, "\n%s,%i,%i,%i,%.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
+    fprintf(sortFile, "\n%s,%i,%lu,%i,%.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
 }
 
 void initParallelSortFilePointer(FILE** fp) {
@@ -302,29 +233,44 @@ void initParallelSortFilePointer(FILE** fp) {
     fprintf((*fp), "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
 }
 
-void writeToParallelSortOut(const char* name, uint64_t entropy, uint64_t CSize, uint32_t numThreads, float time) {
-    fprintf(parallelSortFile, "\n%s,%i,%i,%i,%i,%.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
+void writeToParallelSortOut(const char* name, uint32_t entropy, uint64_t CSize, uint32_t numThreads, float time) {
+    fprintf(parallelSortFile, "\n%s,%i,%lu,%i,%i,%.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
 }
 
-int verifyOutput(vec_t* output, vec_t* sortedData, uint64_t length, const char* name, uint32_t numThreads) {
+int verifyUnsignedOutput(vec_t* output, vec_t* sortedData, uint64_t length, const char* name, uint32_t numThreads) {
     for(uint64_t i = 0; i < length; i++) {
         if(output[i] != sortedData[i]) {
             printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
-            printf("    Index:%d, Given Value:%d, Correct "
-            "Value:%d, ArraySize: %d NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
+            printf("    Index:%lu, Given Value:%d, Correct "
+            "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
             return 0;
         }
     }
     return 1;
 }
 
-int verifySignedOutput(int32_t* output, int32_t* sortedData, uint64_t length, const char* name, uint32_t numThreads) {
-    for(uint64_t i = 0; i < length; i++) {
-        if(output[i] != sortedData[i]) {
-            printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
-            printf("    Index:%d, Given Value:%d, Correct "
-            "Value:%d, ArraySize: %d NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
-            return 0;
+int verifyOutput(vec_t* outputU, vec_t* sortedDataU, uint64_t length, const char* name, uint32_t numThreads, bool isSigned) {
+    if (isSigned) {
+        int32_t* output = (int32_t*)outputU;
+        int32_t* sortedData = (int32_t*)sortedDataU;
+        for(uint64_t i = 0; i < length; i++) {
+            if(output[i] != sortedData[i]) {
+                printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
+                printf("    Index:%lu, Given Value:%d, Correct "
+                "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
+                return 0;
+            }
+        }
+    } else {
+        vec_t* output = (vec_t*)outputU;
+        vec_t* sortedData = (vec_t*)sortedDataU;
+        for(uint64_t i = 0; i < length; i++) {
+            if(output[i] != sortedData[i]) {
+                printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
+                printf("    Index:%lu, Given Value:%d, Correct "
+                "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
+                return 0;
+            }
         }
     }
     return 1;
@@ -338,6 +284,146 @@ void clearArray(vec_t* array, uint64_t length) {
 
 int hostBasicCompare2(const void * a, const void * b) {
     return (int) (*(int32_t *)a - *(int32_t *)b);
+}
+
+void printfcomma(int n) {
+    if (n < 0) {
+        printf ("N/A");
+        return;
+    }
+    if (n < 1000) {
+        printf ("%d", n);
+        return;
+    }
+    printfcomma (n/1000);
+    printf (",%03d", n%1000);
+}
+
+template <AlgoTemplate Algo>
+void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
+
+    // Create input copies in case the algorithm accidentally changes the input
+    #ifdef VERIFYOUTPUT
+    vec_t* ACopy = (vec_t*)xmalloc((globalALength + 8) * sizeof(vec_t));
+    memcpy(ACopy, globalA, globalALength * sizeof(vec_t));
+    vec_t* BCopy = (vec_t*)xmalloc((globalBLength + 8) * sizeof(vec_t));
+    memcpy(BCopy, globalB, globalBLength * sizeof(vec_t));
+    #endif
+
+    uint32_t numberOfThreads = 0;
+
+    // Allocate Variables
+    // uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    // uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    // struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
+    // pointers->ASplitters = ASplitters;
+    // pointers->BSplitters = BSplitters;
+    //
+    // //clear out array just to be sure
+    // if (verifyOutput) {
+    //     clearArray((*C), C_length);
+    // }
+
+    struct AlgoArgs *algoArgs = (struct AlgoArgs*)xcalloc(1, sizeof(struct AlgoArgs));
+    algoArgs->A = globalA;
+    algoArgs->A_length = globalALength;
+    algoArgs->B = globalB;
+    algoArgs->B_length = globalBLength;
+    algoArgs->C = globalC;
+    algoArgs->C_length = globalCLength;
+    // algoArgs->CUnsorted;
+    // algoArgs->threadNum;
+    // algoArgs->numThreads;
+    // algoArgs->ASplitters;
+    // algoArgs->BSplitters;
+    // algoArgs->arraySizes;
+
+
+    //setup timing mechanism
+    float time = 0.0;
+
+    // Run Algorithm
+    if (threadSpawn) {
+        #pragma omp parallel
+        {
+            #pragma omp single
+            {
+                numberOfThreads = omp_get_num_threads();
+                tic_reset();
+            }
+            Algo(algoArgs);
+            #pragma omp barrier
+            #pragma omp single
+            {
+                time = tic_total();
+            }
+        }
+    } else {
+        tic_reset();
+        Algo(algoArgs);
+        time = tic_total();
+    }
+
+    // Output Results
+    if (OutToFile) {
+        // TODO
+        //writeToMergeOut("Basic Merge", entropy, A_length, B_length, serialMergeTime);
+        //writeToMergeOut("Serial Merge Branchless", entropy, A_length, B_length, serialMergeNoBranchTime);
+        //writeToMergeOut("SSE Bitonic Merge", entropy, A_length, B_length, bitonicMergeRealTime);
+        //writeToMergeOut("AVX-512 Merge Path Based Merge", entropy, A_length, B_length, avx512MergeTime);
+        //writeToMergeOut("AVX512 Parallel Merge", entropy, A_length, B_length, avx512ParallelMergeTime);
+    } else {
+        // Pad the input string
+        // First find length of name
+        char a;
+        int size = 0;
+        int found = 0;
+        for (int i = 0; i < 30; i++) {
+            if (algoName[i] == '\0') {
+                found = 1;
+                break;
+            }
+            size++;
+        }
+        if (!found) {
+            printf("Error in Algorithm Name. Must be less than 30 characters\n");
+            return;
+        }
+        char name[31];
+        for (int i = 0; i < size; i++) {
+            name[i] = algoName[i];
+        }
+        for (int i = size; i < 30; i++) {
+            name[i] = ' ';
+        }
+        name[30] = '\0';
+
+        // Print the results
+        printf("%s:     ", name);
+        if (time > 0.0) {
+            printfcomma((int)((float)globalCLength/time));
+        } else if (time == 0.0) {
+            printf("∞");
+        } else {
+            printf("N/A");
+        }
+        printf("\n");
+    }
+
+    // Restore original values
+    #ifdef VERIFYOUTPUT
+    verifyOutput(globalC, CSorted, globalCLength, algoName, numberOfThreads, isSigned);
+    clearArray(globalC, globalCLength);
+    memcpy(globalA, ACopy, globalALength * sizeof(vec_t));
+    memcpy(globalB, BCopy, globalBLength * sizeof(vec_t));
+    free(ACopy);
+    free(BCopy);
+    #endif
+
+
+    // free(ASplitters);
+    // free(BSplitters);
+    free(algoArgs);
 }
 
 template <void (*Merge)(vec_t*,uint64_t,vec_t*,uint64_t,vec_t*,uint64_t, struct memPointers*)>
@@ -461,24 +547,24 @@ float testParallelMerge(
     time = tic_total();
 
     //verify output is valid
-    if (verifyOutput) {
-        verifyOutput((*C), (*CSorted), C_length, algoName, numberOfThreads);
-    }
+    // if (verifyOutput) {
+    //     verifyOutput((*C), (*CSorted), C_length, algoName, numberOfThreads);
+    // }
 
     //restore original values
-    if (verifyOutput) {
-        clearArray((*C), C_length);
-        memcpy( (*A), ACopy, A_length * sizeof(vec_t));
-        memcpy( (*B), BCopy, B_length * sizeof(vec_t));
-    }
+    // if (verifyOutput) {
+    //     clearArray((*C), C_length);
+    //     memcpy( (*A), ACopy, A_length * sizeof(vec_t));
+    //     memcpy( (*B), BCopy, B_length * sizeof(vec_t));
+    // }
 
-    if (verifyOutput) {
-        free(ACopy);
-        free(BCopy);
-    }
-    free(ASplitters);
-    free(BSplitters);
-    free(pointers);
+    // if (verifyOutput) {
+    //     free(ACopy);
+    //     free(BCopy);
+    // }
+    // free(ASplitters);
+    // free(BSplitters);
+    // free(pointers);
 
     return time;
 }
@@ -528,18 +614,18 @@ float testSort(
     }
 
     //restore original values
-    if (verifyOutput) {
-        memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
-    }
+    // if (verifyOutput) {
+    //     memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
+    // }
 
     //deallocate variables
     //free(C);
-    if (verifyOutput) {
-        free(unsortedCopy);
-    }
-    free(ASplitters);
-    free(BSplitters);
-    free(pointers);
+    // if (verifyOutput) {
+    //     free(unsortedCopy);
+    // }
+    // free(ASplitters);
+    // free(BSplitters);
+    // free(pointers);
 
     return time;
 }
@@ -596,28 +682,17 @@ float testParallelSort(
     //memcpy((*CUnsorted), unsortedCopy, Ct_length * sizeof(vec_t));
 
     //deallocate variables
-    free(C);
-    //free(unsortedCopy);
-    free(ASplitters);
-    free(BSplitters);
-    free(arraySizes);
-    free(pointers);
+    // free(C);
+    // //free(unsortedCopy);
+    // free(ASplitters);
+    // free(BSplitters);
+    // free(arraySizes);
+    // free(pointers);
 
     return time;
 }
 
-void printfcomma(int n) {
-    if (n < 0) {
-        printf ("N/A");
-        return;
-    }
-    if (n < 1000) {
-        printf ("%d", n);
-        return;
-    }
-    printfcomma (n/1000);
-    printf (",%03d", n%1000);
-}
+
 
 #ifdef MERGE
 void mergeTester(
@@ -632,8 +707,8 @@ void mergeTester(
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        printf("A Size: %d\n", A_length);
-        printf("B Size: %d\n", B_length);
+        printf("A Size: %lu\n", A_length);
+        printf("B Size: %lu\n", B_length);
         printf("\n");
     }
 
@@ -646,26 +721,26 @@ void mergeTester(
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        serialMergeTime += testMerge<serialMerge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Serial Merge", 1);
+        // serialMergeTime += testMerge<serialMerge>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Serial Merge", 1);
         //
         // serialMergeNoBranchTime += testMerge<serialMergeNoBranch>(
         //     A, A_length, B, B_length,
         //     C, Ct_length, CSorted,
         //     runs, "Branchless Merge");
         //
-        bitonicMergeRealTime += testMerge<bitonicMergeReal>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Bitonic Merge", 1);
+        // bitonicMergeRealTime += testMerge<bitonicMergeReal>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Bitonic Merge", 1);
         //
         // #ifdef AVX512
-        avx512MergeTime += testMerge<avx512Merge>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "AVX-512 Merge", 1);
+        // avx512MergeTime += testMerge<avx512Merge>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "AVX-512 Merge", 1);
         //
         // /*avx512ParallelMergeTime += testMerge<avx512ParallelMerge>(
         //     A, A_length, B, B_length,
@@ -673,12 +748,12 @@ void mergeTester(
         //     runs, "AVX-512 Parallel Merge");*/
         // #endif
         //
-        insertData(
-            A, A_length,
-            B, B_length,
-            C, C_length,
-            CSorted, Ct_length,
-            CUnsorted);
+        // insertData(
+        //     A, A_length,
+        //     B, B_length,
+        //     C, C_length,
+        //     CSorted, Ct_length,
+        //     CUnsorted);
     }
 
     serialMergeTime /= RUNS;
@@ -779,8 +854,8 @@ void parallelMergeTester(
         printf("Parameters\n");
         printf("Entropy: %d\n", entropy);
         printf("Runs: %i\n", runs);
-        printf("A Size: %d\n", A_length);
-        printf("B Size: %d\n", B_length);
+        printf("A Size: %lu\n", A_length);
+        printf("B Size: %lu\n", B_length);
         printf("Number Of Threads: %d\n", numberOfThreads);
         printf("\n");
     }
@@ -792,14 +867,14 @@ void parallelMergeTester(
     #endif
 
     for (uint32_t run = 0; run < RUNS; run++) {
-        serialMergeParallelTime += testParallelMerge<parallelMerge<serialMerge>>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Standard");
-        bitonicMergeParallelTime += testParallelMerge<parallelMerge<bitonicMergeReal>>(
-            A, A_length, B, B_length,
-            C, Ct_length, CSorted,
-            runs, "Bitonic");
+        // serialMergeParallelTime += testParallelMerge<parallelMerge<serialMerge>>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Standard");
+        // bitonicMergeParallelTime += testParallelMerge<parallelMerge<bitonicMergeReal>>(
+        //     A, A_length, B, B_length,
+        //     C, Ct_length, CSorted,
+        //     runs, "Bitonic");
         #ifdef AVX512
         // avx512ParallelMergeTime += testParallelMerge<parallelMerge<avx512Merge>>(
         //     A, A_length, B, B_length,
@@ -970,10 +1045,10 @@ void sortTester(
             //     CUnsorted, C_length,
             //     CSorted, Ct_length,
             //     runs, 64, "AVX-512 Merge Sort", 0, 1);
-        ippSortTime += testSort<ippSort>(
-            CUnsorted, C_length,
-            CSorted, Ct_length,
-            runs, 64, "Ipp Sort", 1, 1);
+        // ippSortTime += testSort<ippSort>(
+        //     CUnsorted, C_length,
+        //     CSorted, Ct_length,
+        //     runs, 64, "Ipp Sort", 1, 1);
         #endif
 
         insertData(
@@ -1196,11 +1271,11 @@ void parallelTester(
 
         #ifdef AVX512
         //if (isPowerOfTwo(C_length)) {
-            avx512MergeParallelSortNewTime += testParallelSort<parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>>(
-                                                CUnsorted, C_length,
-                                                CSorted, Ct_length,
-                                                runs, 64, "AVX-512 Based Merge Sort New");
-//}
+//             avx512MergeParallelSortNewTime += testParallelSort<parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>>(
+//                                                 CUnsorted, C_length,
+//                                                 CSorted, Ct_length,
+//                                                 runs, 64, "AVX-512 Based Merge Sort New");
+// //}
         // if (avx512MergeParallelSortTime >= 0.0) {
         //     temp = avx512MergeParallelSortTime;
             // avx512MergeParallelSortTime += testParallelSort<parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>>(
@@ -1376,73 +1451,64 @@ void MergePathSplitter(
     vec_t * C, uint64_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
-    MergePathSplitter2(A, A_length, B, B_length, C, C_length, threads, ASplitters, BSplitters, 0);
-}
+    for (uint32_t i = 0; i <= threads; i++) {
+        ASplitters[i] = A_length;
+        BSplitters[i] = B_length;
+    }
 
-void MergePathSplitter2(
-    vec_t * A, uint64_t A_length,
-    vec_t * B, uint64_t B_length,
-    vec_t * C, uint64_t C_length,
-    uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t p)
-{
-  for (uint32_t i = 0; i <= threads; i++) {
-      ASplitters[i] = A_length;
-      BSplitters[i] = B_length;
-  }
+    uint64_t minLength = A_length > B_length ? B_length : A_length;
 
-  uint64_t minLength = A_length > B_length ? B_length : A_length;
+    for (uint32_t thread=0; thread<threads;thread++)
+    {
+      uint64_t combinedIndex = thread * (minLength * 2) / threads;
+      uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+      x_top = combinedIndex > minLength ? minLength : combinedIndex;
+      y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
+      x_bottom = y_top;
 
-  for (uint32_t thread=0; thread<threads;thread++)
-  {
-    uint64_t combinedIndex = thread * (minLength * 2) / threads;
-    uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
-    x_top = combinedIndex > minLength ? minLength : combinedIndex;
-    y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
-    x_bottom = y_top;
+      oldx = -1;
+      oldy = -1;
 
-    oldx = -1;
-    oldy = -1;
+      vec_t Ai, Bi;
+      while(1) {
+        offset = (x_top - x_bottom) / 2;
+        if (x_top < x_bottom) {
+            offset = 0;
+        }
+        current_y = y_top + offset;
+        current_x = x_top - offset;
 
-    vec_t Ai, Bi;
-    while(1) {
-      offset = (x_top - x_bottom) / 2;
-      if (x_top < x_bottom) {
-          offset = 0;
-      }
-      current_y = y_top + offset;
-      current_x = x_top - offset;
+        if (current_x == oldx || current_y == oldy) {
+            return;
+        }
 
-      if (current_x == oldx || current_y == oldy) {
-          return;
-      }
+        oldx = current_x;
+        oldy = current_y;
 
-      oldx = current_x;
-      oldy = current_y;
-
-      if(current_x > A_length - 1 || current_y < 1) {
-        Ai = 1;Bi = 0;
-      } else {
-        Ai = A[current_x];Bi = B[current_y - 1];
-      }
-      if(Ai > Bi) {
-        if(current_y > B_length - 1 || current_x < 1) {
-          Ai = 0;Bi = 1;
+        if(current_x > A_length - 1 || current_y < 1) {
+          Ai = 1;Bi = 0;
         } else {
-          Ai = A[current_x - 1];Bi = B[current_y];
+          Ai = A[current_x];Bi = B[current_y - 1];
         }
+        if(Ai > Bi) {
+          if(current_y > B_length - 1 || current_x < 1) {
+            Ai = 0;Bi = 1;
+          } else {
+            Ai = A[current_x - 1];Bi = B[current_y];
+          }
 
-        if(Ai <= Bi) {//Found it
-          ASplitters[thread]   = current_x;
-          BSplitters[thread] = current_y;
-          break;
-        } else {//Both zeros
-          x_top = current_x - 1;y_top = current_y + 1;
+          if(Ai <= Bi) {//Found it
+            ASplitters[thread]   = current_x;
+            BSplitters[thread] = current_y;
+            break;
+          } else {//Both zeros
+            x_top = current_x - 1;y_top = current_y + 1;
+          }
+        } else {// Both ones
+          x_bottom = current_x + 1;
         }
-      } else {// Both ones
-        x_bottom = current_x + 1;
-      }
+    }
   }
-}
 
 }
 
@@ -1538,4 +1604,80 @@ void hostParseArgs(int argc, char** argv)
   }
   h_ui_C_length = h_ui_A_length + h_ui_B_length;
   h_ui_Ct_length = h_ui_C_length;
+}
+
+int main(int argc, char** argv)
+{
+    hostParseArgs(argc, argv);
+
+    uint32_t seed = time(0);
+    srand(seed);
+
+    if (OutToFile) {
+        initMergeFilePointer(&mergeFile);
+    }
+    if (OutToFile) {
+        initParallelMergeFilePointer(&parallelMergeFile);
+    }
+    if (OutToFile) {
+        initSortFilePointer(&sortFile);
+    }
+    if (OutToFile) {
+        initParallelSortFilePointer(&parallelSortFile);
+    }
+
+    omp_set_dynamic(0);
+    for (uint32_t i = 0; i < testingSizesLength; i++) {
+        globalCLength = testingSizes[i];
+        globalALength = globalCLength/2;
+        globalBLength = globalCLength/2 + globalCLength%2;
+        initArrays(
+            &globalA, globalALength,
+            &globalB, globalBLength,
+            &globalC, globalCLength,
+            &CSorted, globalCLength,
+            &CUnsorted);
+        for (uint32_t e = 0; e < testingEntropiesLength; e++) {
+            entropy = testingEntropies[e];
+            insertData(
+                &globalA, globalALength,
+                &globalB, globalBLength,
+                &globalC, globalCLength,
+                &CSorted, globalCLength,
+                &CUnsorted);
+
+            // Single Threaded Algorithms
+            testAlgo<serialMerge>("Standard", false, false);
+            testAlgo<bitonicMergeReal>("Bitonic", false, false);
+            testAlgo<avx512Merge>("AVX-512 MP", false, false);
+            // mergeTester(
+            //     &globalA, testingSizes[i]/2,
+            //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
+            //     &globalC, testingSizes[i],
+            //     &CSorted, testingSizes[i],
+            //     &CUnsorted, RUNS);
+            // sortTester(
+            //     &globalA, testingSizes[i]/2,
+            //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
+            //     &globalC, testingSizes[i],
+            //     &CSorted, testingSizes[i],
+            //     &CUnsorted, RUNS);
+            for (uint32_t j = 0; j < testingThreadsLength; j++) {
+                omp_set_num_threads(testingThreads[j]);
+                // parallelMergeTester(
+                //     &globalA, testingSizes[i]/2,
+                //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
+                //     &globalC, testingSizes[i],
+                //     &CSorted, testingSizes[i],
+                //     &CUnsorted, RUNS);
+                // parallelTester(
+                //     &globalA, testingSizes[i]/2,
+                //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
+                //     &globalC, testingSizes[i],
+                //     &CSorted, testingSizes[i],
+                //     &CUnsorted, RUNS);
+            }
+        }
+        freeGlobalData();
+    }
 }
