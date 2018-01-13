@@ -115,7 +115,7 @@ uint32_t  OutToFile                    = 0; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {1000000};
+uint32_t testingSizes[] = {1048576};
 uint32_t testingSizesLength = 1;
 uint32_t testingThreads[] = {64};
 uint32_t testingThreadsLength = 1;
@@ -249,23 +249,24 @@ int verifyUnsignedOutput(vec_t* output, vec_t* sortedData, uint64_t length, cons
     return 1;
 }
 
-int verifyOutput(vec_t* outputU, vec_t* sortedDataU, uint64_t length, const char* name, uint32_t numThreads, bool isSigned) {
+int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint64_t length, const char* name, uint32_t numThreads, bool isSigned) {
     if (isSigned) {
-        int32_t* output = (int32_t*)outputU;
-        int32_t* sortedData = (int32_t*)sortedDataU;
-        for(uint64_t i = 0; i < length; i++) {
-            if(output[i] != sortedData[i]) {
-                printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
-                printf("    Index:%lu, Given Value:%d, Correct "
-                "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
-                return 0;
-            }
-        }
+        // int32_t* output = (int32_t*)outputU;
+        // int32_t* sortedData = (int32_t*)sortedDataU;
+        // for(uint64_t i = 0; i < length; i++) {
+        //     if(output[i] != sortedData[i]) {
+        //         printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
+        //         printf("    Index:%lu, Given Value:%d, Correct "
+        //         "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
+        //         return 0;
+        //     }
+        // }
     } else {
         vec_t* output = (vec_t*)outputU;
+        vec_t* COut = (vec_t*)CU;
         vec_t* sortedData = (vec_t*)sortedDataU;
         for(uint64_t i = 0; i < length; i++) {
-            if(output[i] != sortedData[i]) {
+            if(output[i] != sortedData[i] && COut[i] != sortedData[i]) {
                 printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
                 printf("    Index:%lu, Given Value:%d, Correct "
                 "Value:%d, ArraySize: %lu NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
@@ -310,7 +311,11 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
     memcpy(BCopy, globalB, globalBLength * sizeof(vec_t));
     #endif
 
-    uint32_t numberOfThreads = 0;
+    // Copy C since we expect it to be modified
+    vec_t* CCopy = (vec_t*)xmalloc((globalCLength) * sizeof(vec_t));
+    memcpy(CCopy, CUnsorted, (globalCLength) * sizeof(vec_t));
+
+    uint32_t numberOfThreads = 1;
 
     // Allocate Variables
     // uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
@@ -331,7 +336,8 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
     algoArgs->B_length = globalBLength;
     algoArgs->C = globalC;
     algoArgs->C_length = globalCLength;
-    // algoArgs->CUnsorted;
+    algoArgs->CUnsorted = CUnsorted;
+
     // algoArgs->threadNum;
     // algoArgs->numThreads;
     // algoArgs->ASplitters;
@@ -412,7 +418,7 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
 
     // Restore original values
     #ifdef VERIFYOUTPUT
-    verifyOutput(globalC, CSorted, globalCLength, algoName, numberOfThreads, isSigned);
+    verifyOutput(CUnsorted, globalC, CSorted, globalCLength, algoName, numberOfThreads, isSigned);
     clearArray(globalC, globalCLength);
     memcpy(globalA, ACopy, globalALength * sizeof(vec_t));
     memcpy(globalB, BCopy, globalBLength * sizeof(vec_t));
@@ -420,6 +426,8 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
     free(BCopy);
     #endif
 
+    memcpy(CUnsorted, CCopy, (globalCLength) * sizeof(vec_t));
+    free(CCopy);
 
     // free(ASplitters);
     // free(BSplitters);
@@ -1646,16 +1654,19 @@ int main(int argc, char** argv)
                 &CSorted, globalCLength,
                 &CUnsorted);
 
-            // Single Threaded Algorithms
+            // Single Threaded Merge Algorithms
             testAlgo<serialMerge>("Standard", false, false);
             testAlgo<bitonicMergeReal>("Bitonic", false, false);
             testAlgo<avx512Merge>("AVX-512 MP", false, false);
-            // mergeTester(
-            //     &globalA, testingSizes[i]/2,
-            //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-            //     &globalC, testingSizes[i],
-            //     &CSorted, testingSizes[i],
-            //     &CUnsorted, RUNS);
+
+            // Single Threaded Sort Algorithms
+            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false);
+            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false);
+            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false);
+            testAlgo<ippSort>("IPP", false, true);
+            // // testAlgo<ippSort>("IPP Radix", false, true);
+            testAlgo<quickSort>("Quick Sort", false, false);
+
             // sortTester(
             //     &globalA, testingSizes[i]/2,
             //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,

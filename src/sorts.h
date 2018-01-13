@@ -40,24 +40,19 @@ void parallelMerge(
  */
 typedef void (*SortTemplate)(vec_t*, vec_t*, uint32_t, const uint32_t, struct memPointers*);
 
-void quickSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+void quickSort(struct AlgoArgs *args);
 
-void ippSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-
+void ippSort(struct AlgoArgs *args);
 
 template <MergeTemplate Merge>
 void avx512SortNoMergePath(
     vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 
-template <MergeTemplate Merge>
-void avx512SortNoMergePathV2(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template <AlgoTemplate Merge>
+void avx512SortNoMergePathV2(struct AlgoArgs *args);
 
-template <MergeTemplate Merge>
-void iterativeMergeSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template <AlgoTemplate Merge>
+void iterativeMergeSort(struct AlgoArgs *args);
 
 template <MergeTemplate Merge>
 void iterativeMergeSortPower2(
