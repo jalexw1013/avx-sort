@@ -1896,31 +1896,24 @@ inline uint32_t arraySum(uint32_t* array, uint32_t sumToIndex) {
     return sum;
 }
 
-template <SortTemplate Sort, MergeTemplate Merge>
-void parallelIterativeMergeSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers)
-{
+template <AlgoTemplate Sort, AlgoTemplate Merge>
+void parallelIterativeMergeSort(struct AlgoArgs *args) {
     int earlyEnd = 1; //Set to zero if small sub array or error
     int numberOfSwaps = 0;
 
+    vec_t* C = args->C;
+    uint64_t C_length = args->C_length;
+    vec_t* array = args->CUnsorted;
+    uint64_t array_length = args->C_length;
+
     #pragma omp parallel
     {
-        //algorithm does not support array_length < num threads
-        //for that case, just quick sort
-        #pragma omp single
-        {
-            if (array_length < (uint32_t)omp_get_num_threads()) {
-                quickSort(array, C, array_length, splitNumber, NULL);
-                earlyEnd = 0;
-            }
-        }
-
         if (earlyEnd) {
             uint32_t threadNum = omp_get_thread_num();
             uint32_t numberOfThreads = omp_get_num_threads();
-            uint32_t* ASplitters = pointers->ASplitters + (numberOfThreads + 1) * threadNum;
-            uint32_t* BSplitters = pointers->BSplitters + (numberOfThreads + 1) * threadNum;
-            uint32_t* arraySizes = pointers->arraySizes + numberOfThreads * threadNum;
+            uint32_t* ASplitters = args->ASplitters + (numberOfThreads + 1) * threadNum;
+            uint32_t* BSplitters = args->BSplitters + (numberOfThreads + 1) * threadNum;
+            uint32_t* arraySizes = args->arraySizes + numberOfThreads * threadNum;
 
             uint32_t numberOfSubArrays = numberOfThreads;
             uint32_t initialSubArraySize = array_length / numberOfThreads;
@@ -1938,8 +1931,13 @@ void parallelIterativeMergeSort(
             uint32_t threadStartIndex = arraySum(arraySizes, threadNum);
             uint32_t currentSubArraySize = arraySizes[threadNum];
 
+            struct AlgoArgs mergeArgs;
+            mergeArgs.C = C + threadStartIndex;
+            mergeArgs.C_length = currentSubArraySize;
+            mergeArgs.CUnsorted = array + threadStartIndex;
+
             // Each thread does its own sort
-            Sort(array + threadStartIndex, C + threadStartIndex, currentSubArraySize, splitNumber, NULL);
+            Sort(&mergeArgs);
 
             uint32_t leftOverThreadsCounter, groupNumber, mergeHeadThreadNum, arraySizesIndex, numPerMergeThreads, leftOverThreads, deferedSubArray = 0, deferedSize = 0;
 
@@ -2003,7 +2001,15 @@ void parallelIterativeMergeSort(
                 uint32_t C_start = ASplitters[threadNum] + BSplitters[threadNum] + AStartMergePath; //start C at offset of previous
                 uint32_t C_length = A_length + B_length;
 
-                Merge(array + A_start, A_length, array + B_start, B_length, C + C_start, C_length, NULL);
+                struct AlgoArgs mergeArgs;
+                mergeArgs.A = array + A_start;
+                mergeArgs.A_length = A_length;
+                mergeArgs.B = array + B_start;
+                mergeArgs.B_length = B_length;
+                mergeArgs.C = C + A_start;
+                mergeArgs.C_length = A_length + B_length;
+
+                Merge(&mergeArgs);
 
                 //number of sub arrays is now cut in half
                 numberOfSubArrays = numberOfSubArrays/2;
@@ -2287,11 +2293,11 @@ template void avx512SortNoMergePathV2<avx512Merge>(struct AlgoArgs *args);
 // template void iterativeMergeSortPower2<avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 // #endif
 //
-// // template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(struct AlgoArgs *args);
 // template void parallelIterativeMergeSort<iterativeMergeSort<serialMergeNoBranch>,serialMergeNoBranch>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-// template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(struct AlgoArgs *args);
 // #ifdef AVX512
-// template void parallelIterativeMergeSort<avx512SortNoMergePathV2<bitonicMergeReal>,bitonicMergeReal>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template void parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>,avx512Merge>(struct AlgoArgs *args);
 // template void parallelIterativeMergeSort<iterativeMergeSort<avx512Merge>,avx512Merge>(vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
 // #endif
 //

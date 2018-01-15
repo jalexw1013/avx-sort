@@ -317,18 +317,12 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
 
     uint32_t numberOfThreads = 1;
 
-    // Allocate Variables
-    // uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
-    // uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
-    // struct memPointers* pointers = (struct memPointers*)xcalloc(1, sizeof(struct memPointers));
-    // pointers->ASplitters = ASplitters;
-    // pointers->BSplitters = BSplitters;
-    //
-    // //clear out array just to be sure
-    // if (verifyOutput) {
-    //     clearArray((*C), C_length);
-    // }
+    // Allocate Splitters
+    uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    uint32_t* BSplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
+    uint32_t* arraySizes = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
 
+    // Set Algorithm Arguments
     struct AlgoArgs *algoArgs = (struct AlgoArgs*)xcalloc(1, sizeof(struct AlgoArgs));
     algoArgs->A = globalA;
     algoArgs->A_length = globalALength;
@@ -337,12 +331,11 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
     algoArgs->C = globalC;
     algoArgs->C_length = globalCLength;
     algoArgs->CUnsorted = CUnsorted;
-
     // algoArgs->threadNum;
     // algoArgs->numThreads;
-    // algoArgs->ASplitters;
-    // algoArgs->BSplitters;
-    // algoArgs->arraySizes;
+    algoArgs->ASplitters;
+    algoArgs->BSplitters;
+    algoArgs->arraySizes;
 
 
     //setup timing mechanism
@@ -1667,26 +1660,13 @@ int main(int argc, char** argv)
             // // testAlgo<ippSort>("IPP Radix", false, true);
             testAlgo<quickSort>("Quick Sort", false, false);
 
-            // sortTester(
-            //     &globalA, testingSizes[i]/2,
-            //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-            //     &globalC, testingSizes[i],
-            //     &CSorted, testingSizes[i],
-            //     &CUnsorted, RUNS);
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);
-                // parallelMergeTester(
-                //     &globalA, testingSizes[i]/2,
-                //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                //     &globalC, testingSizes[i],
-                //     &CSorted, testingSizes[i],
-                //     &CUnsorted, RUNS);
-                // parallelTester(
-                //     &globalA, testingSizes[i]/2,
-                //     &globalB, testingSizes[i]/2 + testingSizes[i]%2,
-                //     &globalC, testingSizes[i],
-                //     &CSorted, testingSizes[i],
-                //     &CUnsorted, RUNS);
+
+                // Parallel Sort Algorithms
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false);
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false);
+                testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false);
             }
         }
         freeGlobalData();

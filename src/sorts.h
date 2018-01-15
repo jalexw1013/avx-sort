@@ -60,16 +60,7 @@ void iterativeMergeSortPower2(
 
 typedef void (*ParallelSortTemplate)(vec_t*, vec_t*, uint32_t, const uint32_t, struct memPointers* pointers);
 
-template <SortTemplate Sort, MergeTemplate Merge>
-void parallelIterativeMergeSort(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-
-template <SortTemplate Sort, MergeTemplate Merge>
-void parallelIterativeMergeSortPower2(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
-
-template <SortTemplate Sort, MergeTemplate Merge>
-void parallelIterativeMergeSortV2(
-    vec_t* array, vec_t* C, uint32_t array_length, const uint32_t splitNumber, struct memPointers* pointers);
+template <AlgoTemplate Sort, AlgoTemplate Merge>
+void parallelIterativeMergeSort(struct AlgoArgs *args);
 
 #endif
