@@ -67,17 +67,17 @@ int isPowerOfTwo(uint32_t n) {
     return 1;
 }
 
-void printfcomma(int n) {
+void printfcomma(uint64_t n) {
     if (n < 0) {
         printf ("N/A");
         return;
     }
     if (n < 1000) {
-        printf ("%d", n);
+        printf ("%lu", n);
         return;
     }
     printfcomma (n/1000);
-    printf (",%03d", n%1000);
+    printf (",%03lu", n%1000);
 }
 
 void clearArray(vec_t* array, uint32_t length) {

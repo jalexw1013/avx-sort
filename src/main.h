@@ -6,6 +6,8 @@
 
 typedef uint32_t vec_t;
 
+enum AlgoType{Merge, ParallelMerge, Sort, ParallelSort};
+
 struct AlgoArgs {
     vec_t* A;
     uint32_t A_length;

@@ -33,17 +33,13 @@ inline void serialMerge(struct AlgoArgs *args) {
     uint32_t Aindex = 0;
     uint32_t Bindex = 0;
     uint32_t Cindex = 0;
-    printf("Args: %u %u %u\n", A_length, B_length, args->threadNum);
 
     while(Aindex < A_length && Bindex < B_length) {
         //printf("10\n");
         C[Cindex++] = A[Aindex] < B[Bindex] ? A[Aindex++] : B[Bindex++];
     }
-    printf("11\n");
     while(Aindex < A_length) C[Cindex++] = A[Aindex++];
-    printf("12\n");
     while(Bindex < B_length) C[Cindex++] = B[Bindex++];
-    printf("13\n");
 }
 
 inline void serialMergeNoBranch(struct AlgoArgs *args) {
@@ -254,7 +250,6 @@ void parallelMerge(struct AlgoArgs *args)
     vec_t* array = args->CUnsorted;
     uint32_t array_length = args->C_length;
 
-    printf("1\n");
     #pragma omp parallel
     {
         uint32_t numThreads = omp_get_num_threads();
@@ -272,29 +267,11 @@ void parallelMerge(struct AlgoArgs *args)
         mergeArgs.B = B + BSplitters[threadNum];
         mergeArgs.B_length = B_split_length;
         mergeArgs.C = C + ASplitters[threadNum] + BSplitters[threadNum];
-        mergeArgs.C_length = A_length + B_length;
+        mergeArgs.C_length = A_split_length + B_split_length;
         mergeArgs.threadNum = threadNum;
 
-        #pragma omp barrier
-        #pragma omp single
-        {
-            printf("2\n");
-        }
-
-        #pragma omp critical
-        {
-            if (threadNum == 127) {
-                for (uint32_t i = 0; i < numThreads; i++) {
-                    printf("ASplitters[%u]:%u\n", i, ASplitters[i]);
-                }
-                for (uint32_t i = 0; i < numThreads; i++) {
-                    printf("BSplitters[%u]:%u\n", i, BSplitters[i]);
-                }
-            }
-            Merge(&mergeArgs);
-        }
+        Merge(&mergeArgs);
     }
-    printf("3\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -731,6 +708,8 @@ template void iterativeMergeSort<bitonicMergeReal>(struct AlgoArgs *args);
 template void avx512SortNoMergePathV2<avx512Merge>(struct AlgoArgs *args);
 // Parallel Merge
 template void parallelMerge<serialMerge>(struct AlgoArgs *args);
+template void parallelMerge<bitonicMergeReal>(struct AlgoArgs *args);
+template void parallelMerge<avx512Merge>(struct AlgoArgs *args);
 // Parallel Sort
 template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(struct AlgoArgs *args);
 template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(struct AlgoArgs *args);

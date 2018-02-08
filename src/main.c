@@ -111,13 +111,13 @@ uint32_t  h_ui_C_length                = 0; //array to put values in
 uint32_t  h_ui_Ct_length               = 0; //for unsorted and sorted
 uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
-uint32_t  OutToFile                    = 0; // 1 if output to file
+uint32_t  OutToFile                    = 1; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {33554432};
+uint32_t testingSizes[] = {1048576};
 uint32_t testingSizesLength = 1;
-uint32_t testingThreads[] = {256};
+uint32_t testingThreads[] = {64};
 uint32_t testingThreadsLength = 1;
 
 // Host Functions
@@ -193,74 +193,46 @@ void freeGlobalData() {
       free(CUnsorted);
 }
 
-void initMergeFilePointer(FILE** fp) {
-    char fileName[50];
-    sprintf(fileName, "../results/MergeResults.%li.csv", time(0));
-    (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name,Entropy,A Size,B Size,Elements Per Second,Total Time");
+void initFilePointers() {
+    char mergeFileName[50];
+    sprintf(mergeFileName, "../results/MergeResults.%li.csv", time(0));
+    mergeFile = fopen(mergeFileName, "w+");
+    fprintf(mergeFile, "Name,Entropy,A Size,B Size,Elements Per Second,Total Time");
+
+    char parallelMergeFileName[50];
+    sprintf(parallelMergeFileName, "../results/ParallelMergeResults.%li.csv", time(0));
+    parallelMergeFile = fopen(parallelMergeFileName, "w+");
+    fprintf(parallelMergeFile, "Name,Entropy,A Size,B Size,Number of Threads,Elements Per Second,Total Time");
+
+    char sortFileName[50];
+    sprintf(sortFileName, "../results/SortResults.%li.csv", time(0));
+    sortFile = fopen(sortFileName, "w+");
+    fprintf(sortFile, "Name,Entropy,C Size,Elements Per Second,Total Time");
+
+    char parallelSortFileName[50];
+    sprintf(parallelSortFileName, "../results/ParallelSortResults.%li.csv", time(0));
+    parallelSortFile = fopen(parallelSortFileName, "w+");
+    fprintf(parallelSortFile, "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
 }
 
-void writeToMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, float time) {
-    fprintf(mergeFile, "\n%s,%i,%u,%u,%i,%.20f", name, entropy, ASize, BSize, (int)((float)(ASize + BSize)/time), time);
-}
-
-void initParallelMergeFilePointer(FILE** fp) {
-    char fileName[50];
-    sprintf(fileName, "../results/ParallelMergeResults.%li.csv", time(0));
-    (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name,Entropy,A Size,B Size,Number of Threads,Elements Per Second,Total Time");
-}
-
-void writeToParallelMergeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, uint32_t numThreads,float time) {
-    fprintf(parallelMergeFile, "\n%s,%i,%u,%u,%i,%i,%.20f", name, entropy, ASize, BSize, numThreads,(int)((float)(ASize + BSize)/time), time);
-}
-
-void initSortFilePointer(FILE** fp) {
-    char fileName[50];
-    sprintf(fileName, "../results/SortResults.%li.csv", time(0));
-    (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name,Entropy,C Size,Elements Per Second,Total Time");
-}
-
-void writeToSortOut(const char* name, uint32_t entropy, uint32_t CSize, float time) {
-    fprintf(sortFile, "\n%s,%i,%u,%i,%.20f", name, entropy, CSize, (int)((float)(CSize)/time), time);
-}
-
-void initParallelSortFilePointer(FILE** fp) {
-    char fileName[50];
-    sprintf(fileName, "../results/ParallelSortResults.%li.csv", time(0));
-    (*fp) = fopen(fileName, "w+");
-    fprintf((*fp), "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
-}
-
-void writeToParallelSortOut(const char* name, uint32_t entropy, uint32_t CSize, uint32_t numThreads, float time) {
-    fprintf(parallelSortFile, "\n%s,%i,%u,%i,%i,%.20f", name, entropy, CSize, numThreads, (int)((float)(CSize)/time), time);
-}
-
-int verifyUnsignedOutput(vec_t* output, vec_t* sortedData, uint32_t length, const char* name, uint32_t numThreads) {
-    for(uint32_t i = 0; i < length; i++) {
-        if(output[i] != sortedData[i]) {
-            printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
-            printf("    Index:%u, Given Value:%d, Correct "
-            "Value:%d, ArraySize: %u NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
-            return 0;
-        }
+void writeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, uint32_t CSize, uint32_t numThreads, double time, AlgoType algoType) {
+    if (algoType == Merge) {
+        fprintf(mergeFile, "\n%s,%u,%u,%u,%lu,%.20f", name, entropy, ASize, BSize, (uint64_t)((double)(ASize + BSize)/time), time);
+        fflush(mergeFile);
+    } else if (algoType == ParallelMerge) {
+        fprintf(parallelMergeFile, "\n%s,%u,%u,%u,%u,%lu,%.20f", name, entropy, ASize, BSize, numThreads,(uint64_t)((double)(ASize + BSize)/time), time);
+        fflush(parallelMergeFile);
+    } else if (algoType == Sort) {
+        fprintf(sortFile, "\n%s,%u,%u,%lu,%.20f", name, entropy, CSize, (uint64_t)((double)(CSize)/time), time);
+        fflush(sortFile);
+    } else if (algoType == ParallelSort) {
+        fprintf(parallelSortFile, "\n%s,%u,%u,%u,%lu,%.20f", name, entropy, CSize, numThreads, (uint64_t)((double)(CSize)/time), time);
+        fflush(parallelSortFile);
     }
-    return 1;
 }
 
 int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint32_t length, const char* name, uint32_t numThreads, bool isSigned) {
     if (isSigned) {
-        // int32_t* output = (int32_t*)outputU;
-        // int32_t* sortedData = (int32_t*)sortedDataU;
-        // for(uint32_t i = 0; i < length; i++) {
-        //     if(output[i] != sortedData[i]) {
-        //         printf(ANSI_COLOR_RED "    Error: %s Failed To Produce Correct Results.\n", name);
-        //         printf("    Index:%u, Given Value:%d, Correct "
-        //         "Value:%d, ArraySize: %u NumThreads: %d" ANSI_COLOR_RESET "\n", i, output[i], sortedData[i], length, numThreads);
-        //         return 0;
-        //     }
-        // }
     } else {
         vec_t* output = (vec_t*)outputU;
         vec_t* COut = (vec_t*)CU;
@@ -278,7 +250,7 @@ int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint32_t length,
 }
 
 template <AlgoTemplate Algo>
-void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
+void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType algoType) {
 
     // Create input copies in case the algorithm accidentally changes the input
     #ifdef VERIFYOUTPUT
@@ -292,7 +264,15 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
     vec_t* CCopy = (vec_t*)xmalloc((globalCLength) * sizeof(vec_t));
     memcpy(CCopy, CUnsorted, (globalCLength) * sizeof(vec_t));
 
-    uint32_t numberOfThreads = 256;
+    // Make sure something goes wrong if thread spawn fails
+    uint32_t numberOfThreads = -1;
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            numberOfThreads = omp_get_num_threads();
+        }
+    }
 
     // Allocate Splitters
     uint32_t* ASplitters = (uint32_t*)xcalloc((numberOfThreads + 1)*numberOfThreads, sizeof(uint32_t));
@@ -316,7 +296,7 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
 
 
     //setup timing mechanism
-    float time = 0.0;
+    double time = 0.0;
 
     // Run Algorithm
     if (threadSpawn) {
@@ -327,6 +307,7 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
                 numberOfThreads = omp_get_num_threads();
                 tic_reset();
             }
+            // TODO put for loop for runs in here
             Algo(algoArgs);
             #pragma omp barrier
             #pragma omp single
@@ -342,49 +323,45 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned) {
 
     // Output Results
     if (OutToFile) {
-        // TODO
-        //writeToMergeOut("Basic Merge", entropy, A_length, B_length, serialMergeTime);
-        //writeToMergeOut("Serial Merge Branchless", entropy, A_length, B_length, serialMergeNoBranchTime);
-        //writeToMergeOut("SSE Bitonic Merge", entropy, A_length, B_length, bitonicMergeRealTime);
-        //writeToMergeOut("AVX-512 Merge Path Based Merge", entropy, A_length, B_length, avx512MergeTime);
-        //writeToMergeOut("AVX512 Parallel Merge", entropy, A_length, B_length, avx512ParallelMergeTime);
-    } else {
-        // Pad the input string
-        // First find length of name
-        char a;
-        int size = 0;
-        int found = 0;
-        for (int i = 0; i < 33; i++) {
-            if (algoName[i] == '\0') {
-                found = 1;
-                break;
-            }
-            size++;
-        }
-        if (!found) {
-            printf("Error in Algorithm Name. Must be less than 30 characters\n");
-            return;
-        }
-        char name[34];
-        for (int i = 0; i < size; i++) {
-            name[i] = algoName[i];
-        }
-        for (int i = size; i < 33; i++) {
-            name[i] = ' ';
-        }
-        name[33] = '\0';
-
-        // Print the results
-        printf("%s:     ", name);
-        // if (time > 0.0) {
-        //     printfcomma((int)((float)globalCLength/time));
-        // } else if (time == 0.0) {
-        //     printf("∞");
-        // } else {
-        //     printf("N/A");
-        // }
-        printf("\n");
+        printf("JKLDKDLFDJKFJLFKLFJKLJFKLJFKLF\n");
+        writeOut(algoName, entropy, globalALength, globalBLength, globalCLength, numberOfThreads, time, algoType);
     }
+
+    // Pad the input string
+    // First find length of name
+    char a;
+    int size = 0;
+    int found = 0;
+    for (int i = 0; i < 33; i++) {
+        if (algoName[i] == '\0') {
+            found = 1;
+            break;
+        }
+        size++;
+    }
+    if (!found) {
+        printf("Error in Algorithm Name. Must be less than 30 characters\n");
+        return;
+    }
+    char name[34];
+    for (int i = 0; i < size; i++) {
+        name[i] = algoName[i];
+    }
+    for (int i = size; i < 33; i++) {
+        name[i] = ' ';
+    }
+    name[33] = '\0';
+
+    // Print the results
+    printf("%s:     ", name);
+    if (time > (double)0.0) {
+        printfcomma((uint64_t)((double)globalCLength/time));
+    } else if (time == 0.0) {
+        printf("∞");
+    } else {
+        printf("N/A");
+    }
+    printf("\n");
 
     // Restore original values
     #ifdef VERIFYOUTPUT
@@ -411,18 +388,17 @@ void MergePathSplitter(
     vec_t * C, uint32_t C_length,
     uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters)
 {
-    printf("A_length:%u B_length:%u C_length:%u numThreads:%u\n", A_length, B_length, C_length, threads);
     for (uint32_t i = 0; i <= threads; i++) {
         ASplitters[i] = A_length;
         BSplitters[i] = B_length;
     }
 
-    uint32_t minLength = A_length > B_length ? B_length : A_length;
+    uint64_t minLength = (uint64_t)A_length > (uint64_t)B_length ? (uint64_t)B_length : (uint64_t)A_length;
 
     for (uint32_t thread=0; thread<threads;thread++)
     {
-      uint32_t combinedIndex = thread * (minLength * 2) / threads;
-      uint32_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+      uint64_t combinedIndex = (uint64_t)thread * ((uint64_t)minLength * (uint64_t)2) / (uint64_t)threads;
+      uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
       x_top = combinedIndex > minLength ? minLength : combinedIndex;
       y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
       x_bottom = y_top;
@@ -470,7 +446,6 @@ void MergePathSplitter(
         }
     }
   }
-
 }
 
 #define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
@@ -569,25 +544,14 @@ void hostParseArgs(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+    omp_set_dynamic(0);
     hostParseArgs(argc, argv);
-
     uint32_t seed = time(0);
     srand(seed);
-
     if (OutToFile) {
-        initMergeFilePointer(&mergeFile);
-    }
-    if (OutToFile) {
-        initParallelMergeFilePointer(&parallelMergeFile);
-    }
-    if (OutToFile) {
-        initSortFilePointer(&sortFile);
-    }
-    if (OutToFile) {
-        initParallelSortFilePointer(&parallelSortFile);
+        initFilePointers();
     }
 
-    omp_set_dynamic(0);
     for (uint32_t i = 0; i < testingSizesLength; i++) {
         globalCLength = testingSizes[i];
         globalALength = globalCLength/2;
@@ -615,37 +579,39 @@ int main(int argc, char** argv)
             printf("Runs:%u\n", RUNS);
             printf("\n\n");
 
-            // // Single Threaded Merge Algorithms
-            // printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
-            // testAlgo<serialMerge>("Standard", false, false);
-            // testAlgo<bitonicMergeReal>("Bitonic", false, false);
-            // testAlgo<avx512Merge>("AVX-512 MP", false, false);
-            // printf("\n");
-            //
-            // // Single Threaded Sort Algorithms
-            // printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
-            // testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false);
-            // testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false);
-            // testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false);
-            // testAlgo<ippSort>("IPP", false, true);
-            // // // testAlgo<ippSort>("IPP Radix", false, true);
-            // testAlgo<quickSort>("Quick Sort", false, false);
-            // printf("\n");
+            // Single Threaded Merge Algorithms
+            printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
+            testAlgo<serialMerge>("Standard", false, false, Merge);
+            testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
+            testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
+            printf("\n");
+
+            // Single Threaded Sort Algorithms
+            printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
+            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
+            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
+            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
+            testAlgo<ippSort>("IPP", false, true, Sort);
+            // // testAlgo<ippSort>("IPP Radix", false, true);
+            testAlgo<quickSort>("Quick Sort", false, false, Sort);
+            printf("\n");
 
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);
 
-                // Parallel Sort Algorithms
+                // Parallel Merge Algorithms
                 printf("Parallel Merge Algorithms        :  Elements Per Second\n");
-                testAlgo<parallelMerge<serialMerge>>("Standard", false, false);
+                testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
+                testAlgo<parallelMerge<bitonicMergeReal>>("Bitonic", false, false, ParallelMerge);
+                testAlgo<parallelMerge<avx512Merge>>("AVX-512 MP", false, false, ParallelMerge);
                 printf("\n");
 
-                // // Parallel Sort Algorithms
-                // printf("Parallel Sort Algorithms         :  Elements Per Second\n");
-                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false);
-                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false);
-                // testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false);
-                // printf("\n");
+                // Parallel Sort Algorithms
+                printf("Parallel Sort Algorithms         :  Elements Per Second\n");
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false, ParallelSort);
+                printf("\n");
             }
         }
         freeGlobalData();

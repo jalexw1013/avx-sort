@@ -23,7 +23,7 @@ void print16intarray(char *text, int *val);
 void printmmask16(char *text, __mmask16 mask);
 
 int isPowerOfTwo(uint32_t n);
-void printfcomma(int n);
+void printfcomma(uint64_t n);
 void clearArray(vec_t* array, uint32_t length);
 
 #endif
