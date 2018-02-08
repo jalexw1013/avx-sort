@@ -3,7 +3,7 @@ AVX512 := YES#Valid Options are YES or NO
 MERGE := YES#Valid Options are YES or NO
 SORT := YES#Valid Options are YES or NO
 PARALLELSORT := YES#Valid Options are YES or NO
-VERIFYOUTPUT := YES#Valid Options are YES or NO
+VERIFYOUTPUT := NO#Valid Options are YES or NO
 
 OS = $(shell uname)
 

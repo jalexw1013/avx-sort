@@ -4,6 +4,7 @@
 //Must be included for __m512i variable
 #include <x86intrin.h>
 #include <immintrin.h>
+#include "../main.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -17,12 +18,12 @@ void tic_reset();
 double tic_total();
 double tic_sincelast();
 
-#ifdef AVX512
 void print512_num(char *text, __m512i var);
 void print16intarray(char *text, int *val);
 void printmmask16(char *text, __mmask16 mask);
-#endif
 
 int isPowerOfTwo(uint32_t n);
+void printfcomma(int n);
+void clearArray(vec_t* array, uint32_t length);
 
 #endif

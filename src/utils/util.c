@@ -37,7 +37,6 @@ double tic_sincelast() {
   (byte & 0x02 ? '1' : '0'), \
   (byte & 0x01 ? '1' : '0')
 
-#ifdef AVX512
 void print512_num(char *text, __m512i var)
 {
     uint32_t *val = (uint32_t*) &var;
@@ -54,10 +53,8 @@ void printmmask16(char *text, __mmask16 mask) {
     printf("%s: " BYTE_TO_BINARY_PATTERN " " BYTE_TO_BINARY_PATTERN "\n",text,
 		BYTE_TO_BINARY(mask>>8), BYTE_TO_BINARY(mask));
 }
-#endif
 
-int isPowerOfTwo(uint32_t n)
-{
+int isPowerOfTwo(uint32_t n) {
     if (n == 0) {
         return 0;
 	}
@@ -68,4 +65,23 @@ int isPowerOfTwo(uint32_t n)
         n = n/2;
     }
     return 1;
+}
+
+void printfcomma(int n) {
+    if (n < 0) {
+        printf ("N/A");
+        return;
+    }
+    if (n < 1000) {
+        printf ("%d", n);
+        return;
+    }
+    printfcomma (n/1000);
+    printf (",%03d", n%1000);
+}
+
+void clearArray(vec_t* array, uint32_t length) {
+    for (uint32_t i = 0; i < length; i++) {
+        array[i] = 0;
+    }
 }
