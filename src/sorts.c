@@ -288,6 +288,10 @@ void ippSort(struct AlgoArgs *args) {
     ippsSortAscend_32s_I((Ipp32s*)args->CUnsorted, args->C_length);
 }
 
+void ippRadixSort(struct AlgoArgs *args) {
+    ippsSortRadixAscend_32u_I((Ipp32u*)args->CUnsorted, args->C_length, (Ipp8u*)args->C);
+}
+
 template <AlgoTemplate Merge>
 void avx512SortNoMergePathV2(struct AlgoArgs *args) {
     vec_t* C = args->C;
