@@ -115,7 +115,7 @@ uint32_t  OutToFile                    = 0; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {134217728};
+uint32_t testingSizes[] = {16777216};
 uint32_t testingSizesLength = 1;
 uint32_t testingThreads[] = {64};
 uint32_t testingThreadsLength = 1;
@@ -138,7 +138,10 @@ void initArrays(vec_t** A, uint32_t A_length,
 {
     (*A)  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
     (*B)  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
-    (*C)  = (vec_t*) xmalloc((C_length  + 32) * (sizeof(vec_t)));
+    int pBufSize = 0;
+    ippsSortRadixGetBufferSize(C_length, ipp32u, &pBufSize);
+    uint32_t mallocSize = MAX((C_length  + 32) * sizeof(vec_t), pBufSize);
+    (*C)  = (vec_t*) xmalloc(mallocSize);
     #ifdef VERIFYOUTPUT
     (*CSorted) = (vec_t*) xmalloc((Ct_length + 32) * (sizeof(vec_t)));
     #endif
@@ -185,7 +188,7 @@ void insertData(vec_t** A, uint32_t A_length,
 
 void freeGlobalData() {
       free(globalA);
-      //free(globalB);
+      free(globalB);
       free(globalC);
       #ifdef VERIFYOUTPUT
       free(CSorted);
@@ -577,39 +580,39 @@ int main(int argc, char** argv)
             printf("Runs:%u\n", RUNS);
             printf("\n\n");
 
-            // // Single Threaded Merge Algorithms
-            // printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
-            // testAlgo<serialMerge>("Standard", false, false, Merge);
-            // testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
-            // testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
-            // printf("\n");
+            // Single Threaded Merge Algorithms
+            printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
+            testAlgo<serialMerge>("Standard", false, false, Merge);
+            testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
+            testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
+            printf("\n");
 
             // Single Threaded Sort Algorithms
             printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
-            // testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
-            // testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
-            // testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
-            // testAlgo<ippSort>("IPP", false, true, Sort);
+            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
+            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
+            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
+            testAlgo<ippSort>("IPP", false, true, Sort);
             testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
-            // testAlgo<quickSort>("Quick Sort", false, false, Sort);
+            testAlgo<quickSort>("Quick Sort", false, false, Sort);
             printf("\n");
 
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);
 
-                // // Parallel Merge Algorithms
-                // printf("Parallel Merge Algorithms        :  Elements Per Second\n");
-                // testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
-                // testAlgo<parallelMerge<bitonicMergeReal>>("Bitonic", false, false, ParallelMerge);
-                // testAlgo<parallelMerge<avx512Merge>>("AVX-512 MP", false, false, ParallelMerge);
-                // printf("\n");
-                //
-                // // Parallel Sort Algorithms
-                // printf("Parallel Sort Algorithms         :  Elements Per Second\n");
-                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
-                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
-                // testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false, ParallelSort);
-                // printf("\n");
+                // Parallel Merge Algorithms
+                printf("Parallel Merge Algorithms        :  Elements Per Second\n");
+                testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
+                testAlgo<parallelMerge<bitonicMergeReal>>("Bitonic", false, false, ParallelMerge);
+                testAlgo<parallelMerge<avx512Merge>>("AVX-512 MP", false, false, ParallelMerge);
+                printf("\n");
+
+                // Parallel Sort Algorithms
+                printf("Parallel Sort Algorithms         :  Elements Per Second\n");
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false, ParallelSort);
+                printf("\n");
             }
         }
         freeGlobalData();
