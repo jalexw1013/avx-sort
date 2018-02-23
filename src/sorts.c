@@ -12,11 +12,16 @@
 #include <string.h>
 #include <immintrin.h>
 #include <sys/time.h>
+//#include <../tools/intel64/staticlib/ipp_n0.h>
+#include <ipp.h>
 
 #include "utils/util.h"
 #include "utils/xmalloc.h"
 #include "sorts.h"
-#include "ipp.h"
+//#include "ipp.h"
+//#include "ipp.h"
+//#include <tbb/tbb.h>
+//#include "tbb/parallel_sort.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -290,6 +295,98 @@ void ippSort(struct AlgoArgs *args) {
 
 void ippRadixSort(struct AlgoArgs *args) {
     ippsSortRadixAscend_32u_I((Ipp32u*)args->CUnsorted, args->C_length, (Ipp8u*)args->C);
+}
+
+void tbbSort(struct AlgoArgs *args) {
+    //tbb::parallel_sort(args->CUnsorted, args->CUnsorted + args->C_length);
+}
+
+
+/*
+This next algorithm:
+Copyright (c) 2014, Haichuan Wang
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#define BASE_BITS 8
+#define BASE (1 << BASE_BITS)
+#define MASK (BASE-1)
+#define DIGITS(v, shift) (((v) >> shift) & MASK)
+
+void omp_lsd_radix_sort(size_t n, uint32_t data[n], uint32_t* buffer) {
+    int total_digits = sizeof(uint32_t)*8;
+
+    //Each thread use local_bucket to move data
+    size_t i;
+    for(int shift = 0; shift < total_digits; shift+=BASE_BITS) {
+        size_t bucket[BASE] = {0};
+
+        size_t local_bucket[BASE] = {0}; // size needed in each bucket/thread
+        //1st pass, scan whole and check the count
+        #pragma omp parallel firstprivate(local_bucket)
+        {
+            #pragma omp for schedule(static) nowait
+            for(i = 0; i < n; i++){
+                local_bucket[DIGITS(data[i], shift)]++;
+            }
+            #pragma omp critical
+            for(i = 0; i < BASE; i++) {
+                bucket[i] += local_bucket[i];
+            }
+            #pragma omp barrier
+            #pragma omp single
+            for (i = 1; i < BASE; i++) {
+                bucket[i] += bucket[i - 1];
+            }
+            int nthreads = omp_get_num_threads();
+            int tid = omp_get_thread_num();
+            for(int cur_t = nthreads - 1; cur_t >= 0; cur_t--) {
+                if(cur_t == tid) {
+                    for(i = 0; i < BASE; i++) {
+                        bucket[i] -= local_bucket[i];
+                        local_bucket[i] = bucket[i];
+                    }
+                } else { //just do barrier
+                    #pragma omp barrier
+                }
+
+            }
+            #pragma omp for schedule(static)
+            for(i = 0; i < n; i++) { //note here the end condition
+                buffer[local_bucket[DIGITS(data[i], shift)]++] = data[i];
+            }
+        }
+        //now move data
+        uint32_t* tmp = data;
+        data = buffer;
+        buffer = tmp;
+    }
+}
+
+void haichuanwangSort(struct AlgoArgs *args) {
+    omp_lsd_radix_sort((size_t)args->C_length, args->CUnsorted, args->C);
 }
 
 template <AlgoTemplate Merge>

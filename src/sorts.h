@@ -25,6 +25,8 @@ void quickSort(struct AlgoArgs *args);
 
 void ippSort(struct AlgoArgs *args);
 void ippRadixSort(struct AlgoArgs *args);
+void tbbSort(struct AlgoArgs *args);
+void haichuanwangSort(struct AlgoArgs *args);
 
 template <AlgoTemplate Merge>
 void avx512SortNoMergePathV2(struct AlgoArgs *args);

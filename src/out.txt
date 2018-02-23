@@ -1,274 +1,256 @@
-Parameters
-Entropy: 28
-Runs: 1
-
-Thread 0 time: 0.020371
-Thread 1 time: 0.019839
-Thread 2 time: 0.020348
-Thread 3 time: 0.019165
-Thread 4 time: 0.018559
-Thread 5 time: 0.018722
-Thread 6 time: 0.019327
-Thread 7 time: 0.020007
-Thread 8 time: 0.020453
-Thread 9 time: 0.019760
-Thread 10 time: 0.020126
-Thread 11 time: 0.019099
-Thread 12 time: 0.019876
-Thread 13 time: 0.020144
-Thread 14 time: 0.020401
-Thread 15 time: 0.020200
-Thread 16 time: 0.019459
-Thread 17 time: 0.018547
-Thread 18 time: 0.020647
-Thread 19 time: 0.020658
-Thread 20 time: 0.020061
-Thread 21 time: 0.020226
-Thread 22 time: 0.019683
-Thread 23 time: 0.020127
-Thread 24 time: 0.019781
-Thread 25 time: 0.020593
-Thread 26 time: 0.019722
-Thread 27 time: 0.020591
-Thread 28 time: 0.020378
-Thread 29 time: 0.020476
-Thread 30 time: 0.020464
-Thread 31 time: 0.020406
-Thread 32 time: 0.019788
-Thread 33 time: 0.019123
-Thread 34 time: 0.018655
-Thread 35 time: 0.018492
-Thread 36 time: 0.019855
-Thread 37 time: 0.020455
-Thread 38 time: 0.019588
-Thread 39 time: 0.019549
-Thread 40 time: 0.019787
-Thread 41 time: 0.019809
-Thread 42 time: 0.020455
-Thread 43 time: 0.020409
-Thread 44 time: 0.020459
-Thread 45 time: 0.020071
-Thread 46 time: 0.020100
-Thread 47 time: 0.020371
-Thread 48 time: 0.019746
-Thread 49 time: 0.019779
-Thread 50 time: 0.020453
-Thread 51 time: 0.020354
-Thread 52 time: 0.019787
-Thread 53 time: 0.019621
-Thread 54 time: 0.020617
-Thread 55 time: 0.020602
-Thread 56 time: 0.020591
-Thread 57 time: 0.019752
-Thread 58 time: 0.019914
-Thread 59 time: 0.019419
-Thread 60 time: 0.018411
-Thread 61 time: 0.018855
-Thread 62 time: 0.019721
-Thread 63 time: 0.020476
-Thread 64 time: 0.020274
-Thread 65 time: 0.020496
-Thread 66 time: 0.019824
-Thread 67 time: 0.019669
-Thread 68 time: 0.019665
-Thread 69 time: 0.020403
-Thread 70 time: 0.020464
-Thread 71 time: 0.020510
-Thread 72 time: 0.020607
-Thread 73 time: 0.020262
-Thread 74 time: 0.020492
-Thread 75 time: 0.020172
-Thread 76 time: 0.020051
-Thread 77 time: 0.019428
-Thread 78 time: 0.019867
-Thread 79 time: 0.019910
-Thread 80 time: 0.020357
-Thread 81 time: 0.020261
-Thread 82 time: 0.019623
-Thread 83 time: 0.017576
-Thread 84 time: 0.017918
-Thread 85 time: 0.017118
-Thread 86 time: 0.018100
-Thread 87 time: 0.019267
-Thread 88 time: 0.018601
-Thread 89 time: 0.019919
-Thread 90 time: 0.019291
-Thread 91 time: 0.019780
-Thread 92 time: 0.019720
-Thread 93 time: 0.020372
-Thread 94 time: 0.019274
-Thread 95 time: 0.019648
-Thread 96 time: 0.020414
-Thread 97 time: 0.020405
-Thread 98 time: 0.020298
-Thread 99 time: 0.020498
-Thread 100 time: 0.020494
-Thread 101 time: 0.020370
-Thread 102 time: 0.020138
-Thread 103 time: 0.019849
-Thread 104 time: 0.020178
-Thread 105 time: 0.019849
-Thread 106 time: 0.020333
-Thread 107 time: 0.020149
-Thread 108 time: 0.020447
-Thread 109 time: 0.020464
-Thread 110 time: 0.020330
-Thread 111 time: 0.019587
-Thread 112 time: 0.020503
-Thread 113 time: 0.020203
-Thread 114 time: 0.020321
-Thread 115 time: 0.020468
-Thread 116 time: 0.018519
-Thread 117 time: 0.019794
-Thread 118 time: 0.019726
-Thread 119 time: 0.018850
-Thread 120 time: 0.019178
-Thread 121 time: 0.019350
-Thread 122 time: 0.019608
-Thread 123 time: 0.019037
-Thread 124 time: 0.020324
-Thread 125 time: 0.017485
-Thread 126 time: 0.019536
-Thread 127 time: 0.019527
-Thread 128 time: 0.020069
-Thread 129 time: 0.019871
-Thread 130 time: 0.020352
-Thread 131 time: 0.020175
-Thread 132 time: 0.019417
-Thread 133 time: 0.020261
-Thread 134 time: 0.019127
-Thread 135 time: 0.020472
-Thread 136 time: 0.020613
-Thread 137 time: 0.020495
-Thread 138 time: 0.020411
-Thread 139 time: 0.020463
-Thread 140 time: 0.020210
-Thread 141 time: 0.019609
-Thread 142 time: 0.019488
-Thread 143 time: 0.020118
-Thread 144 time: 0.017306
-Thread 145 time: 0.020138
-Thread 146 time: 0.020404
-Thread 147 time: 0.020677
-Thread 148 time: 0.019787
-Thread 149 time: 0.020168
-Thread 150 time: 0.020499
-Thread 151 time: 0.020396
-Thread 152 time: 0.020649
-Thread 153 time: 0.020566
-Thread 154 time: 0.020575
-Thread 155 time: 0.020678
-Thread 156 time: 0.019184
-Thread 157 time: 0.020462
-Thread 158 time: 0.020520
-Thread 159 time: 0.020166
-Thread 160 time: 0.020443
-Thread 161 time: 0.020395
-Thread 162 time: 0.020379
-Thread 163 time: 0.020458
-Thread 164 time: 0.020550
-Thread 165 time: 0.020518
-Thread 166 time: 0.020368
-Thread 167 time: 0.020270
-Thread 168 time: 0.020198
-Thread 169 time: 0.020207
-Thread 170 time: 0.019178
-Thread 171 time: 0.019856
-Thread 172 time: 0.019889
-Thread 173 time: 0.020513
-Thread 174 time: 0.020201
-Thread 175 time: 0.020371
-Thread 176 time: 0.020604
-Thread 177 time: 0.020519
-Thread 178 time: 0.019346
-Thread 179 time: 0.019098
-Thread 180 time: 0.017333
-Thread 181 time: 0.019761
-Thread 182 time: 0.020071
-Thread 183 time: 0.018557
-Thread 184 time: 0.020136
-Thread 185 time: 0.019580
-Thread 186 time: 0.019612
-Thread 187 time: 0.019729
-Thread 188 time: 0.020364
-Thread 189 time: 0.020485
-Thread 190 time: 0.020339
-Thread 191 time: 0.019854
-Thread 192 time: 0.020103
-Thread 193 time: 0.020171
-Thread 194 time: 0.019478
-Thread 195 time: 0.019698
-Thread 196 time: 0.020355
-Thread 197 time: 0.020201
-Thread 198 time: 0.019765
-Thread 199 time: 0.017648
-Thread 200 time: 0.020116
-Thread 201 time: 0.019780
-Thread 202 time: 0.019459
-Thread 203 time: 0.019521
-Thread 204 time: 0.019740
-Thread 205 time: 0.019717
-Thread 206 time: 0.020102
-Thread 207 time: 0.020174
-Thread 208 time: 0.019541
-Thread 209 time: 0.019669
-Thread 210 time: 0.019321
-Thread 211 time: 0.019832
-Thread 212 time: 0.019895
-Thread 213 time: 0.019399
-Thread 214 time: 0.020486
-Thread 215 time: 0.019285
-Thread 216 time: 0.020585
-Thread 217 time: 0.020203
-Thread 218 time: 0.018612
-Thread 219 time: 0.017687
-Thread 220 time: 0.020058
-Thread 221 time: 0.019678
-Thread 222 time: 0.018815
-Thread 223 time: 0.018175
-Thread 224 time: 0.018805
-Thread 225 time: 0.018646
-Thread 226 time: 0.018778
-Thread 227 time: 0.019217
-Thread 228 time: 0.019619
-Thread 229 time: 0.019156
-Thread 230 time: 0.019156
-Thread 231 time: 0.019278
-Thread 232 time: 0.018130
-Thread 233 time: 0.020040
-Thread 234 time: 0.019487
-Thread 235 time: 0.018676
-Thread 236 time: 0.018844
-Thread 237 time: 0.019038
-Thread 238 time: 0.018702
-Thread 239 time: 0.018418
-Thread 240 time: 0.018685
-Thread 241 time: 0.019148
-Thread 242 time: 0.016549
-Thread 243 time: 0.018469
-Thread 244 time: 0.019388
-Thread 245 time: 0.019301
-Thread 246 time: 0.020304
-Thread 247 time: 0.020502
-Thread 248 time: 0.020602
-Thread 249 time: 0.020567
-Thread 250 time: 0.020297
-Thread 251 time: 0.020138
-Thread 252 time: 0.020556
-Thread 253 time: 0.020393
-Thread 254 time: 0.020467
-Thread 255 time: 0.019229
-Merging Results        :  Elements per Second
-Serial Merge           :     97,145,760
-
-Serial Merge Branchless:     92,629,920
-Bitonic Merge          :     105,849,464
-AVX512 Merge           :     287,258,080
-AVX512 Parallel Merge   :     349,729,925
+make merge
+make[1]: Entering directory `/home/jwatkins45/avx-sort/src'
+rm merge -f
+icpc -O3 -o merge -qopenmp -std=c++11 -funroll-loops -Wall -pedantic -fkeep-inline-functions -axMIC-AVX512 -D AVX512 -L PPROOT/lib/intel64_lin/threaded -lippi -lipps -lippcore -lpthread -I BB_INCLUDE -Wl,-rpath,BB_LIBRARY_RELEASE -L BB_LIBRARY_RELEASE -ltbb main.c sorts.c utils/util.c utils/xmalloc.c
+make[1]: Leaving directory `/home/jwatkins45/avx-sort/src'
+numactl --membind=1 ./merge
 
 
-Serial Merge           :     1.029381
-Serial Merge Branchless:     1.079565
-Bitonic Merge          :     0.944738
-AVX512 Merge           :     0.348119
-AVX512 Parallel Merge  :     0.285935
+Running with sizes:
+A Length:50000
+B Length:50000
+C Length:100000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     103,180,910
+Bitonic                          :     207,023,889
+AVX-512 MP                       :     408,403,505
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     90,025,842
+Bitonic                          :     435,093,775
+AVX-512 MP                       :     819,200,000
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     632,625,037
+Bitonic                          :     812,849,612
+AVX-512 MP                       :     247,451,563
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,053,845,226
+Bitonic                          :     1,353,001,290
+AVX-512 MP                       :     1,855,886,725
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,248,304,761
+Bitonic                          :     1,664,406,349
+AVX-512 MP                       :     1,588,751,515
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     979,977,570
+Bitonic                          :     1,451,316,262
+AVX-512 MP                       :     1,051,204,010
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     489,988,785
+Bitonic                          :     522,980,548
+AVX-512 MP                       :     404,855,598
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     143,297,027
+Bitonic                          :     199,633,698
+AVX-512 MP                       :     146,653,986
+
+
+
+Running with sizes:
+A Length:500000
+B Length:500000
+C Length:1000000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     145,645,669
+Bitonic                          :     219,344,420
+AVX-512 MP                       :     504,547,576
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     401,445,635
+Bitonic                          :     439,562,355
+AVX-512 MP                       :     999,834,088
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     794,375,757
+Bitonic                          :     851,116,883
+AVX-512 MP                       :     1,894,446,251
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,565,038,805
+Bitonic                          :     1,698,098,785
+AVX-512 MP                       :     3,506,943,143
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     2,364,320,180
+Bitonic                          :     2,732,445,602
+AVX-512 MP                       :     4,905,618,713
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,862,158,379
+Bitonic                          :     4,013,688,038
+AVX-512 MP                       :     4,739,326,553
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     2,326,291,735
+Bitonic                          :     3,077,258,987
+AVX-512 MP                       :     2,864,961,748
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,051,467,535
+Bitonic                          :     1,113,729,155
+AVX-512 MP                       :     1,139,137,425
+
+
+
+Running with sizes:
+A Length:5000000
+B Length:5000000
+C Length:10000000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     191,563,591
+Bitonic                          :     229,136,838
+AVX-512 MP                       :     540,830,657
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     404,009,362
+Bitonic                          :     448,047,172
+AVX-512 MP                       :     934,309,899
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     816,187,121
+Bitonic                          :     894,288,821
+AVX-512 MP                       :     1,942,886,788
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,632,660,179
+Bitonic                          :     1,771,841,838
+AVX-512 MP                       :     3,955,771,008
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,042,216,580
+Bitonic                          :     3,467,513,227
+AVX-512 MP                       :     7,669,233,863
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,367,678,525
+Bitonic                          :     6,357,896,013
+AVX-512 MP                       :     12,394,515,366
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     4,967,788,700
+Bitonic                          :     7,473,813,257
+AVX-512 MP                       :     8,169,661,082
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,669,878,379
+Bitonic                          :     5,076,006,293
+AVX-512 MP                       :     4,580,934,906
+
+
+
+Running with sizes:
+A Length:50000000
+B Length:50000000
+C Length:100000000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     193,133,349
+Bitonic                          :     224,373,642
+AVX-512 MP                       :     550,642,435
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     411,524,197
+Bitonic                          :     449,024,721
+AVX-512 MP                       :     1,102,632,561
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     819,489,702
+Bitonic                          :     898,005,219
+AVX-512 MP                       :     2,053,384,117
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,080,730,432
+Bitonic                          :     1,601,019,936
+AVX-512 MP                       :     4,048,087,094
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,137,734,621
+Bitonic                          :     3,568,769,995
+AVX-512 MP                       :     8,566,097,541
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,044,798,016
+Bitonic                          :     6,912,738,360
+AVX-512 MP                       :     15,681,399,783
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,484,614,378
+Bitonic                          :     10,905,059,539
+AVX-512 MP                       :     11,097,510,252
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     4,758,036,119
+Bitonic                          :     10,916,980,739
+AVX-512 MP                       :     9,928,521,718
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     172,358,785
+Bitonic                          :     220,999,407
+AVX-512 MP                       :     530,420,724
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     414,398,155
+Bitonic                          :     442,720,182
+AVX-512 MP                       :     1,090,998,097
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     826,927,410
+Bitonic                          :     885,266,094
+AVX-512 MP                       :     2,089,414,896
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,650,089,206
+Bitonic                          :     1,770,225,064
+AVX-512 MP                       :     4,113,990,674
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,264,997,544
+Bitonic                          :     3,521,674,697
+AVX-512 MP                       :     8,039,485,310
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,050,815,084
+Bitonic                          :     6,904,454,153
+AVX-512 MP                       :     16,001,770,215
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,189,109,786
+Bitonic                          :     11,134,128,115
+AVX-512 MP                       :     10,581,442,695
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,351,907,099
+Bitonic                          :     13,431,314,405
+AVX-512 MP                       :     11,224,350,311
+

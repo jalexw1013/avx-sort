@@ -1,0 +1,165 @@
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:4
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     3,027,383,783
+Bitonic                          :     8,095,517,870
+AVX-512 MP                       :     1,378,815,836
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:7
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     11,269,890,829
+Bitonic                          :     13,653,022,229
+AVX-512 MP                       :     2,746,302,352
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:10
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,285,908,685
+Bitonic                          :     8,529,151,356
+AVX-512 MP                       :     9,999,008,277
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:13
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,994,594,679
+Bitonic                          :     8,078,522,011
+AVX-512 MP                       :     17,295,956,322
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:16
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     4,421,726,667
+Bitonic                          :     8,020,207,776
+AVX-512 MP                       :     16,909,038,867
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:19
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,907,304,019
+Bitonic                          :     8,075,069,212
+AVX-512 MP                       :     17,096,649,804
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:22
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,961,857,679
+Bitonic                          :     8,010,450,645
+AVX-512 MP                       :     16,418,761,596
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:25
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,984,612,926
+Bitonic                          :     7,358,298,977
+AVX-512 MP                       :     15,666,873,351
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:28
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,978,292,133
+Bitonic                          :     6,900,784,960
+AVX-512 MP                       :     10,101,109,741
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:31
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,958,266,744
+Bitonic                          :     7,004,761,356
+AVX-512 MP                       :     16,183,039,520
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:34
+Runs:1
+
+
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,664,437,933
+Bitonic                          :     8,255,317,641
+AVX-512 MP                       :     1,379,080,594
+

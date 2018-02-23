@@ -1,8 +1,4 @@
 CC := icpc
-AVX512 := YES#Valid Options are YES or NO
-MERGE := YES#Valid Options are YES or NO
-SORT := YES#Valid Options are YES or NO
-PARALLELSORT := YES#Valid Options are YES or NO
 VERIFYOUTPUT := NO#Valid Options are YES or NO
 
 OS = $(shell uname)
@@ -39,29 +35,6 @@ else
     $(error Unknown Compiler Given)
 endif
 
-#check Whether merging and sorting
-ifeq ($(MERGE),NO)
-
-else ifeq ($(MERGE),YES)
-	CCFLAGS += -D MERGE
-else
-    $(error Invalid value for variable Merge. Valid values are YES or NO)
-endif
-ifeq ($(SORT),NO)
-
-else ifeq ($(SORT),YES)
-	CCFLAGS += -D SORT
-else
-    $(error Invalid value for variable SORT. Valid values are YES or NO)
-endif
-ifeq ($(PARALLELSORT),NO)
-
-else ifeq ($(PARALLELSORT),YES)
-	CCFLAGS += -D PARALLELSORT
-else
-    $(error Invalid value for variable PARALLELSORT. Valid values are YES or NO)
-endif
-
 ifeq ($(VERIFYOUTPUT),NO)
 
 else ifeq ($(VERIFYOUTPUT),YES)
@@ -70,23 +43,18 @@ else
     $(error Invalid value for variable VERIFYOUTPUT. Valid values are YES or NO)
 endif
 
-#check for AVX512
-ifeq ($(AVX512),NO)
-
-else ifeq ($(AVX512),YES)
-	ifeq ($(CC),g++)
-		CCFLAGS += -mavx512f -D AVX512
-	else ifeq ($(CC),gcc)
-		CCFLAGS += -mavx512f -D AVX512
-	else ifeq ($(CC),icc)
-		CCFLAGS += -axMIC-AVX512 -D AVX512
-	else ifeq ($(CC),icpc)
-		CCFLAGS += -axMIC-AVX512 -D AVX512 -I $IPPROOT/include -L $IPPROOT/lib/intel64 -lippi -lipps -lippcore -Wl,-rpath,$IPPROOT/lib/intel64 -lpthread
-	else
-		$(error Unknown Compiler Given)
-	endif
+ifeq ($(CC),g++)
+	CCFLAGS += -mavx512f -D AVX512
+else ifeq ($(CC),gcc)
+	CCFLAGS += -mavx512f -D AVX512
+else ifeq ($(CC),icc)
+	CCFLAGS += -axMIC-AVX512 -D AVX512
+else ifeq ($(CC),icpc)
+	CCFLAGS += -axMIC-AVX512 -D AVX512 -L $IPPROOT/lib/intel64_lin/threaded -lippi -lipps -lippcore -lpthread
+	CCFLAGS += -I $TBB_INCLUDE -Wl,-rpath,$TBB_LIBRARY_RELEASE -L $TBB_LIBRARY_RELEASE -ltbb
+	#CCFLAGS += -ltbb
 else
-    $(error Invalid value for variable AVX512. Valid values are YES or NO)
+	$(error Unknown Compiler Given)
 endif
 
 .PHONY: merge
