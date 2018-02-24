@@ -45,36 +45,7 @@ void insertData(
     vec_t** C, uint32_t C_length,
     vec_t** CSorted, uint32_t Ct_length,
     vec_t** CUnsorted);
-#ifdef MERGE
-void mergeTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted, uint32_t runs);
-void parallelMergeTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted, uint32_t runs);
-#endif
-#ifdef SORT
-void sortTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted, uint32_t runs);
-#endif
-#ifdef PARALLELSORT
-void parallelTester(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted, uint32_t runs);
-#endif
+
 
 void freeGlobalData();
 #ifdef MERGE
@@ -113,16 +84,17 @@ uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
-uint32_t testingEntropies[] = {1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
-uint32_t testingEntropiesLength = 10;
-uint32_t testingSizes[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
-uint32_t testingSizesLength = 11;
-uint32_t testingThreads[] = {2, 4, 8, 16, 32, 64, 128, 256};
-uint32_t testingThreadsLength = 8;
+uint32_t testingEntropies[] = {28};//{1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
+uint32_t testingEntropiesLength = 1;//10;
+uint32_t testingSizes[] = {16777216};//{1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
+uint32_t testingSizesLength = 1;//11;
+uint32_t testingThreads[] = {64};//{2, 4, 8, 16, 32, 64, 128, 256};
+uint32_t testingThreadsLength = 1;//8;
 // Host Functions
 ////////////////////////////
 
-int hostBasicCompare(const void * a, const void * b) {
+int hostBasicCompare(const void * a, const void * b)
+{
     return (int) (*(vec_t *)a - *(vec_t *)b);
 }
 
@@ -138,6 +110,10 @@ void initArrays(vec_t** A, uint32_t A_length,
     (*A)  = (vec_t*) xmalloc((A_length  + 8) * (sizeof(vec_t)));
     (*B)  = (vec_t*) xmalloc((B_length  + 8) * (sizeof(vec_t)));
     int pBufSize = 0;
+    // C is used as a buffer by many of the algorithms. To simplify things,
+    // we just allocate a buffer big enough for all the algorithms
+    // and share it. IPP has its own function to calculate the buffer size
+    // which the function below.
     ippsSortRadixGetBufferSize(C_length, ipp32u, &pBufSize);
     uint32_t mallocSize = MAX((C_length  + 32) * sizeof(vec_t), pBufSize);
     (*C)  = (vec_t*) xmalloc(mallocSize);
@@ -148,7 +124,7 @@ void initArrays(vec_t** A, uint32_t A_length,
 }
 
 /**
- * inserts the data into the arrays A,B,CUnsorted, and CSorted.
+ * Inserts the data into the arrays A,B,CUnsorted, and CSorted.
  * This can be called over and over to re randomize the data
  */
 void insertData(vec_t** A, uint32_t A_length,
@@ -185,7 +161,11 @@ void insertData(vec_t** A, uint32_t A_length,
     #endif
 }
 
-void freeGlobalData() {
+/**
+ * Frees all the data allocated by initArrays(*)
+ */
+void freeGlobalData()
+{
       free(globalA);
       free(globalB);
       free(globalC);
@@ -195,7 +175,12 @@ void freeGlobalData() {
       free(CUnsorted);
 }
 
-void initFilePointers() {
+/**
+ * Creates CSV files for writing output to. These are only actually created
+ * and written to if the -F flag is set at runtime.
+ */
+void initFilePointers()
+{
     char mergeFileName[50];
     sprintf(mergeFileName, "../results/MergeResults.%li.csv", time(0));
     mergeFile = fopen(mergeFileName, "w+");
@@ -217,7 +202,11 @@ void initFilePointers() {
     fprintf(parallelSortFile, "Name,Entropy,C Size,Number of Threads,Elements Per Second,Total Time");
 }
 
-void writeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, uint32_t CSize, uint32_t numThreads, double time, AlgoType algoType) {
+/**
+ * Writes a data point out to the appropriate CSV file
+ */
+void writeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize, uint32_t CSize, uint32_t numThreads, double time, AlgoType algoType)
+{
     if (algoType == Merge) {
         fprintf(mergeFile, "\n%s,%u,%u,%u,%lu,%.20f", name, entropy, ASize, BSize, (uint64_t)((double)(ASize + BSize)/time), time);
         fflush(mergeFile);
@@ -233,8 +222,13 @@ void writeOut(const char* name, uint32_t entropy, uint32_t ASize, uint32_t BSize
     }
 }
 
-int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint32_t length, const char* name, uint32_t numThreads, bool isSigned) {
+/**
+ * Verifies that the given output is equal to sorted data for every element.
+ */
+int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint32_t length, const char* name, uint32_t numThreads, bool isSigned)
+{
     if (isSigned) {
+        //TODO This feature has not been implemented
     } else {
         vec_t* output = (vec_t*)outputU;
         vec_t* COut = (vec_t*)CU;
@@ -251,10 +245,18 @@ int verifyOutput(vec_t* outputU, vec_t* CU, vec_t* sortedDataU, uint32_t length,
     return 1;
 }
 
+/**
+ * Tester for all algorithms. Running this automatically handles allocation
+ * and timing of an algorithm. Results are printed and output to a CSV if the
+ * -F flag is set. Only one algorithm is run at a time. This function is
+ * designed to be as general as possible to allow for general testing of almost
+ * any mergeing or sorting related algorithm with ease.
+ */
 template <AlgoTemplate Algo>
-void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType algoType) {
-
+void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType algoType)
+{
     // Create input copies in case the algorithm accidentally changes the input
+    // really only needed if we want to verify the output
     #ifdef VERIFYOUTPUT
     vec_t* ACopy = (vec_t*)xmalloc((globalALength + 8) * sizeof(vec_t));
     memcpy(ACopy, globalA, globalALength * sizeof(vec_t));
@@ -268,6 +270,11 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType al
 
     // Make sure something goes wrong if thread spawn fails
     uint32_t numberOfThreads = -1;
+    // Determine number of threads
+    // We need to know this information for allocating array sizes. In reality
+    // this is a bad way to determine this since openmp does not guarantee this
+    // number to be the same across thread spawns, but it works good enough for
+    // our purposes.
     #pragma omp parallel
     {
         #pragma omp single
@@ -363,7 +370,7 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType al
     }
     printf("\n");
 
-    // Restore original values
+    // verify output and restore original values if necesary
     #ifdef VERIFYOUTPUT
     verifyOutput(CCopy, globalC, CSorted, globalCLength, algoName, numberOfThreads, isSigned);
     clearArray(globalC, globalCLength);
@@ -373,7 +380,8 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType al
     free(BCopy);
     #endif
 
-    //memcpy(CUnsorted, CCopy, (globalCLength) * sizeof(vec_t));
+    // restore C to its former state
+    memcpy(CUnsorted, CCopy, (globalCLength) * sizeof(vec_t));
     free(CCopy);
 
     free(ASplitters);
@@ -395,155 +403,185 @@ void MergePathSplitter(
 
     uint64_t minLength = (uint64_t)A_length > (uint64_t)B_length ? (uint64_t)B_length : (uint64_t)A_length;
 
-    for (uint32_t thread=0; thread<threads;thread++)
-    {
-      uint64_t combinedIndex = (uint64_t)thread * ((uint64_t)minLength * (uint64_t)2) / (uint64_t)threads;
-      uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
-      x_top = combinedIndex > minLength ? minLength : combinedIndex;
-      y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
-      x_bottom = y_top;
+    for (uint32_t thread=0; thread<threads;thread++) {
+        uint64_t combinedIndex = (uint64_t)thread * ((uint64_t)minLength * (uint64_t)2) / (uint64_t)threads;
+        uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+        x_top = combinedIndex > minLength ? minLength : combinedIndex;
+        y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
+        x_bottom = y_top;
 
-      oldx = -1;
-      oldy = -1;
+        oldx = -1;
+        oldy = -1;
 
-      vec_t Ai, Bi;
-      while(1) {
-        offset = (x_top - x_bottom) / 2;
-        if (x_top < x_bottom) {
-            offset = 0;
-        }
-        current_y = y_top + offset;
-        current_x = x_top - offset;
+        vec_t Ai, Bi;
+        while(1) {
+            offset = (x_top - x_bottom) / 2;
+            if (x_top < x_bottom) {
+                offset = 0;
+            }
+            current_y = y_top + offset;
+            current_x = x_top - offset;
 
-        if (current_x == oldx || current_y == oldy) {
-            return;
-        }
+            if (current_x == oldx || current_y == oldy) {
+                return;
+            }
 
-        oldx = current_x;
-        oldy = current_y;
+            oldx = current_x;
+            oldy = current_y;
 
-        if(current_x > A_length - 1 || current_y < 1) {
-          Ai = 1;Bi = 0;
-        } else {
-          Ai = A[current_x];Bi = B[current_y - 1];
-        }
-        if(Ai > Bi) {
-          if(current_y > B_length - 1 || current_x < 1) {
-            Ai = 0;Bi = 1;
-          } else {
-            Ai = A[current_x - 1];Bi = B[current_y];
-          }
+            if(current_x > A_length - 1 || current_y < 1) {
+                Ai = 1;Bi = 0;
+            } else {
+                Ai = A[current_x];Bi = B[current_y - 1];
+            }
+            if(Ai > Bi) {
+                if(current_y > B_length - 1 || current_x < 1) {
+                    Ai = 0;Bi = 1;
+                } else {
+                    Ai = A[current_x - 1];Bi = B[current_y];
+                }
 
-          if(Ai <= Bi) {//Found it
-            ASplitters[thread]   = current_x;
-            BSplitters[thread] = current_y;
-            break;
-          } else {//Both zeros
-            x_top = current_x - 1;y_top = current_y + 1;
-          }
-        } else {// Both ones
-          x_bottom = current_x + 1;
+                if(Ai <= Bi) {//Found it
+                    ASplitters[thread]   = current_x;
+                    BSplitters[thread] = current_y;
+                    break;
+                } else {//Both zeros
+                    x_top = current_x - 1;y_top = current_y + 1;
+                }
+            } else {// Both ones
+                x_bottom = current_x + 1;
+            }
         }
     }
-  }
 }
 
-#define PRINT_ARRAY_INDEX(ARR,IND) for (int t=0; t<threads;t++){printf("%10d, ",ARR[IND[t]]);}printf("\n");
-
-void hostParseArgs(int argc, char** argv)
-{
-  static struct option long_options[] = {
-    {"Alength", required_argument, 0, 'A'},
-    {"Blength", required_argument, 0, 'B'},
-    {"Runs"   , optional_argument, 0, 'R'},
-    {"Entropy", optional_argument, 0, 'E'},
-    {"FileOut", no_argument      , 0, 'F'},
-    {"help"   , no_argument      , 0, 'h'},
-    {0        , 0                , 0,  0 }
-  };
-
-  while(1) {
-    int option_index = 0;
-    int c = getopt_long(argc, argv, "A:B:R:E:h:F",
-  long_options, &option_index);
-    extern char * optarg;
-    //extern int    optind, opterr, optopt;
-    int intout = 0;
-
-    if(-1 == c)
-      break;
-
-    switch(c) {
-      default:
-        printf("Unrecognized option: %c\n\n", c);
-      case 'h':
-        printf("\nCreates two arrays A and B and "
-            "merges them into array C in parallel on OpenMP.");
-        printf("\n\nUsage"
-            "\n====="
-            "\n\n\t-A --Alength <number>"
-            "\n\t\tSpecify the length of randomly "
-            "generated array A.\n"
-            "\n\t-B --Blength <number>"
-            "\n\t\tSpecify the length of randomly "
-            "generated array B.\n"
-            "\n\t-R --Runs <number>"
-            "\n\t\tSpecify the number of runs to be used for "
-            "serial and parallel algorithms.\n"
-            "\n\t-E --Entropy <number>"
-            "\n\t\tSpecify the number of bits of entropy "
-            "to be used for random number generation\n"
-            "\n\t-F --FileOut 0 or 1"
-            "\n\t\tSpecify weather to write full "
-            "output to a file\n"
-            );
-         exit(0);
-         break;
-      case 'A':
-        errno = 0;
-        intout = strtol(optarg, NULL, 10);
-        if(errno || intout < 0) {
-          printf("Error - Alength %s\n", optarg);
-          exit(-1);
-        }
-        h_ui_A_length = intout;
-        break;
-      case 'B':
-        errno = 0;
-        intout = strtol(optarg, NULL, 10);
-        if(errno || intout < 0) {
-          printf("Error - Blength %s\n", optarg);
-          exit(-1);
-        }
-        h_ui_B_length = intout;
-        break;
-      case 'R':
-        intout = strtol(optarg, NULL, 10);
-        if(errno || intout < 0) {
-          printf("Error - Runs %s\n", optarg);
-          exit(-1);
-        }
-        RUNS = intout;
-        break;
-      case 'E':
-        intout = strtol(optarg, NULL, 10);
-        if(errno || intout < 0) {
-          printf("Error - Entropy %s\n", optarg);
-          exit(-1);
-        }
-        entropy = (intout < 1) ? 1: intout;
-        break;
-      case 'F':
-        OutToFile = 1;
-        break;
+void hostParseArgs(int argc, char** argv) {
+    if(errno) {
+        printf("Error0 %d\n", errno);
+        exit(-1);
     }
-  }
-  h_ui_C_length = h_ui_A_length + h_ui_B_length;
-  h_ui_Ct_length = h_ui_C_length;
+    static struct option long_options[] = {
+        {"help"   , no_argument      , 0, 'h'},
+        {"Runs"   , required_argument, 0, 'R'},
+        {"Entropy", required_argument, 0, 'E'},
+        {"Alength", required_argument, 0, 'A'},
+        {"Blength", required_argument, 0, 'B'},
+        {"Clength", required_argument, 0, 'C'},
+        {"numThreads", required_argument, 0, 'T'},
+        {"FileOut", no_argument      , 0, 'F'},
+        {0        , 0                , 0,  0 }
+    };
+
+    while(1) {
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "h:R:E:A:B:C:T:F", long_options, &option_index);
+        extern char * optarg;
+        int intout = 0;
+
+        if(-1 == c) {
+            break;
+        }
+
+        switch(c) {
+            default:
+                printf("Unrecognized option: %c\n\n", c);
+            case 'h':
+                printf("\nPerforms parallel merging and sorting using openmp");
+                printf("\n\nUsage"
+                    "\n====="
+                    "\n\t-R --Runs <number>"
+                    "\n\t\tSpecify the number of runs to be used for "
+                    "serial and parallel algorithms.\n"
+                    "\n\t-E --Entropy <number>"
+                    "\n\t\tSpecify the number of bits of entropy "
+                    "to be used for random number generation\n"
+                    "\n\n\t-A --Alength <number>"
+                    "\n\t\tSpecify the length of randomly "
+                    "generated array A.\n"
+                    "\n\t-B --Blength <number>"
+                    "\n\t\tSpecify the length of randomly "
+                    "generated array B.\n"
+                    "\n\t-C --Clength <number>"
+                    "\n\t\tSpecify the length of randomly "
+                    "generated array C.\n"
+                    "\n\t-T --numThreads <number>"
+                    "\n\t\tSpecify the of threads "
+                    "used in merging and sorting\n"
+                    "\n\t-F --FileOut 0 or 1"
+                    "\n\t\tSpecify weather to write full "
+                    "output to a csv file\n"
+                );
+                exit(0);
+                break;
+            case 'R':
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - Runs %s\n", optarg);
+                   exit(-1);
+                }
+                RUNS = intout;
+                break;
+            case 'E':
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - Entropy %s\n", optarg);
+                    exit(-1);
+                }
+                testingEntropies[0] = (intout < 1) ? 1: intout;
+                testingEntropiesLength = 1;
+                break;
+            case 'A':
+                errno = 0;
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - Alength %s\n", optarg);
+                    exit(-1);
+                }
+                testingSizes[0] = 2*intout;
+                testingSizesLength = 1;
+                break;
+            case 'B':
+                errno = 0;
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - Blength %s\n", optarg);
+                    exit(-1);
+                }
+                testingSizes[0] = 2*intout;
+                testingSizesLength = 1;
+                break;
+            case 'C':
+                errno = 0;
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - Clength %s\n", optarg);
+                    exit(-1);
+                }
+                testingSizes[0] = intout;
+                testingSizesLength = 1;
+                break;
+            case 'T':
+                errno = 0;
+                intout = strtol(optarg, NULL, 10);
+                if(errno || intout < 0) {
+                    printf("Error - numThreads %s\n", optarg);
+                    exit(-1);
+                }
+                testingThreads[0] = intout;
+                testingThreadsLength = 1;
+                break;
+            case 'F':
+                OutToFile = 1;
+                break;
+        }
+    }
+    h_ui_C_length = h_ui_A_length + h_ui_B_length;
+    h_ui_Ct_length = h_ui_C_length;
 }
 
 int main(int argc, char** argv)
 {
+    errno = 0;
     omp_set_dynamic(0);
     hostParseArgs(argc, argv);
     uint32_t seed = time(0);
@@ -581,36 +619,37 @@ int main(int argc, char** argv)
 
             omp_set_num_threads(1);
             ippSetNumThreads(1);
-            // // Single Threaded Merge Algorithms
-            // printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
-            // testAlgo<serialMerge>("Standard", false, false, Merge);
-            // testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
-            // testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
-            // printf("\n");
-            //
-            // // Single Threaded Sort Algorithms
-            // printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
-            // testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
-            // testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
-            // testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
-            // testAlgo<ippSort>("IPP", false, true, Sort);
-            // testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
-            // testAlgo<quickSort>("Quick Sort", false, false, Sort);
-            // printf("\n");
+            // Single Threaded Merge Algorithms
+            printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
+            testAlgo<serialMerge>("Standard", false, false, Merge);
+            testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
+            testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
+            printf("\n");
+
+            // Single Threaded Sort Algorithms
+            printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
+            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
+            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
+            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
+            testAlgo<ippSort>("IPP", false, true, Sort);
+            testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
+            testAlgo<quickSort>("Quick Sort", false, false, Sort);
+            printf("\n");
 
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);
                 ippSetNumThreads(testingThreads[j]);
-                printf("Thread Count:%u\n", testingThreads[j]);
 
-                // // Parallel Merge Algorithms
-                // printf("Parallel Merge Algorithms        :  Elements Per Second\n");
-                // testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
-                // testAlgo<parallelMerge<bitonicMergeReal>>("Bitonic", false, false, ParallelMerge);
-                // testAlgo<parallelMerge<avx512Merge>>("AVX-512 MP", false, false, ParallelMerge);
-                // printf("\n");
+                // Parallel Merge Algorithms
+                printf("Thread Count:%u\n", testingThreads[j]);
+                printf("Parallel Merge Algorithms        :  Elements Per Second\n");
+                testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
+                testAlgo<parallelMerge<bitonicMergeReal>>("Bitonic", false, false, ParallelMerge);
+                testAlgo<parallelMerge<avx512Merge>>("AVX-512 MP", false, false, ParallelMerge);
+                printf("\n");
 
                 // Parallel Sort Algorithms
+                printf("Thread Count:%u\n", testingThreads[j]);
                 printf("Parallel Sort Algorithms         :  Elements Per Second\n");
                 testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
                 testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
