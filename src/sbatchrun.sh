@@ -9,7 +9,7 @@
 
 #SBATCH -J merge                 # Job name
 #SBATCH -o merge.%j.out          # Specify stdout output file (%j expands to jobId)
-#SBATCH -p normal           # Queue name
+#SBATCH -p flat-quadrant         # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 1                   # Total number of tasks
 #SBATCH -t 8:00:00              # Run time (hh:mm:ss) - 8 hours
