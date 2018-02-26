@@ -1,0 +1,5299 @@
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,458,489
+Bitonic                          :     10,728,198
+AVX-512 Optimized                :     8,794,123
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,631,929
+Bitonic                          :     22,110,624
+AVX-512 Optimized                :     21,230,089
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,417,937
+Bitonic                          :     43,505,816
+AVX-512 Optimized                :     42,067,649
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     86,082,607
+Bitonic                          :     91,788,511
+AVX-512 Optimized                :     78,240,349
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,334,866
+Bitonic                          :     162,169,856
+AVX-512 Optimized                :     126,975,387
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     275,947,202
+Bitonic                          :     260,054,784
+AVX-512 Optimized                :     217,681,969
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     241,664,185
+Bitonic                          :     272,291,141
+AVX-512 Optimized                :     177,240,529
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     274,072,818
+Bitonic                          :     396,149,028
+AVX-512 Optimized                :     200,531,028
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     6,140,713
+Bitonic                          :     10,327,349
+AVX-512 Optimized                :     13,419,888
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,677,180
+Bitonic                          :     20,981,244
+AVX-512 Optimized                :     20,753,627
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,845,318
+Bitonic                          :     42,126,882
+AVX-512 Optimized                :     42,027,047
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,258,362
+Bitonic                          :     88,847,629
+AVX-512 Optimized                :     78,328,136
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     151,005,888
+Bitonic                          :     157,562,659
+AVX-512 Optimized                :     126,653,607
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     326,967,995
+Bitonic                          :     351,871,870
+AVX-512 Optimized                :     249,068,213
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     301,918,480
+Bitonic                          :     323,933,601
+AVX-512 Optimized                :     219,408,656
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     359,964,520
+Bitonic                          :     398,698,804
+AVX-512 Optimized                :     201,884,163
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,875,366
+Bitonic                          :     10,621,812
+AVX-512 Optimized                :     8,516,067
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,178,135
+Bitonic                          :     21,380,773
+AVX-512 Optimized                :     20,700,293
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,911,123
+Bitonic                          :     41,329,585
+AVX-512 Optimized                :     42,023,835
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     81,183,713
+Bitonic                          :     86,373,387
+AVX-512 Optimized                :     77,967,106
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     147,664,736
+Bitonic                          :     154,225,427
+AVX-512 Optimized                :     127,254,608
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     333,817,572
+Bitonic                          :     350,441,953
+AVX-512 Optimized                :     249,960,017
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     298,395,176
+Bitonic                          :     322,036,062
+AVX-512 Optimized                :     220,475,562
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     346,876,450
+Bitonic                          :     398,229,492
+AVX-512 Optimized                :     202,274,134
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,891,240
+Bitonic                          :     10,369,009
+AVX-512 Optimized                :     12,269,349
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,647,731
+Bitonic                          :     20,936,797
+AVX-512 Optimized                :     24,313,644
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,973,535
+Bitonic                          :     41,318,325
+AVX-512 Optimized                :     41,917,695
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,612,738
+Bitonic                          :     86,536,538
+AVX-512 Optimized                :     78,106,956
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,041,723
+Bitonic                          :     153,589,890
+AVX-512 Optimized                :     126,902,112
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,182,064
+Bitonic                          :     341,781,668
+AVX-512 Optimized                :     249,903,205
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     294,715,976
+Bitonic                          :     318,514,376
+AVX-512 Optimized                :     219,649,728
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     340,880,988
+Bitonic                          :     389,379,947
+AVX-512 Optimized                :     202,693,635
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,780,240
+Bitonic                          :     10,370,769
+AVX-512 Optimized                :     8,796,919
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,132,413
+Bitonic                          :     21,384,620
+AVX-512 Optimized                :     21,180,705
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,971,703
+Bitonic                          :     42,226,786
+AVX-512 Optimized                :     42,080,931
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,436,065
+Bitonic                          :     88,427,829
+AVX-512 Optimized                :     78,357,442
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     148,673,061
+Bitonic                          :     155,688,573
+AVX-512 Optimized                :     126,821,607
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     321,447,632
+Bitonic                          :     346,302,874
+AVX-512 Optimized                :     243,969,962
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     302,001,408
+Bitonic                          :     322,130,411
+AVX-512 Optimized                :     220,796,551
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     344,674,491
+Bitonic                          :     390,833,245
+AVX-512 Optimized                :     201,182,311
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,879,214
+Bitonic                          :     10,659,941
+AVX-512 Optimized                :     8,713,661
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,702,339
+Bitonic                          :     21,720,893
+AVX-512 Optimized                :     20,895,417
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,123,608
+Bitonic                          :     43,008,053
+AVX-512 Optimized                :     41,898,128
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     86,565,494
+Bitonic                          :     90,386,915
+AVX-512 Optimized                :     78,286,308
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,815,497
+Bitonic                          :     160,091,966
+AVX-512 Optimized                :     127,100,150
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     336,499,350
+Bitonic                          :     353,996,016
+AVX-512 Optimized                :     250,801,009
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     309,394,759
+Bitonic                          :     326,652,295
+AVX-512 Optimized                :     219,638,759
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     355,311,561
+Bitonic                          :     403,453,491
+AVX-512 Optimized                :     201,847,102
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,870,597
+Bitonic                          :     10,747,336
+AVX-512 Optimized                :     10,821,565
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,888,370
+Bitonic                          :     22,063,261
+AVX-512 Optimized                :     20,937,196
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,457,369
+Bitonic                          :     43,306,187
+AVX-512 Optimized                :     41,276,057
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     87,323,468
+Bitonic                          :     91,706,211
+AVX-512 Optimized                :     78,124,993
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     154,975,387
+Bitonic                          :     161,770,203
+AVX-512 Optimized                :     126,657,254
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     340,327,053
+Bitonic                          :     359,728,980
+AVX-512 Optimized                :     249,492,087
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     312,272,544
+Bitonic                          :     325,227,132
+AVX-512 Optimized                :     220,376,134
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     357,042,256
+Bitonic                          :     403,935,204
+AVX-512 Optimized                :     201,412,644
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,893,553
+Bitonic                          :     10,801,711
+AVX-512 Optimized                :     8,967,004
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,949,263
+Bitonic                          :     22,075,332
+AVX-512 Optimized                :     20,737,676
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,600,500
+Bitonic                          :     43,690,795
+AVX-512 Optimized                :     40,937,575
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     85,221,898
+Bitonic                          :     92,069,051
+AVX-512 Optimized                :     77,834,643
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     155,254,395
+Bitonic                          :     161,663,168
+AVX-512 Optimized                :     127,162,623
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     340,248,066
+Bitonic                          :     363,354,800
+AVX-512 Optimized                :     250,016,855
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     314,415,678
+Bitonic                          :     327,576,829
+AVX-512 Optimized                :     218,406,242
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     363,084,827
+Bitonic                          :     400,368,366
+AVX-512 Optimized                :     200,686,585
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,873,224
+Bitonic                          :     10,834,521
+AVX-512 Optimized                :     8,637,152
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,940,485
+Bitonic                          :     22,146,141
+AVX-512 Optimized                :     20,848,861
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,596,565
+Bitonic                          :     43,728,588
+AVX-512 Optimized                :     41,994,944
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     87,834,448
+Bitonic                          :     92,126,909
+AVX-512 Optimized                :     78,533,740
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     156,386,107
+Bitonic                          :     162,068,265
+AVX-512 Optimized                :     126,902,112
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,783,170
+Bitonic                          :     362,456,445
+AVX-512 Optimized                :     250,615,220
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     312,250,373
+Bitonic                          :     328,506,611
+AVX-512 Optimized                :     202,749,700
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     357,622,907
+Bitonic                          :     396,899,784
+AVX-512 Optimized                :     202,581,598
+
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,935,461
+Bitonic                          :     10,785,605
+AVX-512 Optimized                :     8,828,103
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,977,441
+Bitonic                          :     22,184,569
+AVX-512 Optimized                :     20,746,285
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     41,658,029
+Bitonic                          :     43,791,286
+AVX-512 Optimized                :     41,909,706
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     85,160,841
+Bitonic                          :     91,867,120
+AVX-512 Optimized                :     78,451,089
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     155,095,620
+Bitonic                          :     162,595,530
+AVX-512 Optimized                :     127,192,044
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     340,669,752
+Bitonic                          :     363,715,391
+AVX-512 Optimized                :     246,956,399
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     313,944,357
+Bitonic                          :     325,853,634
+AVX-512 Optimized                :     219,364,881
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     357,855,696
+Bitonic                          :     405,312,552
+AVX-512 Optimized                :     201,569,572
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,989,010
+Bitonic                          :     10,536,867
+AVX-512 Optimized                :     12,325,102
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,346,490
+Bitonic                          :     21,500,452
+AVX-512 Optimized                :     20,803,644
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     40,599,351
+Bitonic                          :     42,860,102
+AVX-512 Optimized                :     33,439,880
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     83,578,094
+Bitonic                          :     87,927,517
+AVX-512 Optimized                :     69,963,515
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,783,227
+Bitonic                          :     159,237,006
+AVX-512 Optimized                :     117,665,614
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     338,519,589
+Bitonic                          :     362,830,219
+AVX-512 Optimized                :     237,507,574
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     315,453,056
+Bitonic                          :     346,125,723
+AVX-512 Optimized                :     218,270,751
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     385,928,967
+Bitonic                          :     501,344,714
+AVX-512 Optimized                :     218,797,398
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,987,056
+Bitonic                          :     9,981,359
+AVX-512 Optimized                :     12,234,280
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,135,460
+Bitonic                          :     20,419,607
+AVX-512 Optimized                :     21,606,076
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,143,502
+Bitonic                          :     41,436,668
+AVX-512 Optimized                :     33,371,245
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     80,590,893
+Bitonic                          :     84,919,127
+AVX-512 Optimized                :     70,000,819
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     147,853,375
+Bitonic                          :     151,979,076
+AVX-512 Optimized                :     118,697,699
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,327,754
+Bitonic                          :     351,801,504
+AVX-512 Optimized                :     236,804,227
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,227,821
+Bitonic                          :     342,834,042
+AVX-512 Optimized                :     218,590,780
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     415,772,973
+Bitonic                          :     498,362,210
+AVX-512 Optimized                :     219,020,766
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,744,428
+Bitonic                          :     10,553,137
+AVX-512 Optimized                :     11,856,010
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,988,485
+Bitonic                          :     21,296,705
+AVX-512 Optimized                :     20,650,771
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,578,539
+Bitonic                          :     41,191,781
+AVX-512 Optimized                :     35,574,409
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,120,055
+Bitonic                          :     84,067,752
+AVX-512 Optimized                :     69,812,478
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,070,826
+Bitonic                          :     153,164,655
+AVX-512 Optimized                :     118,062,023
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,375,922
+Bitonic                          :     351,450,096
+AVX-512 Optimized                :     237,264,128
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     319,254,247
+Bitonic                          :     340,169,116
+AVX-512 Optimized                :     220,680,223
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     413,078,473
+Bitonic                          :     496,141,520
+AVX-512 Optimized                :     219,020,766
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,710,966
+Bitonic                          :     10,141,119
+AVX-512 Optimized                :     9,878,067
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,153,294
+Bitonic                          :     20,301,174
+AVX-512 Optimized                :     18,016,141
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,269,839
+Bitonic                          :     40,592,793
+AVX-512 Optimized                :     30,146,629
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,348,689
+Bitonic                          :     83,562,215
+AVX-512 Optimized                :     69,905,133
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     143,689,444
+Bitonic                          :     151,070,726
+AVX-512 Optimized                :     118,055,685
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     314,224,735
+Bitonic                          :     340,775,337
+AVX-512 Optimized                :     237,526,815
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     304,953,994
+Bitonic                          :     332,882,721
+AVX-512 Optimized                :     217,547,375
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     398,103,327
+Bitonic                          :     488,943,469
+AVX-512 Optimized                :     220,475,562
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,769,950
+Bitonic                          :     10,273,253
+AVX-512 Optimized                :     9,030,618
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,562,653
+Bitonic                          :     20,805,662
+AVX-512 Optimized                :     17,608,033
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,084,366
+Bitonic                          :     41,522,930
+AVX-512 Optimized                :     30,338,992
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,648,783
+Bitonic                          :     84,866,690
+AVX-512 Optimized                :     70,044,856
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,520,963
+Bitonic                          :     147,488,942
+AVX-512 Optimized                :     118,368,653
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     320,908,173
+Bitonic                          :     344,917,772
+AVX-512 Optimized                :     237,392,195
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     310,870,932
+Bitonic                          :     336,126,448
+AVX-512 Optimized                :     217,235,756
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     395,170,179
+Bitonic                          :     486,482,662
+AVX-512 Optimized                :     220,127,956
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,727,547
+Bitonic                          :     10,378,136
+AVX-512 Optimized                :     9,819,237
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,960,363
+Bitonic                          :     21,081,160
+AVX-512 Optimized                :     17,532,051
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,950,280
+Bitonic                          :     42,014,401
+AVX-512 Optimized                :     30,152,312
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     81,284,993
+Bitonic                          :     86,090,190
+AVX-512 Optimized                :     69,800,844
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     149,730,926
+Bitonic                          :     156,994,592
+AVX-512 Optimized                :     118,343,173
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,568,075
+Bitonic                          :     353,242,561
+AVX-512 Optimized                :     237,340,952
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     319,045,811
+Bitonic                          :     341,383,723
+AVX-512 Optimized                :     218,840,946
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     415,772,973
+Bitonic                          :     496,253,485
+AVX-512 Optimized                :     220,199,595
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,737,968
+Bitonic                          :     10,481,409
+AVX-512 Optimized                :     9,109,845
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,333,650
+Bitonic                          :     21,471,167
+AVX-512 Optimized                :     17,683,468
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     40,700,041
+Bitonic                          :     42,868,248
+AVX-512 Optimized                :     28,102,892
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,717,469
+Bitonic                          :     87,746,827
+AVX-512 Optimized                :     69,723,937
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,076,694
+Bitonic                          :     159,141,934
+AVX-512 Optimized                :     117,494,296
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     338,910,881
+Bitonic                          :     359,038,859
+AVX-512 Optimized                :     237,501,161
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,435,416
+Bitonic                          :     342,287,066
+AVX-512 Optimized                :     215,844,449
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     425,301,857
+Bitonic                          :     499,692,837
+AVX-512 Optimized                :     220,127,956
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,759,586
+Bitonic                          :     10,647,721
+AVX-512 Optimized                :     9,193,875
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,401,704
+Bitonic                          :     21,621,425
+AVX-512 Optimized                :     17,849,613
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     40,811,644
+Bitonic                          :     42,251,329
+AVX-512 Optimized                :     30,501,744
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     83,236,430
+Bitonic                          :     88,271,646
+AVX-512 Optimized                :     69,416,899
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,469,301
+Bitonic                          :     160,086,139
+AVX-512 Optimized                :     117,348,520
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     338,584,742
+Bitonic                          :     361,206,185
+AVX-512 Optimized                :     237,507,574
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     325,443,725
+Bitonic                          :     344,013,963
+AVX-512 Optimized                :     219,255,521
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     426,953,355
+Bitonic                          :     503,525,847
+AVX-512 Optimized                :     218,955,343
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,748,851
+Bitonic                          :     10,699,151
+AVX-512 Optimized                :     9,467,571
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,332,663
+Bitonic                          :     21,584,550
+AVX-512 Optimized                :     15,411,382
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     40,904,070
+Bitonic                          :     43,049,308
+AVX-512 Optimized                :     29,176,179
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     83,187,624
+Bitonic                          :     88,402,056
+AVX-512 Optimized                :     69,858,497
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,346,228
+Bitonic                          :     160,150,262
+AVX-512 Optimized                :     118,550,521
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     339,172,245
+Bitonic                          :     362,830,219
+AVX-512 Optimized                :     237,206,542
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,782,816
+Bitonic                          :     343,798,828
+AVX-512 Optimized                :     217,773,588
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     426,002,180
+Bitonic                          :     504,102,987
+AVX-512 Optimized                :     221,407,899
+
+
+
+Running with sizes:
+A Length:1048576
+B Length:1048576
+C Length:2097152
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,787,067
+Bitonic                          :     10,759,088
+AVX-512 Optimized                :     9,902,543
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,415,389
+Bitonic                          :     21,631,048
+AVX-512 Optimized                :     15,565,358
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     40,884,297
+Bitonic                          :     43,105,002
+AVX-512 Optimized                :     30,366,224
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     83,286,082
+Bitonic                          :     88,483,869
+AVX-512 Optimized                :     67,906,718
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,423,795
+Bitonic                          :     160,615,229
+AVX-512 Optimized                :     118,182,579
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     270,291,399
+Bitonic                          :     296,294,439
+AVX-512 Optimized                :     226,446,633
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,878,781
+Bitonic                          :     343,852,586
+AVX-512 Optimized                :     218,770,189
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     426,167,297
+Bitonic                          :     502,806,277
+AVX-512 Optimized                :     218,840,946
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,795,291
+Bitonic                          :     10,391,763
+AVX-512 Optimized                :     6,237,912
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,867,670
+Bitonic                          :     21,195,328
+AVX-512 Optimized                :     20,293,821
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,726,277
+Bitonic                          :     41,932,182
+AVX-512 Optimized                :     30,353,701
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,268,755
+Bitonic                          :     87,359,460
+AVX-512 Optimized                :     51,966,248
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     149,871,241
+Bitonic                          :     157,154,473
+AVX-512 Optimized                :     115,494,918
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     333,097,020
+Bitonic                          :     351,281,670
+AVX-512 Optimized                :     229,082,819
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     337,461,127
+Bitonic                          :     364,250,078
+AVX-512 Optimized                :     234,109,868
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     451,382,615
+Bitonic                          :     533,970,316
+AVX-512 Optimized                :     233,417,180
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,894,973
+Bitonic                          :     9,893,555
+AVX-512 Optimized                :     6,031,142
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,764,277
+Bitonic                          :     20,124,283
+AVX-512 Optimized                :     16,266,378
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,220,368
+Bitonic                          :     40,622,788
+AVX-512 Optimized                :     31,029,847
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,534,273
+Bitonic                          :     84,591,645
+AVX-512 Optimized                :     52,438,070
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     145,924,218
+Bitonic                          :     152,942,282
+AVX-512 Optimized                :     115,803,586
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     323,385,772
+Bitonic                          :     331,615,194
+AVX-512 Optimized                :     228,484,785
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     329,380,004
+Bitonic                          :     358,212,743
+AVX-512 Optimized                :     230,965,576
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     440,211,847
+Bitonic                          :     537,395,712
+AVX-512 Optimized                :     230,683,915
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,543,644
+Bitonic                          :     9,903,625
+AVX-512 Optimized                :     6,747,746
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,507,200
+Bitonic                          :     19,925,908
+AVX-512 Optimized                :     16,832,356
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,011,013
+Bitonic                          :     39,562,251
+AVX-512 Optimized                :     31,160,548
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,281,751
+Bitonic                          :     82,555,214
+AVX-512 Optimized                :     52,002,347
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     142,542,648
+Bitonic                          :     150,399,128
+AVX-512 Optimized                :     116,137,671
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     321,037,009
+Bitonic                          :     338,064,223
+AVX-512 Optimized                :     228,698,647
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     325,142,979
+Bitonic                          :     326,834,355
+AVX-512 Optimized                :     233,770,776
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     431,297,311
+Bitonic                          :     535,188,647
+AVX-512 Optimized                :     232,335,160
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,620,160
+Bitonic                          :     10,145,406
+AVX-512 Optimized                :     8,861,642
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,053,060
+Bitonic                          :     20,371,276
+AVX-512 Optimized                :     16,658,998
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,962,334
+Bitonic                          :     39,854,254
+AVX-512 Optimized                :     30,812,616
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,414,381
+Bitonic                          :     82,507,977
+AVX-512 Optimized                :     50,923,945
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     141,593,847
+Bitonic                          :     149,620,136
+AVX-512 Optimized                :     116,022,014
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     312,683,268
+Bitonic                          :     332,172,467
+AVX-512 Optimized                :     225,891,267
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     319,980,102
+Bitonic                          :     351,492,228
+AVX-512 Optimized                :     234,659,473
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     427,461,694
+Bitonic                          :     527,375,323
+AVX-512 Optimized                :     231,460,904
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,556,570
+Bitonic                          :     9,914,626
+AVX-512 Optimized                :     7,677,487
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,126,743
+Bitonic                          :     20,454,032
+AVX-512 Optimized                :     18,895,889
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,824,035
+Bitonic                          :     40,539,567
+AVX-512 Optimized                :     30,521,588
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     78,698,509
+Bitonic                          :     83,944,600
+AVX-512 Optimized                :     51,784,674
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     143,955,174
+Bitonic                          :     151,123,934
+AVX-512 Optimized                :     115,587,498
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     314,297,715
+Bitonic                          :     333,387,394
+AVX-512 Optimized                :     227,816,086
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,222,100
+Bitonic                          :     353,235,468
+AVX-512 Optimized                :     233,018,345
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     417,757,499
+Bitonic                          :     505,522,587
+AVX-512 Optimized                :     231,509,640
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,706,449
+Bitonic                          :     10,147,220
+AVX-512 Optimized                :     7,445,895
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,341,700
+Bitonic                          :     20,597,385
+AVX-512 Optimized                :     16,094,791
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,583,924
+Bitonic                          :     40,856,192
+AVX-512 Optimized                :     31,112,218
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,864,288
+Bitonic                          :     84,348,292
+AVX-512 Optimized                :     52,896,262
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,239,607
+Bitonic                          :     153,071,366
+AVX-512 Optimized                :     116,031,197
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     321,924,095
+Bitonic                          :     341,052,809
+AVX-512 Optimized                :     228,895,039
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,634,486
+Bitonic                          :     312,444,472
+AVX-512 Optimized                :     188,185,938
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     429,266,166
+Bitonic                          :     531,935,959
+AVX-512 Optimized                :     231,102,111
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,530,944
+Bitonic                          :     10,126,788
+AVX-512 Optimized                :     8,047,678
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,897,849
+Bitonic                          :     21,055,852
+AVX-512 Optimized                :     16,627,507
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,578,272
+Bitonic                          :     41,474,767
+AVX-512 Optimized                :     30,363,813
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,099,440
+Bitonic                          :     86,937,673
+AVX-512 Optimized                :     52,320,324
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,144,971
+Bitonic                          :     156,299,963
+AVX-512 Optimized                :     116,044,209
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     331,228,084
+Bitonic                          :     347,239,327
+AVX-512 Optimized                :     228,422,484
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,853,266
+Bitonic                          :     360,429,143
+AVX-512 Optimized                :     234,437,447
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     455,213,632
+Bitonic                          :     546,426,030
+AVX-512 Optimized                :     233,315,022
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,602,214
+Bitonic                          :     10,367,463
+AVX-512 Optimized                :     7,659,123
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,026,394
+Bitonic                          :     21,155,260
+AVX-512 Optimized                :     19,401,983
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,868,254
+Bitonic                          :     41,870,206
+AVX-512 Optimized                :     30,537,748
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,731,084
+Bitonic                          :     87,326,503
+AVX-512 Optimized                :     51,972,082
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,495,624
+Bitonic                          :     157,302,020
+AVX-512 Optimized                :     115,624,723
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     333,646,633
+Bitonic                          :     351,604,629
+AVX-512 Optimized                :     227,248,121
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     333,969,664
+Bitonic                          :     364,506,683
+AVX-512 Optimized                :     233,209,863
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     446,490,851
+Bitonic                          :     547,906,629
+AVX-512 Optimized                :     232,399,614
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,697,296
+Bitonic                          :     10,547,835
+AVX-512 Optimized                :     7,080,966
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,035,928
+Bitonic                          :     21,217,337
+AVX-512 Optimized                :     16,474,922
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,874,308
+Bitonic                          :     42,003,065
+AVX-512 Optimized                :     30,486,045
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,801,564
+Bitonic                          :     87,761,711
+AVX-512 Optimized                :     51,535,883
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,933,337
+Bitonic                          :     157,627,601
+AVX-512 Optimized                :     116,108,544
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     333,463,227
+Bitonic                          :     352,725,534
+AVX-512 Optimized                :     228,770,023
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,904,263
+Bitonic                          :     363,114,804
+AVX-512 Optimized                :     231,677,325
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     454,167,704
+Bitonic                          :     546,561,843
+AVX-512 Optimized                :     231,857,476
+
+
+
+Running with sizes:
+A Length:2097152
+B Length:2097152
+C Length:4194304
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,638,307
+Bitonic                          :     10,437,072
+AVX-512 Optimized                :     6,740,296
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     20,029,632
+Bitonic                          :     21,282,869
+AVX-512 Optimized                :     20,319,065
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,928,247
+Bitonic                          :     41,946,780
+AVX-512 Optimized                :     31,126,365
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     82,693,362
+Bitonic                          :     87,341,677
+AVX-512 Optimized                :     51,356,699
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,554,870
+Bitonic                          :     158,072,332
+AVX-512 Optimized                :     116,411,260
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,116,028
+Bitonic                          :     353,917,678
+AVX-512 Optimized                :     228,636,229
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     337,571,210
+Bitonic                          :     364,310,423
+AVX-512 Optimized                :     234,265,743
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     447,672,495
+Bitonic                          :     543,942,429
+AVX-512 Optimized                :     234,150,375
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,490,009
+Bitonic                          :     10,168,097
+AVX-512 Optimized                :     7,849,694
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,420,317
+Bitonic                          :     20,680,911
+AVX-512 Optimized                :     5,418,651
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,005,377
+Bitonic                          :     41,324,391
+AVX-512 Optimized                :     12,723,371
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     80,406,167
+Bitonic                          :     85,116,753
+AVX-512 Optimized                :     27,143,743
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,010,539
+Bitonic                          :     157,272,488
+AVX-512 Optimized                :     71,382,663
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     245,344,556
+Bitonic                          :     274,055,739
+AVX-512 Optimized                :     162,204,995
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     355,160,923
+Bitonic                          :     394,722,417
+AVX-512 Optimized                :     221,258,919
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     465,907,096
+Bitonic                          :     565,692,430
+AVX-512 Optimized                :     218,647,833
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,738,292
+Bitonic                          :     9,688,572
+AVX-512 Optimized                :     6,706,824
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,314,939
+Bitonic                          :     19,708,449
+AVX-512 Optimized                :     5,377,230
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,524,033
+Bitonic                          :     40,041,256
+AVX-512 Optimized                :     11,798,039
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,726,145
+Bitonic                          :     82,816,961
+AVX-512 Optimized                :     26,503,696
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,407,163
+Bitonic                          :     153,308,810
+AVX-512 Optimized                :     69,652,024
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     308,078,140
+Bitonic                          :     325,404,597
+AVX-512 Optimized                :     200,549,316
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     342,770,583
+Bitonic                          :     388,953,803
+AVX-512 Optimized                :     221,189,371
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     452,043,735
+Bitonic                          :     557,570,513
+AVX-512 Optimized                :     216,798,048
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,475,999
+Bitonic                          :     9,874,701
+AVX-512 Optimized                :     6,768,613
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,417,887
+Bitonic                          :     19,832,494
+AVX-512 Optimized                :     5,339,460
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,322,013
+Bitonic                          :     38,965,118
+AVX-512 Optimized                :     11,027,426
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,136,452
+Bitonic                          :     80,597,539
+AVX-512 Optimized                :     27,563,633
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     142,081,006
+Bitonic                          :     151,274,026
+AVX-512 Optimized                :     72,096,759
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     306,668,399
+Bitonic                          :     324,247,054
+AVX-512 Optimized                :     201,980,356
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     340,986,704
+Bitonic                          :     385,539,908
+AVX-512 Optimized                :     220,376,134
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     437,954,294
+Bitonic                          :     559,201,069
+AVX-512 Optimized                :     217,586,390
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,476,268
+Bitonic                          :     9,899,169
+AVX-512 Optimized                :     8,097,846
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,642,969
+Bitonic                          :     20,070,742
+AVX-512 Optimized                :     6,467,167
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,903,793
+Bitonic                          :     39,493,464
+AVX-512 Optimized                :     12,189,661
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,368,704
+Bitonic                          :     80,939,806
+AVX-512 Optimized                :     27,154,008
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     141,077,202
+Bitonic                          :     149,705,443
+AVX-512 Optimized                :     69,775,374
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     296,866,933
+Bitonic                          :     315,872,195
+AVX-512 Optimized                :     202,623,598
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     331,421,526
+Bitonic                          :     383,585,413
+AVX-512 Optimized                :     221,247,788
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     437,818,051
+Bitonic                          :     537,182,388
+AVX-512 Optimized                :     217,529,890
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,444,245
+Bitonic                          :     9,746,282
+AVX-512 Optimized                :     6,130,526
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,644,203
+Bitonic                          :     20,018,441
+AVX-512 Optimized                :     8,061,271
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,340,962
+Bitonic                          :     39,964,620
+AVX-512 Optimized                :     10,895,682
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     76,738,500
+Bitonic                          :     82,080,287
+AVX-512 Optimized                :     26,717,187
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     142,768,223
+Bitonic                          :     150,974,786
+AVX-512 Optimized                :     72,059,106
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     301,035,028
+Bitonic                          :     318,145,725
+AVX-512 Optimized                :     201,837,838
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     330,171,278
+Bitonic                          :     384,180,165
+AVX-512 Optimized                :     219,804,787
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     425,770,200
+Bitonic                          :     547,659,305
+AVX-512 Optimized                :     217,068,228
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,465,614
+Bitonic                          :     9,881,715
+AVX-512 Optimized                :     6,365,518
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,723,148
+Bitonic                          :     20,081,269
+AVX-512 Optimized                :     5,379,130
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,630,062
+Bitonic                          :     40,076,283
+AVX-512 Optimized                :     10,841,873
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,744,350
+Bitonic                          :     82,281,645
+AVX-512 Optimized                :     26,960,089
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,920,472
+Bitonic                          :     153,187,995
+AVX-512 Optimized                :     72,771,062
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     306,532,139
+Bitonic                          :     323,249,105
+AVX-512 Optimized                :     193,295,236
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     337,963,557
+Bitonic                          :     385,861,248
+AVX-512 Optimized                :     221,078,185
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     440,807,488
+Bitonic                          :     552,422,981
+AVX-512 Optimized                :     217,517,786
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,585,832
+Bitonic                          :     10,282,740
+AVX-512 Optimized                :     5,489,071
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,175,894
+Bitonic                          :     20,506,127
+AVX-512 Optimized                :     5,329,162
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,571,150
+Bitonic                          :     40,873,373
+AVX-512 Optimized                :     12,210,991
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,901,468
+Bitonic                          :     84,294,943
+AVX-512 Optimized                :     27,020,982
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     148,499,873
+Bitonic                          :     156,006,119
+AVX-512 Optimized                :     76,078,101
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     314,154,594
+Bitonic                          :     330,310,762
+AVX-512 Optimized                :     195,853,913
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     348,249,783
+Bitonic                          :     389,949,595
+AVX-512 Optimized                :     221,938,612
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     463,898,372
+Bitonic                          :     558,686,061
+AVX-512 Optimized                :     217,101,713
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,368,702
+Bitonic                          :     10,128,246
+AVX-512 Optimized                :     4,387,958
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,399,576
+Bitonic                          :     20,681,263
+AVX-512 Optimized                :     5,331,896
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,038,182
+Bitonic                          :     41,216,584
+AVX-512 Optimized                :     11,109,534
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     80,805,780
+Bitonic                          :     85,162,490
+AVX-512 Optimized                :     31,492,449
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     149,845,071
+Bitonic                          :     157,829,119
+AVX-512 Optimized                :     71,121,350
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     316,790,816
+Bitonic                          :     331,290,460
+AVX-512 Optimized                :     195,247,453
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     353,175,191
+Bitonic                          :     393,222,527
+AVX-512 Optimized                :     220,641,474
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     466,086,079
+Bitonic                          :     547,915,161
+AVX-512 Optimized                :     217,001,289
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,437,166
+Bitonic                          :     10,180,459
+AVX-512 Optimized                :     4,013,733
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,421,582
+Bitonic                          :     20,767,727
+AVX-512 Optimized                :     5,694,732
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,093,877
+Bitonic                          :     41,524,057
+AVX-512 Optimized                :     11,664,679
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     80,801,141
+Bitonic                          :     85,566,563
+AVX-512 Optimized                :     27,017,683
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,185,989
+Bitonic                          :     158,317,721
+AVX-512 Optimized                :     70,121,216
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     315,600,194
+Bitonic                          :     334,169,496
+AVX-512 Optimized                :     201,479,540
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     352,743,216
+Bitonic                          :     394,536,517
+AVX-512 Optimized                :     221,329,903
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     461,876,578
+Bitonic                          :     564,621,232
+AVX-512 Optimized                :     217,648,305
+
+
+
+Running with sizes:
+A Length:4194304
+B Length:4194304
+C Length:8388608
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,501,260
+Bitonic                          :     10,356,779
+AVX-512 Optimized                :     4,332,799
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,516,102
+Bitonic                          :     20,753,444
+AVX-512 Optimized                :     5,609,589
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     39,141,673
+Bitonic                          :     41,540,677
+AVX-512 Optimized                :     12,552,478
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     80,973,522
+Bitonic                          :     85,689,932
+AVX-512 Optimized                :     28,811,192
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     150,218,049
+Bitonic                          :     158,571,734
+AVX-512 Optimized                :     71,576,380
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,990,456
+Bitonic                          :     334,687,632
+AVX-512 Optimized                :     201,528,009
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     351,341,302
+Bitonic                          :     394,275,668
+AVX-512 Optimized                :     222,209,134
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     462,337,841
+Bitonic                          :     563,490,904
+AVX-512 Optimized                :     218,732,108
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,238,234
+Bitonic                          :     9,925,638
+AVX-512 Optimized                :     6,979,426
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,052,069
+Bitonic                          :     20,298,937
+AVX-512 Optimized                :     7,392,319
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,972,113
+Bitonic                          :     40,444,666
+AVX-512 Optimized                :     10,251,701
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     78,764,398
+Bitonic                          :     84,047,871
+AVX-512 Optimized                :     22,183,576
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     147,048,516
+Bitonic                          :     154,021,200
+AVX-512 Optimized                :     48,940,730
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     316,693,868
+Bitonic                          :     334,995,140
+AVX-512 Optimized                :     123,683,945
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     352,040,863
+Bitonic                          :     398,301,622
+AVX-512 Optimized                :     208,663,822
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     474,240,434
+Bitonic                          :     596,587,969
+AVX-512 Optimized                :     213,444,948
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,505,126
+Bitonic                          :     9,342,473
+AVX-512 Optimized                :     6,484,993
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,947,062
+Bitonic                          :     19,346,486
+AVX-512 Optimized                :     5,480,674
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,554,470
+Bitonic                          :     39,145,135
+AVX-512 Optimized                :     10,090,884
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     76,117,519
+Bitonic                          :     81,195,329
+AVX-512 Optimized                :     20,348,131
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     142,171,429
+Bitonic                          :     150,857,944
+AVX-512 Optimized                :     47,620,066
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     306,484,077
+Bitonic                          :     325,803,848
+AVX-512 Optimized                :     125,563,850
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     345,032,773
+Bitonic                          :     395,214,567
+AVX-512 Optimized                :     208,687,337
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     463,549,999
+Bitonic                          :     590,539,981
+AVX-512 Optimized                :     210,872,375
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,324,778
+Bitonic                          :     9,876,125
+AVX-512 Optimized                :     5,794,832
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,941,293
+Bitonic                          :     20,337,646
+AVX-512 Optimized                :     5,554,733
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,898,593
+Bitonic                          :     40,388,489
+AVX-512 Optimized                :     9,326,007
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     78,825,454
+Bitonic                          :     83,718,196
+AVX-512 Optimized                :     20,233,892
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,861,924
+Bitonic                          :     146,840,165
+AVX-512 Optimized                :     47,993,567
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     315,818,324
+Bitonic                          :     334,894,700
+AVX-512 Optimized                :     125,373,470
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     351,348,319
+Bitonic                          :     400,448,110
+AVX-512 Optimized                :     207,082,617
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     474,537,856
+Bitonic                          :     596,886,534
+AVX-512 Optimized                :     213,858,809
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,395,956
+Bitonic                          :     9,630,129
+AVX-512 Optimized                :     5,419,913
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,900,354
+Bitonic                          :     19,331,483
+AVX-512 Optimized                :     5,754,806
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,580,291
+Bitonic                          :     38,337,141
+AVX-512 Optimized                :     9,222,405
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     73,697,436
+Bitonic                          :     79,161,354
+AVX-512 Optimized                :     23,451,057
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     137,676,122
+Bitonic                          :     147,062,960
+AVX-512 Optimized                :     48,998,424
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     294,750,541
+Bitonic                          :     316,777,982
+AVX-512 Optimized                :     127,537,832
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     328,584,842
+Bitonic                          :     384,841,998
+AVX-512 Optimized                :     210,546,809
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     436,292,496
+Bitonic                          :     578,885,513
+AVX-512 Optimized                :     214,158,852
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,312,488
+Bitonic                          :     9,670,968
+AVX-512 Optimized                :     7,002,358
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,277,486
+Bitonic                          :     19,674,275
+AVX-512 Optimized                :     6,208,464
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,503,158
+Bitonic                          :     39,137,842
+AVX-512 Optimized                :     10,215,962
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,078,252
+Bitonic                          :     80,650,838
+AVX-512 Optimized                :     20,608,473
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     138,976,105
+Bitonic                          :     148,246,468
+AVX-512 Optimized                :     48,711,644
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     298,926,293
+Bitonic                          :     318,171,618
+AVX-512 Optimized                :     127,231,139
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,947,297
+Bitonic                          :     387,205,239
+AVX-512 Optimized                :     210,143,774
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     434,192,710
+Bitonic                          :     576,854,453
+AVX-512 Optimized                :     211,459,793
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,278,310
+Bitonic                          :     9,491,877
+AVX-512 Optimized                :     5,124,201
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,352,263
+Bitonic                          :     19,710,514
+AVX-512 Optimized                :     5,204,639
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,622,672
+Bitonic                          :     39,185,091
+AVX-512 Optimized                :     10,199,932
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     76,016,463
+Bitonic                          :     81,423,818
+AVX-512 Optimized                :     19,158,571
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     141,526,071
+Bitonic                          :     150,064,603
+AVX-512 Optimized                :     47,512,580
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     302,990,971
+Bitonic                          :     323,884,400
+AVX-512 Optimized                :     126,245,060
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     335,114,790
+Bitonic                          :     389,433,820
+AVX-512 Optimized                :     206,865,895
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     440,379,897
+Bitonic                          :     581,833,956
+AVX-512 Optimized                :     213,084,294
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,308,387
+Bitonic                          :     9,762,936
+AVX-512 Optimized                :     5,177,666
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,664,785
+Bitonic                          :     19,937,109
+AVX-512 Optimized                :     4,876,245
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,214,890
+Bitonic                          :     39,695,777
+AVX-512 Optimized                :     9,441,845
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,314,356
+Bitonic                          :     82,105,954
+AVX-512 Optimized                :     20,516,763
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,326,306
+Bitonic                          :     152,144,030
+AVX-512 Optimized                :     47,563,770
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     176,557,910
+Bitonic                          :     218,180,743
+AVX-512 Optimized                :     101,838,751
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     279,033,987
+Bitonic                          :     324,649,458
+AVX-512 Optimized                :     174,236,557
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     456,536,721
+Bitonic                          :     585,713,107
+AVX-512 Optimized                :     214,287,980
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,280,639
+Bitonic                          :     9,765,761
+AVX-512 Optimized                :     5,958,649
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,992,416
+Bitonic                          :     20,292,680
+AVX-512 Optimized                :     5,432,167
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,871,384
+Bitonic                          :     40,175,219
+AVX-512 Optimized                :     10,046,952
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     78,731,176
+Bitonic                          :     83,593,086
+AVX-512 Optimized                :     19,256,116
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,374,974
+Bitonic                          :     154,285,955
+AVX-512 Optimized                :     48,786,583
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     315,758,804
+Bitonic                          :     333,702,011
+AVX-512 Optimized                :     124,722,827
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     351,908,824
+Bitonic                          :     397,525,346
+AVX-512 Optimized                :     208,604,439
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     468,088,924
+Bitonic                          :     593,088,329
+AVX-512 Optimized                :     210,618,019
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,398,137
+Bitonic                          :     10,081,825
+AVX-512 Optimized                :     5,747,100
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,081,496
+Bitonic                          :     20,442,772
+AVX-512 Optimized                :     10,200,336
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,059,109
+Bitonic                          :     40,492,189
+AVX-512 Optimized                :     9,592,791
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,153,518
+Bitonic                          :     84,101,310
+AVX-512 Optimized                :     20,727,378
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,968,972
+Bitonic                          :     155,126,391
+AVX-512 Optimized                :     48,218,444
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,671,768
+Bitonic                          :     335,706,318
+AVX-512 Optimized                :     127,521,423
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     353,145,060
+Bitonic                          :     395,605,613
+AVX-512 Optimized                :     210,546,809
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     471,918,720
+Bitonic                          :     597,393,259
+AVX-512 Optimized                :     209,841,100
+
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,373,344
+Bitonic                          :     10,058,662
+AVX-512 Optimized                :     6,980,940
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     19,131,345
+Bitonic                          :     20,467,632
+AVX-512 Optimized                :     5,287,579
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     38,135,507
+Bitonic                          :     40,539,077
+AVX-512 Optimized                :     9,428,972
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     79,192,356
+Bitonic                          :     84,443,337
+AVX-512 Optimized                :     19,595,224
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     146,901,780
+Bitonic                          :     155,022,843
+AVX-512 Optimized                :     47,646,603
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,323,665
+Bitonic                          :     336,776,347
+AVX-512 Optimized                :     126,923,170
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     352,633,620
+Bitonic                          :     399,522,768
+AVX-512 Optimized                :     209,103,439
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     471,918,720
+Bitonic                          :     596,542,451
+AVX-512 Optimized                :     213,760,713
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     9,063,217
+Bitonic                          :     9,746,684
+AVX-512 Optimized                :     7,262,210
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,576,212
+Bitonic                          :     19,900,643
+AVX-512 Optimized                :     6,272,300
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,214,969
+Bitonic                          :     39,757,610
+AVX-512 Optimized                :     9,312,377
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     76,943,993
+Bitonic                          :     81,864,434
+AVX-512 Optimized                :     16,279,739
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,752,934
+Bitonic                          :     152,718,730
+AVX-512 Optimized                :     35,534,412
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     309,365,515
+Bitonic                          :     327,152,689
+AVX-512 Optimized                :     85,574,420
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     352,321,998
+Bitonic                          :     404,728,594
+AVX-512 Optimized                :     167,245,379
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     478,399,533
+Bitonic                          :     602,436,019
+AVX-512 Optimized                :     202,796,153
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,417,587
+Bitonic                          :     9,446,378
+AVX-512 Optimized                :     7,166,672
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,933,196
+Bitonic                          :     19,332,486
+AVX-512 Optimized                :     6,691,292
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,958,431
+Bitonic                          :     38,590,452
+AVX-512 Optimized                :     7,787,254
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     74,160,144
+Bitonic                          :     79,613,053
+AVX-512 Optimized                :     16,986,953
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     139,290,124
+Bitonic                          :     148,595,202
+AVX-512 Optimized                :     34,827,330
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     300,158,652
+Bitonic                          :     317,864,771
+AVX-512 Optimized                :     82,975,404
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     342,347,014
+Bitonic                          :     395,955,098
+AVX-512 Optimized                :     167,455,717
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     450,280,713
+Bitonic                          :     599,763,432
+AVX-512 Optimized                :     202,088,826
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,211,759
+Bitonic                          :     9,176,765
+AVX-512 Optimized                :     7,333,502
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,315,904
+Bitonic                          :     18,770,406
+AVX-512 Optimized                :     5,484,132
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,826,107
+Bitonic                          :     37,595,543
+AVX-512 Optimized                :     10,675,704
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     71,976,630
+Bitonic                          :     77,613,883
+AVX-512 Optimized                :     16,379,457
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     136,960,261
+Bitonic                          :     146,159,569
+AVX-512 Optimized                :     35,046,647
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     296,907,642
+Bitonic                          :     317,065,589
+AVX-512 Optimized                :     82,826,514
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     337,362,438
+Bitonic                          :     397,635,415
+AVX-512 Optimized                :     168,526,294
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     447,595,612
+Bitonic                          :     593,170,820
+AVX-512 Optimized                :     200,066,938
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,172,068
+Bitonic                          :     9,527,182
+AVX-512 Optimized                :     5,828,874
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,069,500
+Bitonic                          :     19,458,566
+AVX-512 Optimized                :     10,285,630
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,537,122
+Bitonic                          :     38,278,843
+AVX-512 Optimized                :     9,165,658
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     71,834,894
+Bitonic                          :     77,391,734
+AVX-512 Optimized                :     17,330,519
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     135,635,426
+Bitonic                          :     145,196,322
+AVX-512 Optimized                :     35,888,403
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     290,365,983
+Bitonic                          :     309,799,989
+AVX-512 Optimized                :     81,434,466
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     325,961,558
+Bitonic                          :     390,648,821
+AVX-512 Optimized                :     165,592,802
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     445,212,592
+Bitonic                          :     590,309,623
+AVX-512 Optimized                :     199,089,958
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,097,021
+Bitonic                          :     9,324,371
+AVX-512 Optimized                :     5,932,462
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,862,827
+Bitonic                          :     19,287,147
+AVX-512 Optimized                :     6,618,049
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,533,246
+Bitonic                          :     38,265,136
+AVX-512 Optimized                :     8,254,503
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     73,185,279
+Bitonic                          :     78,808,063
+AVX-512 Optimized                :     16,106,902
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     136,724,222
+Bitonic                          :     146,326,578
+AVX-512 Optimized                :     35,008,506
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     290,416,314
+Bitonic                          :     310,358,831
+AVX-512 Optimized                :     85,637,582
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     328,965,025
+Bitonic                          :     390,668,340
+AVX-512 Optimized                :     167,219,546
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     435,032,884
+Bitonic                          :     585,213,828
+AVX-512 Optimized                :     202,407,079
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,311,493
+Bitonic                          :     9,573,544
+AVX-512 Optimized                :     6,077,676
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,851,890
+Bitonic                          :     19,197,086
+AVX-512 Optimized                :     7,311,372
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,939,909
+Bitonic                          :     38,597,596
+AVX-512 Optimized                :     8,088,198
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     74,082,538
+Bitonic                          :     79,311,558
+AVX-512 Optimized                :     16,887,321
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     139,242,166
+Bitonic                          :     148,390,114
+AVX-512 Optimized                :     35,068,802
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     297,362,458
+Bitonic                          :     316,485,202
+AVX-512 Optimized                :     83,040,519
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     336,324,047
+Bitonic                          :     395,689,033
+AVX-512 Optimized                :     165,986,137
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     444,569,884
+Bitonic                          :     589,335,690
+AVX-512 Optimized                :     203,085,864
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,226,421
+Bitonic                          :     9,524,251
+AVX-512 Optimized                :     6,370,851
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,044,704
+Bitonic                          :     19,407,179
+AVX-512 Optimized                :     7,927,137
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,245,280
+Bitonic                          :     38,581,565
+AVX-512 Optimized                :     7,737,270
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     74,505,119
+Bitonic                          :     79,815,643
+AVX-512 Optimized                :     15,860,511
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     140,402,768
+Bitonic                          :     148,721,607
+AVX-512 Optimized                :     34,652,678
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     299,342,108
+Bitonic                          :     317,705,473
+AVX-512 Optimized                :     83,161,375
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     338,516,332
+Bitonic                          :     397,117,050
+AVX-512 Optimized                :     167,589,519
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     448,468,501
+Bitonic                          :     590,153,677
+AVX-512 Optimized                :     203,166,779
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,200,895
+Bitonic                          :     9,631,193
+AVX-512 Optimized                :     6,069,300
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,491,477
+Bitonic                          :     19,818,234
+AVX-512 Optimized                :     5,692,536
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,210,305
+Bitonic                          :     39,588,793
+AVX-512 Optimized                :     9,485,968
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     76,442,523
+Bitonic                          :     81,458,410
+AVX-512 Optimized                :     17,406,170
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     143,314,133
+Bitonic                          :     151,952,986
+AVX-512 Optimized                :     35,132,507
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     306,727,214
+Bitonic                          :     325,348,178
+AVX-512 Optimized                :     82,355,891
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     349,071,222
+Bitonic                          :     402,490,050
+AVX-512 Optimized                :     166,703,569
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     464,454,101
+Bitonic                          :     601,830,618
+AVX-512 Optimized                :     202,455,996
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,186,840
+Bitonic                          :     9,724,665
+AVX-512 Optimized                :     6,173,803
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,608,732
+Bitonic                          :     19,904,029
+AVX-512 Optimized                :     5,607,118
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,399,010
+Bitonic                          :     39,852,482
+AVX-512 Optimized                :     9,113,232
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,101,180
+Bitonic                          :     82,054,015
+AVX-512 Optimized                :     15,881,432
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,775,270
+Bitonic                          :     152,981,849
+AVX-512 Optimized                :     35,937,404
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     310,922,441
+Bitonic                          :     327,637,837
+AVX-512 Optimized                :     84,113,575
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     351,189,630
+Bitonic                          :     402,475,086
+AVX-512 Optimized                :     168,627,054
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     466,630,045
+Bitonic                          :     604,018,370
+AVX-512 Optimized                :     165,728,715
+
+
+
+Running with sizes:
+A Length:16777216
+B Length:16777216
+C Length:33554432
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,167,238
+Bitonic                          :     9,712,640
+AVX-512 Optimized                :     6,929,847
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,587,551
+Bitonic                          :     19,990,703
+AVX-512 Optimized                :     6,169,071
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     37,360,708
+Bitonic                          :     39,980,775
+AVX-512 Optimized                :     8,708,264
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     77,136,635
+Bitonic                          :     82,242,698
+AVX-512 Optimized                :     15,906,870
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     144,705,456
+Bitonic                          :     153,468,966
+AVX-512 Optimized                :     34,800,031
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     308,861,747
+Bitonic                          :     327,936,341
+AVX-512 Optimized                :     83,977,208
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     349,904,375
+Bitonic                          :     405,002,297
+AVX-512 Optimized                :     168,421,422
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     468,187,026
+Bitonic                          :     606,726,482
+AVX-512 Optimized                :     202,938,271
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     8,736,581
+Bitonic                          :     9,376,812
+AVX-512 Optimized                :     6,700,093
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,141,217
+Bitonic                          :     19,572,170
+AVX-512 Optimized                :     13,373,425
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,280,982
+Bitonic                          :     38,923,951
+AVX-512 Optimized                :     8,745,004
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,431,276
+Bitonic                          :     80,598,762
+AVX-512 Optimized                :     14,596,277
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     140,937,972
+Bitonic                          :     149,740,086
+AVX-512 Optimized                :     29,333,592
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     303,456,778
+Bitonic                          :     322,064,066
+AVX-512 Optimized                :     61,359,979
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     346,378,730
+Bitonic                          :     399,714,532
+AVX-512 Optimized                :     123,472,674
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     475,466,897
+Bitonic                          :     627,853,702
+AVX-512 Optimized                :     177,622,596
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,286,403
+Bitonic                          :     9,114,219
+AVX-512 Optimized                :     7,151,935
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,259,382
+Bitonic                          :     18,687,629
+AVX-512 Optimized                :     8,460,386
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,128,083
+Bitonic                          :     37,797,202
+AVX-512 Optimized                :     9,178,352
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,755,563
+Bitonic                          :     78,232,890
+AVX-512 Optimized                :     13,441,502
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     136,940,671
+Bitonic                          :     145,726,583
+AVX-512 Optimized                :     28,373,166
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     292,260,560
+Bitonic                          :     312,869,212
+AVX-512 Optimized                :     61,747,334
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,877,997
+Bitonic                          :     395,938,946
+AVX-512 Optimized                :     125,321,167
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     462,863,954
+Bitonic                          :     618,834,414
+AVX-512 Optimized                :     177,604,776
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,066,099
+Bitonic                          :     9,172,497
+AVX-512 Optimized                :     6,359,838
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,035,062
+Bitonic                          :     18,499,307
+AVX-512 Optimized                :     9,811,137
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,064,757
+Bitonic                          :     36,846,986
+AVX-512 Optimized                :     9,557,286
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,678,918
+Bitonic                          :     76,332,341
+AVX-512 Optimized                :     14,123,888
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     133,865,630
+Bitonic                          :     143,272,844
+AVX-512 Optimized                :     29,461,661
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     291,324,060
+Bitonic                          :     311,449,154
+AVX-512 Optimized                :     62,544,838
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     335,691,904
+Bitonic                          :     381,460,815
+AVX-512 Optimized                :     125,420,005
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     458,494,013
+Bitonic                          :     615,462,439
+AVX-512 Optimized                :     177,231,490
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,076,671
+Bitonic                          :     9,218,297
+AVX-512 Optimized                :     6,426,956
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,062,375
+Bitonic                          :     18,558,610
+AVX-512 Optimized                :     11,273,404
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,075,532
+Bitonic                          :     36,878,409
+AVX-512 Optimized                :     9,500,514
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,326,671
+Bitonic                          :     76,069,568
+AVX-512 Optimized                :     14,007,189
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     132,113,204
+Bitonic                          :     142,014,052
+AVX-512 Optimized                :     28,829,975
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     284,419,859
+Bitonic                          :     305,433,153
+AVX-512 Optimized                :     62,973,526
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,264,610
+Bitonic                          :     387,466,947
+AVX-512 Optimized                :     125,602,679
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     441,082,411
+Bitonic                          :     605,085,701
+AVX-512 Optimized                :     177,675,742
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,024,697
+Bitonic                          :     9,168,718
+AVX-512 Optimized                :     6,059,025
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,345,636
+Bitonic                          :     18,819,640
+AVX-512 Optimized                :     11,045,062
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,382,377
+Bitonic                          :     37,001,511
+AVX-512 Optimized                :     7,741,563
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,960,751
+Bitonic                          :     76,602,606
+AVX-512 Optimized                :     13,465,503
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     133,287,705
+Bitonic                          :     142,607,356
+AVX-512 Optimized                :     27,850,114
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     282,847,067
+Bitonic                          :     305,569,431
+AVX-512 Optimized                :     63,484,529
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     323,255,787
+Bitonic                          :     388,728,195
+AVX-512 Optimized                :     122,653,461
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     436,378,398
+Bitonic                          :     602,890,225
+AVX-512 Optimized                :     177,669,685
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,033,092
+Bitonic                          :     9,226,384
+AVX-512 Optimized                :     6,347,363
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,529,710
+Bitonic                          :     18,975,451
+AVX-512 Optimized                :     7,127,725
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,037,717
+Bitonic                          :     37,734,573
+AVX-512 Optimized                :     9,917,658
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,328,056
+Bitonic                          :     77,929,546
+AVX-512 Optimized                :     13,640,458
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     135,766,270
+Bitonic                          :     144,891,901
+AVX-512 Optimized                :     28,639,752
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     288,883,687
+Bitonic                          :     309,970,229
+AVX-512 Optimized                :     60,076,331
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     328,395,080
+Bitonic                          :     392,472,471
+AVX-512 Optimized                :     127,326,102
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     444,904,367
+Bitonic                          :     609,077,855
+AVX-512 Optimized                :     178,361,963
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,022,155
+Bitonic                          :     9,123,910
+AVX-512 Optimized                :     6,991,795
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,606,227
+Bitonic                          :     18,971,111
+AVX-512 Optimized                :     7,147,474
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,144,272
+Bitonic                          :     37,711,353
+AVX-512 Optimized                :     11,589,784
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,902,884
+Bitonic                          :     78,175,463
+AVX-512 Optimized                :     13,675,959
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     136,825,310
+Bitonic                          :     145,537,007
+AVX-512 Optimized                :     28,505,529
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     292,626,382
+Bitonic                          :     313,528,220
+AVX-512 Optimized                :     62,824,425
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,075,671
+Bitonic                          :     391,961,466
+AVX-512 Optimized                :     124,589,946
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     445,956,764
+Bitonic                          :     611,257,645
+AVX-512 Optimized                :     178,044,034
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,090,372
+Bitonic                          :     9,391,421
+AVX-512 Optimized                :     6,809,593
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,053,091
+Bitonic                          :     19,401,518
+AVX-512 Optimized                :     8,335,341
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,000,641
+Bitonic                          :     38,525,337
+AVX-512 Optimized                :     9,455,842
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     74,801,281
+Bitonic                          :     79,603,777
+AVX-512 Optimized                :     14,698,399
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     140,043,851
+Bitonic                          :     148,146,128
+AVX-512 Optimized                :     28,498,271
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     301,224,457
+Bitonic                          :     319,119,239
+AVX-512 Optimized                :     61,502,712
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     342,102,356
+Bitonic                          :     395,829,257
+AVX-512 Optimized                :     123,295,707
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     473,384,633
+Bitonic                          :     622,191,273
+AVX-512 Optimized                :     178,993,273
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,056,148
+Bitonic                          :     9,522,980
+AVX-512 Optimized                :     6,404,393
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,207,373
+Bitonic                          :     19,577,166
+AVX-512 Optimized                :     11,384,932
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,293,384
+Bitonic                          :     38,894,848
+AVX-512 Optimized                :     9,400,361
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,473,508
+Bitonic                          :     80,457,880
+AVX-512 Optimized                :     13,858,793
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     141,337,394
+Bitonic                          :     149,316,624
+AVX-512 Optimized                :     28,217,004
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     304,757,868
+Bitonic                          :     321,899,060
+AVX-512 Optimized                :     60,650,763
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     344,130,466
+Bitonic                          :     399,838,312
+AVX-512 Optimized                :     124,476,445
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     470,229,216
+Bitonic                          :     628,330,226
+AVX-512 Optimized                :     176,836,880
+
+
+
+Running with sizes:
+A Length:33554432
+B Length:33554432
+C Length:67108864
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,033,715
+Bitonic                          :     9,419,107
+AVX-512 Optimized                :     6,199,054
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     18,263,538
+Bitonic                          :     19,644,399
+AVX-512 Optimized                :     7,467,028
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     36,443,570
+Bitonic                          :     38,966,262
+AVX-512 Optimized                :     10,176,075
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     75,826,753
+Bitonic                          :     80,714,785
+AVX-512 Optimized                :     15,069,048
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     141,138,604
+Bitonic                          :     149,769,487
+AVX-512 Optimized                :     28,971,451
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     303,474,773
+Bitonic                          :     323,500,246
+AVX-512 Optimized                :     63,214,463
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     346,289,667
+Bitonic                          :     400,621,376
+AVX-512 Optimized                :     124,979,953
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     469,348,684
+Bitonic                          :     626,343,424
+AVX-512 Optimized                :     176,018,670
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     8,696,743
+Bitonic                          :     9,527,931
+AVX-512 Optimized                :     5,723,359
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,761,002
+Bitonic                          :     19,157,833
+AVX-512 Optimized                :     11,330,809
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,753,580
+Bitonic                          :     38,326,516
+AVX-512 Optimized                :     8,841,249
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     73,561,333
+Bitonic                          :     78,614,435
+AVX-512 Optimized                :     14,604,871
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     138,613,445
+Bitonic                          :     147,333,652
+AVX-512 Optimized                :     24,128,595
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     296,866,933
+Bitonic                          :     315,084,399
+AVX-512 Optimized                :     51,780,473
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     341,888,982
+Bitonic                          :     398,449,344
+AVX-512 Optimized                :     95,179,829
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     465,447,152
+Bitonic                          :     621,749,417
+AVX-512 Optimized                :     151,469,153
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,110,083
+Bitonic                          :     9,089,035
+AVX-512 Optimized                :     6,431,215
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,882,136
+Bitonic                          :     18,320,183
+AVX-512 Optimized                :     11,011,667
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,447,138
+Bitonic                          :     37,225,290
+AVX-512 Optimized                :     12,354,405
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     71,058,401
+Bitonic                          :     76,559,081
+AVX-512 Optimized                :     14,766,594
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     134,255,850
+Bitonic                          :     143,634,561
+AVX-512 Optimized                :     24,912,756
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     287,147,137
+Bitonic                          :     307,307,389
+AVX-512 Optimized                :     49,900,836
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,525,054
+Bitonic                          :     393,394,819
+AVX-512 Optimized                :     94,595,678
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     451,989,293
+Bitonic                          :     612,022,532
+AVX-512 Optimized                :     151,208,771
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,902,009
+Bitonic                          :     9,143,065
+AVX-512 Optimized                :     5,971,997
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,949,805
+Bitonic                          :     18,409,054
+AVX-512 Optimized                :     11,675,640
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,031,544
+Bitonic                          :     36,796,315
+AVX-512 Optimized                :     9,955,350
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     69,193,883
+Bitonic                          :     74,848,959
+AVX-512 Optimized                :     13,761,158
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     132,001,435
+Bitonic                          :     141,525,253
+AVX-512 Optimized                :     24,187,531
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     286,885,639
+Bitonic                          :     306,177,366
+AVX-512 Optimized                :     51,530,203
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     331,998,509
+Bitonic                          :     392,997,703
+AVX-512 Optimized                :     95,960,824
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     447,617,677
+Bitonic                          :     609,911,954
+AVX-512 Optimized                :     150,169,803
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,881,588
+Bitonic                          :     9,069,932
+AVX-512 Optimized                :     6,314,830
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,673,517
+Bitonic                          :     18,171,619
+AVX-512 Optimized                :     7,830,238
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,454,345
+Bitonic                          :     36,294,875
+AVX-512 Optimized                :     11,231,985
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     68,751,401
+Bitonic                          :     74,441,415
+AVX-512 Optimized                :     13,036,418
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     130,349,753
+Bitonic                          :     139,882,387
+AVX-512 Optimized                :     25,097,201
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     278,668,092
+Bitonic                          :     299,104,494
+AVX-512 Optimized                :     50,493,589
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     319,853,929
+Bitonic                          :     385,583,480
+AVX-512 Optimized                :     93,397,837
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     437,228,419
+Bitonic                          :     604,341,937
+AVX-512 Optimized                :     151,106,937
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,939,378
+Bitonic                          :     9,343,121
+AVX-512 Optimized                :     6,268,189
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,156,601
+Bitonic                          :     18,632,857
+AVX-512 Optimized                :     8,050,833
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,751,371
+Bitonic                          :     36,666,472
+AVX-512 Optimized                :     8,584,021
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     69,189,597
+Bitonic                          :     74,935,710
+AVX-512 Optimized                :     13,080,791
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     130,846,962
+Bitonic                          :     140,584,391
+AVX-512 Optimized                :     24,727,257
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     277,477,907
+Bitonic                          :     300,431,931
+AVX-512 Optimized                :     49,996,754
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     319,090,479
+Bitonic                          :     386,811,478
+AVX-512 Optimized                :     96,040,617
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     430,197,467
+Bitonic                          :     601,175,069
+AVX-512 Optimized                :     150,869,669
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,922,444
+Bitonic                          :     9,205,906
+AVX-512 Optimized                :     6,349,664
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,141,056
+Bitonic                          :     18,594,433
+AVX-512 Optimized                :     8,010,019
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,425,351
+Bitonic                          :     37,189,067
+AVX-512 Optimized                :     11,595,677
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,642,430
+Bitonic                          :     76,248,112
+AVX-512 Optimized                :     12,990,678
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     133,482,766
+Bitonic                          :     142,817,047
+AVX-512 Optimized                :     24,291,069
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     283,474,892
+Bitonic                          :     303,917,949
+AVX-512 Optimized                :     49,690,962
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,299,168
+Bitonic                          :     387,538,432
+AVX-512 Optimized                :     97,019,989
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     433,216,044
+Bitonic                          :     601,116,011
+AVX-512 Optimized                :     151,612,542
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,936,165
+Bitonic                          :     9,035,113
+AVX-512 Optimized                :     6,550,517
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,173,826
+Bitonic                          :     18,578,671
+AVX-512 Optimized                :     8,118,961
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,523,097
+Bitonic                          :     37,270,403
+AVX-512 Optimized                :     18,728,921
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,926,483
+Bitonic                          :     76,497,306
+AVX-512 Optimized                :     13,430,400
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     133,903,075
+Bitonic                          :     143,562,987
+AVX-512 Optimized                :     24,600,181
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     286,433,280
+Bitonic                          :     306,316,977
+AVX-512 Optimized                :     50,495,587
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     328,638,744
+Bitonic                          :     389,359,749
+AVX-512 Optimized                :     97,755,004
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     438,376,502
+Bitonic                          :     602,962,548
+AVX-512 Optimized                :     150,509,465
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,868,383
+Bitonic                          :     9,140,632
+AVX-512 Optimized                :     6,284,029
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,439,430
+Bitonic                          :     18,788,896
+AVX-512 Optimized                :     7,941,997
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,048,360
+Bitonic                          :     37,532,103
+AVX-512 Optimized                :     11,107,710
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,034,939
+Bitonic                          :     77,217,565
+AVX-512 Optimized                :     13,061,505
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     136,349,819
+Bitonic                          :     144,865,018
+AVX-512 Optimized                :     24,927,437
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     291,654,143
+Bitonic                          :     309,390,848
+AVX-512 Optimized                :     49,628,419
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     335,530,040
+Bitonic                          :     393,696,349
+AVX-512 Optimized                :     97,491,433
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     453,441,186
+Bitonic                          :     610,063,974
+AVX-512 Optimized                :     152,545,088
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,913,135
+Bitonic                          :     9,438,310
+AVX-512 Optimized                :     6,437,729
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,747,843
+Bitonic                          :     19,060,989
+AVX-512 Optimized                :     7,758,212
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,592,286
+Bitonic                          :     38,221,321
+AVX-512 Optimized                :     14,041,799
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,273,187
+Bitonic                          :     78,395,819
+AVX-512 Optimized                :     13,401,341
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     138,614,878
+Bitonic                          :     146,805,242
+AVX-512 Optimized                :     23,879,409
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     296,895,115
+Bitonic                          :     314,188,784
+AVX-512 Optimized                :     50,532,333
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     342,891,467
+Bitonic                          :     398,625,965
+AVX-512 Optimized                :     94,662,120
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     469,627,854
+Bitonic                          :     620,473,424
+AVX-512 Optimized                :     151,202,110
+
+
+
+Running with sizes:
+A Length:67108864
+B Length:67108864
+C Length:134217728
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,956,374
+Bitonic                          :     9,465,621
+AVX-512 Optimized                :     6,056,323
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,794,171
+Bitonic                          :     19,203,454
+AVX-512 Optimized                :     11,620,514
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     35,825,854
+Bitonic                          :     38,420,769
+AVX-512 Optimized                :     11,891,620
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     73,574,524
+Bitonic                          :     78,993,423
+AVX-512 Optimized                :     16,107,678
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     139,291,882
+Bitonic                          :     147,814,087
+AVX-512 Optimized                :     24,546,458
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     297,552,795
+Bitonic                          :     315,548,715
+AVX-512 Optimized                :     48,450,988
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     280,492,691
+Bitonic                          :     398,817,718
+AVX-512 Optimized                :     96,915,181
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     471,174,176
+Bitonic                          :     622,401,082
+AVX-512 Optimized                :     151,548,014
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     8,506,640
+Bitonic                          :     9,216,128
+AVX-512 Optimized                :     5,531,411
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,463,021
+Bitonic                          :     18,811,758
+AVX-512 Optimized                :     11,379,428
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,720,650
+Bitonic                          :     37,415,209
+AVX-512 Optimized                :     11,771,185
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,043,563
+Bitonic                          :     77,545,118
+AVX-512 Optimized                :     18,243,535
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     135,341,263
+Bitonic                          :     144,406,700
+AVX-512 Optimized                :     23,580,976
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     291,800,785
+Bitonic                          :     310,601,474
+AVX-512 Optimized                :     44,455,742
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,263,249
+Bitonic                          :     392,549,920
+AVX-512 Optimized                :     78,106,945
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     459,569,552
+Bitonic                          :     622,271,396
+AVX-512 Optimized                :     132,497,704
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     5,010,754
+Bitonic                          :     8,994,087
+AVX-512 Optimized                :     5,499,558
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,843,687
+Bitonic                          :     18,306,177
+AVX-512 Optimized                :     9,387,557
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,764,667
+Bitonic                          :     36,462,582
+AVX-512 Optimized                :     12,900,049
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     69,707,546
+Bitonic                          :     75,286,183
+AVX-512 Optimized                :     14,640,961
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     131,452,244
+Bitonic                          :     140,815,429
+AVX-512 Optimized                :     23,460,940
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     282,527,958
+Bitonic                          :     302,152,966
+AVX-512 Optimized                :     44,156,610
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     325,134,341
+Bitonic                          :     388,405,816
+AVX-512 Optimized                :     78,334,517
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     442,161,579
+Bitonic                          :     610,413,576
+AVX-512 Optimized                :     134,970,243
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:7
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,855,678
+Bitonic                          :     8,831,522
+AVX-512 Optimized                :     5,515,003
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,314,907
+Bitonic                          :     17,814,649
+AVX-512 Optimized                :     11,250,646
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     32,664,321
+Bitonic                          :     35,507,556
+AVX-512 Optimized                :     14,311,687
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     67,715,030
+Bitonic                          :     73,550,896
+AVX-512 Optimized                :     13,824,899
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     128,547,123
+Bitonic                          :     138,527,029
+AVX-512 Optimized                :     22,923,822
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     280,881,894
+Bitonic                          :     301,417,109
+AVX-512 Optimized                :     44,446,516
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     321,511,153
+Bitonic                          :     385,891,533
+AVX-512 Optimized                :     81,677,795
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     434,277,285
+Bitonic                          :     607,296,570
+AVX-512 Optimized                :     131,063,556
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:10
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,769,370
+Bitonic                          :     8,927,835
+AVX-512 Optimized                :     5,617,048
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,795,602
+Bitonic                          :     18,266,233
+AVX-512 Optimized                :     11,740,703
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     32,885,894
+Bitonic                          :     34,008,341
+AVX-512 Optimized                :     19,878,569
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     67,768,639
+Bitonic                          :     73,553,370
+AVX-512 Optimized                :     14,372,572
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     127,380,943
+Bitonic                          :     137,005,726
+AVX-512 Optimized                :     23,542,333
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     273,280,191
+Bitonic                          :     294,551,209
+AVX-512 Optimized                :     43,862,885
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     317,735,688
+Bitonic                          :     381,536,694
+AVX-512 Optimized                :     80,128,124
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     430,098,043
+Bitonic                          :     601,774,648
+AVX-512 Optimized                :     131,088,704
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:13
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,758,945
+Bitonic                          :     8,816,573
+AVX-512 Optimized                :     5,651,847
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,566,671
+Bitonic                          :     18,051,373
+AVX-512 Optimized                :     11,262,378
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     32,957,890
+Bitonic                          :     35,803,544
+AVX-512 Optimized                :     11,349,684
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     67,897,201
+Bitonic                          :     73,670,918
+AVX-512 Optimized                :     14,381,349
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     127,645,698
+Bitonic                          :     137,418,421
+AVX-512 Optimized                :     23,468,309
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     273,308,584
+Bitonic                          :     294,799,007
+AVX-512 Optimized                :     44,010,285
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     312,724,087
+Bitonic                          :     380,126,562
+AVX-512 Optimized                :     77,688,126
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     417,678,770
+Bitonic                          :     593,563,276
+AVX-512 Optimized                :     130,503,471
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:16
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,757,801
+Bitonic                          :     8,854,157
+AVX-512 Optimized                :     5,657,907
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,794,463
+Bitonic                          :     18,269,302
+AVX-512 Optimized                :     7,959,985
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,493,541
+Bitonic                          :     36,317,178
+AVX-512 Optimized                :     14,287,888
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     69,003,577
+Bitonic                          :     74,766,276
+AVX-512 Optimized                :     13,908,069
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     129,575,617
+Bitonic                          :     139,197,666
+AVX-512 Optimized                :     23,589,803
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     277,662,188
+Bitonic                          :     298,686,724
+AVX-512 Optimized                :     43,231,222
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     315,362,312
+Bitonic                          :     380,087,680
+AVX-512 Optimized                :     77,790,712
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     420,916,830
+Bitonic                          :     599,440,600
+AVX-512 Optimized                :     130,958,490
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:19
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,806,842
+Bitonic                          :     8,929,436
+AVX-512 Optimized                :     5,481,722
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,831,379
+Bitonic                          :     17,870,543
+AVX-512 Optimized                :     9,697,379
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,665,667
+Bitonic                          :     36,477,348
+AVX-512 Optimized                :     14,460,435
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     69,646,720
+Bitonic                          :     75,038,207
+AVX-512 Optimized                :     14,443,952
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     131,157,682
+Bitonic                          :     140,562,365
+AVX-512 Optimized                :     23,047,193
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     281,447,324
+Bitonic                          :     301,943,257
+AVX-512 Optimized                :     45,358,829
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     320,989,507
+Bitonic                          :     384,404,066
+AVX-512 Optimized                :     77,897,762
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     432,827,006
+Bitonic                          :     606,356,923
+AVX-512 Optimized                :     130,713,677
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:22
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,757,408
+Bitonic                          :     8,842,288
+AVX-512 Optimized                :     5,417,756
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,955,686
+Bitonic                          :     18,360,859
+AVX-512 Optimized                :     9,063,024
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     33,900,114
+Bitonic                          :     36,618,089
+AVX-512 Optimized                :     13,457,636
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,040,695
+Bitonic                          :     75,591,604
+AVX-512 Optimized                :     14,649,925
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     131,949,503
+Bitonic                          :     140,757,247
+AVX-512 Optimized                :     23,432,473
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     283,478,246
+Bitonic                          :     302,894,542
+AVX-512 Optimized                :     43,778,180
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     324,457,201
+Bitonic                          :     386,390,403
+AVX-512 Optimized                :     78,208,897
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     442,227,227
+Bitonic                          :     608,724,844
+AVX-512 Optimized                :     130,695,287
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:25
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,749,242
+Bitonic                          :     9,093,623
+AVX-512 Optimized                :     5,593,772
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,380,804
+Bitonic                          :     18,788,969
+AVX-512 Optimized                :     7,779,546
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,735,966
+Bitonic                          :     37,207,821
+AVX-512 Optimized                :     20,482,106
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     71,759,103
+Bitonic                          :     77,185,819
+AVX-512 Optimized                :     13,163,456
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     134,999,308
+Bitonic                          :     143,487,443
+AVX-512 Optimized                :     23,391,944
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     290,586,310
+Bitonic                          :     308,971,255
+AVX-512 Optimized                :     44,772,867
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     332,514,742
+Bitonic                          :     390,115,110
+AVX-512 Optimized                :     77,904,796
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     459,007,480
+Bitonic                          :     618,929,665
+AVX-512 Optimized                :     131,255,294
+
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,832,954
+Bitonic                          :     9,144,351
+AVX-512 Optimized                :     5,513,269
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,468,224
+Bitonic                          :     18,902,128
+AVX-512 Optimized                :     11,469,717
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,810,504
+Bitonic                          :     37,575,599
+AVX-512 Optimized                :     14,880,979
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,278,184
+Bitonic                          :     77,667,622
+AVX-512 Optimized                :     14,745,067
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     135,723,849
+Bitonic                          :     144,443,919
+AVX-512 Optimized                :     23,340,561
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     292,551,335
+Bitonic                          :     311,112,657
+AVX-512 Optimized                :     44,770,103
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     334,695,492
+Bitonic                          :     391,736,583
+AVX-512 Optimized                :     79,376,218
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     461,613,925
+Bitonic                          :     623,054,459
+AVX-512 Optimized                :     130,516,405
+
+
+
+Running with sizes:
+A Length:268435456
+B Length:268435456
+C Length:536870912
+Entropy:1
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     8,277,837
+Bitonic                          :     8,927,214
+AVX-512 Optimized                :     4,826,700
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     17,068,157
+Bitonic                          :     18,451,373
+AVX-512 Optimized                :     6,432,663
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,115,139
+Bitonic                          :     36,840,695
+AVX-512 Optimized                :     17,488,573
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     70,385,715
+Bitonic                          :     75,611,757
+AVX-512 Optimized                :     17,399,669
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     133,303,533
+Bitonic                          :     142,329,740
+AVX-512 Optimized                :     24,543,799
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     284,318,337
+Bitonic                          :     303,363,527
+AVX-512 Optimized                :     44,845,178
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     329,175,175
+Bitonic                          :     392,137,367
+AVX-512 Optimized                :     69,302,727
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     447,126,788
+Bitonic                          :     607,992,631
+AVX-512 Optimized                :     112,243,668
+
+
+
+Running with sizes:
+A Length:268435456
+B Length:268435456
+C Length:536870912
+Entropy:4
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,890,580
+Bitonic                          :     8,803,951
+AVX-512 Optimized                :     4,900,143
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     16,242,728
+Bitonic                          :     17,709,974
+AVX-512 Optimized                :  

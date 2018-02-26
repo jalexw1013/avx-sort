@@ -1,0 +1,1 @@
+/tmp/slurmd/job834089/slurm_script: line 39: 132928 Segmentation fault      numactl --membind=1 ./merge -F
