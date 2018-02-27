@@ -1,0 +1,35 @@
+
+
+Running with sizes:
+A Length:8388608
+B Length:8388608
+C Length:16777216
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     98,988,217
+Bitonic                          :     120,841,015
+AVX-512 MP                       :     125,700,222
+
+Single Threaded Sort Algorithms  :  Elements Per Second
+Standard                         :     2,577,490
+Bitonic                          :     5,285,608
+AVX-512 Optimized                :     5,939,089
+IPP                              :     10,961,710
+IPP Radix                        :     28,583,289
+Quick Sort                       :     2,856,208
+
+Thread Count:64
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,202,479,977
+Bitonic                          :     6,967,202,393
+AVX-512 MP                       :     6,873,290,113
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     302,206,331
+Bitonic                          :     305,307,261
+AVX-512 Optimized                :     127,296,044
+

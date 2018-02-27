@@ -1,0 +1,66 @@
+
+
+Running with sizes:
+A Length:134217728
+B Length:134217728
+C Length:268435456
+Entropy:28
+Runs:1
+
+
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     4,788,901
+Bitonic                          :     9,178,530
+AVX-512 Optimized                :     5,667,587
+haichuanwang                     :     20,444,316
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     15,790,284
+Bitonic                          :     18,897,883
+AVX-512 Optimized                :     11,700,754
+haichuanwang                     :     41,092,440
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     34,884,391
+Bitonic                          :     37,365,711
+AVX-512 Optimized                :     6,349,153
+haichuanwang                     :     82,197,912
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     72,276,607
+Bitonic                          :     77,411,837
+AVX-512 Optimized                :     12,740,626
+haichuanwang                     :     163,879,221
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     124,238,862
+Bitonic                          :     144,263,597
+AVX-512 Optimized                :     24,033,907
+haichuanwang                     :     327,398,606
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     283,719,767
+Bitonic                          :     311,385,155
+AVX-512 Optimized                :     46,711,463
+haichuanwang                     :     645,881,455
+
+Thread Count:128
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     306,335,896
+Bitonic                          :     390,772,746
+AVX-512 Optimized                :     79,626,341
+haichuanwang                     :     974,945,236
+
+Thread Count:256
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     461,548,829
+Bitonic                          :     623,298,665
+AVX-512 Optimized                :     137,756,203
+haichuanwang                     :     1,036,145,845
+

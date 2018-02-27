@@ -7,8 +7,8 @@
 # job will be charged as if all 16 cores were requested.
 #-----------------------------------------------------------------
 
-#SBATCH -J merge                 # Job name
-#SBATCH -o merge.%j.out          # Specify stdout output file (%j expands to jobId)
+#SBATCH -J mergeThreads3                 # Job name
+#SBATCH -o mergeThreads3.%j.out          # Specify stdout output file (%j expands to jobId)
 #SBATCH -p flat-quadrant         # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 1                   # Total number of tasks
