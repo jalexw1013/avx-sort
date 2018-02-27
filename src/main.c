@@ -64,36 +64,6 @@
 #define INFINITY_VALUE 1073741824
 #define NEGATIVE_INFINITY_VALUE 0
 
-// Function Prototypes
-//////////////////////////////
-void hostParseArgs(
-    int argc, char** argv);
-void initArrays(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted);
-void insertData(
-    vec_t** A, uint32_t A_length,
-    vec_t** B, uint32_t B_length,
-    vec_t** C, uint32_t C_length,
-    vec_t** CSorted, uint32_t Ct_length,
-    vec_t** CUnsorted);
-
-
-void freeGlobalData();
-#ifdef MERGE
-void initMergeFilePointer(FILE** fp);
-void initParallelMergeFilePointer(FILE** fp);
-#endif
-#ifdef SORT
-void initSortFilePointer(FILE** fp);
-#endif
-#ifdef PARALLELSORT
-void initParallelSortFilePointer(FILE** fp);
-#endif
-
 
 // Global Host Variables
 ////////////////////////////
@@ -120,11 +90,11 @@ uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};//{1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
-uint32_t testingEntropiesLength = 1;//10;
-uint32_t testingSizes[] = {268435456};//{1073741824};//{1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
-uint32_t testingSizesLength = 1;//11;
-uint32_t testingThreads[] = {2, 4, 8, 16, 32, 64, 128, 256};
-uint32_t testingThreadsLength = 8;
+uint32_t testingEntropiesLength = 1;
+uint32_t testingSizes[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
+uint32_t testingSizesLength = 9;//11;
+uint32_t testingThreads[] = {64};//{2, 4, 8, 16, 32, 64, 128, 256};
+uint32_t testingThreadsLength = 1;
 // Host Functions
 ////////////////////////////
 
@@ -416,7 +386,7 @@ void testAlgo(const char* algoName, bool threadSpawn, bool isSigned, AlgoType al
     #endif
 
     // restore C to its former state
-    memcpy(CUnsorted, CCopy, (globalCLength) * sizeof(vec_t));
+    //memcpy(CUnsorted, CCopy, (globalCLength) * sizeof(vec_t));
     free(CCopy);
 
     free(ASplitters);
@@ -661,15 +631,15 @@ int main(int argc, char** argv)
             // testAlgo<avx512Merge>("AVX-512 MP", false, false, Merge);
             // printf("\n");
 
-            // // Single Threaded Sort Algorithms
-            // printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
-            // testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
-            // testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
-            // testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
-            // testAlgo<ippSort>("IPP", false, true, Sort);
-            // testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
-            // testAlgo<quickSort>("Quick Sort", false, false, Sort);
-            // printf("\n");
+            // Single Threaded Sort Algorithms
+            printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
+            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
+            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
+            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
+            testAlgo<ippSort>("IPP", false, true, Sort);
+            testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
+            testAlgo<quickSort>("Quick Sort", false, false, Sort);
+            printf("\n");
 
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);

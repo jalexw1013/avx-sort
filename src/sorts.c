@@ -666,7 +666,6 @@ inline uint32_t arraySum(uint32_t* array, uint32_t sumToIndex) {
 
 template <AlgoTemplate Sort, AlgoTemplate Merge>
 void parallelIterativeMergeSort(struct AlgoArgs *args) {
-    int earlyEnd = 1; // Set to zero if small sub array or error
     int numberOfSwaps = 0;
 
     vec_t* C = args->C;
@@ -676,7 +675,6 @@ void parallelIterativeMergeSort(struct AlgoArgs *args) {
 
     #pragma omp parallel
     {
-        if (earlyEnd) {
             uint32_t threadNum = omp_get_thread_num();
             uint32_t numberOfThreads = omp_get_num_threads();
             uint32_t* ASplitters = args->ASplitters + (numberOfThreads + 1) * threadNum;
@@ -823,7 +821,6 @@ void parallelIterativeMergeSort(struct AlgoArgs *args) {
                     numberOfSwaps++;
                 }
             }
-        }
     }
     //must return original array
     if (numberOfSwaps > 0 && numberOfSwaps%2 == 1) {
