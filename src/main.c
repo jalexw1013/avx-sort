@@ -91,10 +91,10 @@ uint32_t  OutToFile                    = 0; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};//{1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
-uint32_t testingSizesLength = 9;//11;
-uint32_t testingThreads[] = {64};//{2, 4, 8, 16, 32, 64, 128, 256};
-uint32_t testingThreadsLength = 1;
+uint32_t testingSizes[] = {1048576, 16777216, 134217728};//{1000000000};//{1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
+uint32_t testingSizesLength = 3;//9;//11;
+uint32_t testingThreads[] = {16, 64, 256};//{2, 4, 8, 16, 32, 64, 128, 256};
+uint32_t testingThreadsLength = 3;
 // Host Functions
 ////////////////////////////
 
@@ -460,6 +460,69 @@ void MergePathSplitter(
     }
 }
 
+void MergePathSplitterThread(
+    vec_t * A, uint32_t A_length,
+    vec_t * B, uint32_t B_length,
+    vec_t * C, uint32_t C_length,
+    uint32_t threads, uint32_t* ASplitters, uint32_t* BSplitters, uint32_t threadNumber)
+{
+    ASplitters[threads] = A_length;
+    BSplitters[threads] = B_length;
+
+    uint64_t minLength = (uint64_t)A_length > (uint64_t)B_length ? (uint64_t)B_length : (uint64_t)A_length;
+
+    for (uint32_t thread=threadNumber; thread<=threadNumber + 1 && thread < threads;thread++) {
+        uint64_t combinedIndex = (uint64_t)thread * ((uint64_t)minLength * (uint64_t)2) / (uint64_t)threads;
+        uint64_t x_top, y_top, x_bottom, current_x, current_y, offset, oldx, oldy;
+        x_top = combinedIndex > minLength ? minLength : combinedIndex;
+        y_top = combinedIndex > (minLength) ? combinedIndex - (minLength) : 0;
+        x_bottom = y_top;
+
+        oldx = -1;
+        oldy = -1;
+
+        vec_t Ai, Bi;
+        while(1) {
+            offset = (x_top - x_bottom) / 2;
+            if (x_top < x_bottom) {
+                offset = 0;
+            }
+            current_y = y_top + offset;
+            current_x = x_top - offset;
+
+            if (current_x == oldx || current_y == oldy) {
+                return;
+            }
+
+            oldx = current_x;
+            oldy = current_y;
+
+            if(current_x > A_length - 1 || current_y < 1) {
+                Ai = 1;Bi = 0;
+            } else {
+                Ai = A[current_x];Bi = B[current_y - 1];
+            }
+            if(Ai > Bi) {
+                if(current_y > B_length - 1 || current_x < 1) {
+                    Ai = 0;Bi = 1;
+                } else {
+                    Ai = A[current_x - 1];Bi = B[current_y];
+                }
+
+                if(Ai <= Bi) {//Found it
+                    ASplitters[thread]   = current_x;
+                    BSplitters[thread] = current_y;
+                    break;
+                } else {//Both zeros
+                    x_top = current_x - 1;y_top = current_y + 1;
+                }
+            } else {// Both ones
+                x_bottom = current_x + 1;
+            }
+        }
+    }
+}
+
 void hostParseArgs(int argc, char** argv) {
     if(errno) {
         printf("Error0 %d\n", errno);
@@ -624,7 +687,7 @@ int main(int argc, char** argv)
 
             omp_set_num_threads(1);
             ippSetNumThreads(1);
-            // // Single Threaded Merge Algorithms
+            // Single Threaded Merge Algorithms
             // printf("Single Threaded Merge Algorithms :  Elements Per Second\n");
             // testAlgo<serialMerge>("Standard", false, false, Merge);
             // testAlgo<bitonicMergeReal>("Bitonic", false, false, Merge);
@@ -632,20 +695,20 @@ int main(int argc, char** argv)
             // printf("\n");
 
             // Single Threaded Sort Algorithms
-            printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
-            testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
-            testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
-            testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
-            testAlgo<ippSort>("IPP", false, true, Sort);
-            testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
-            testAlgo<quickSort>("Quick Sort", false, false, Sort);
-            printf("\n");
+            // printf("Single Threaded Sort Algorithms  :  Elements Per Second\n");
+            // testAlgo<iterativeMergeSort<serialMerge>>("Standard", false, false, Sort);
+            // testAlgo<iterativeMergeSort<bitonicMergeReal>>("Bitonic", false, false, Sort);
+            // testAlgo<avx512SortNoMergePathV2<avx512Merge>>("AVX-512 Optimized", false, false, Sort);
+            // testAlgo<ippSort>("IPP", false, true, Sort);
+            // testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
+            // testAlgo<quickSort>("Quick Sort", false, false, Sort);
+            // printf("\n");
 
             for (uint32_t j = 0; j < testingThreadsLength; j++) {
                 omp_set_num_threads(testingThreads[j]);
                 ippSetNumThreads(testingThreads[j]);
 
-                // // Parallel Merge Algorithms
+                // Parallel Merge Algorithms
                 // printf("Thread Count:%u\n", testingThreads[j]);
                 // printf("Parallel Merge Algorithms        :  Elements Per Second\n");
                 // testAlgo<parallelMerge<serialMerge>>("Standard", false, false, ParallelMerge);
@@ -656,9 +719,12 @@ int main(int argc, char** argv)
                 // Parallel Sort Algorithms
                 printf("Thread Count:%u\n", testingThreads[j]);
                 printf("Parallel Sort Algorithms         :  Elements Per Second\n");
-                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
-                testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
-                testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false, ParallelSort);
+                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
+                // testAlgo<parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 OLD", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>, serialMerge>>("Standard", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>, bitonicMergeReal>>("Bitonic", false, false, ParallelSort);
+                testAlgo<parallelIterativeMergeSortPower2<avx512SortNoMergePathV2<avx512Merge>, avx512Merge>>("AVX-512 Optimized", false, false, ParallelSort);
                 // testAlgo<ippRadixSort>("IPP Radix", false, false, Sort);
                 // testAlgo<tbbSort>("TBB", false, false, ParallelSort);
                 testAlgo<haichuanwangSort>("haichuanwang", false, false, ParallelSort);

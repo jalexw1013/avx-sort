@@ -72,4 +72,7 @@ void iterativeMergeSort(struct AlgoArgs *args);
 template <AlgoTemplate Sort, AlgoTemplate Merge>
 void parallelIterativeMergeSort(struct AlgoArgs *args);
 
+template <AlgoTemplate Sort, AlgoTemplate Merge>
+void parallelIterativeMergeSortPower2(struct AlgoArgs *args);
+
 #endif

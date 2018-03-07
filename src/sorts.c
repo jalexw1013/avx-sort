@@ -290,10 +290,13 @@ void parallelMerge(struct AlgoArgs *args)
     vec_t* array = args->CUnsorted;
     uint32_t array_length = args->C_length;
 
-    #pragma omp parallel
+    // #pragma omp parallel
+    // {
+    #pragma omp parallel for
+    for(int t=0; t< omp_get_num_threads(); t++)
     {
         uint32_t numThreads = omp_get_num_threads();
-        uint32_t threadNum = omp_get_thread_num();
+        uint32_t threadNum = t;//omp_get_thread_num();
         uint32_t* ASplitters = args->ASplitters + (numThreads + 1) * threadNum;
         uint32_t* BSplitters = args->BSplitters + (numThreads + 1) * threadNum;
         MergePathSplitter(A, A_length, B, B_length, C,
@@ -831,6 +834,90 @@ void parallelIterativeMergeSort(struct AlgoArgs *args) {
     }
 }
 
+template <AlgoTemplate Sort, AlgoTemplate Merge>
+void parallelIterativeMergeSortPower2(struct AlgoArgs *args) {
+    int numberOfSwaps = 0;
+    vec_t* C = args->C;
+    uint32_t C_length = args->C_length;
+    vec_t* array = args->CUnsorted;
+    uint32_t array_length = args->C_length;
+    #pragma omp parallel
+    {
+        uint32_t threadNum = omp_get_thread_num();
+        uint32_t numberOfThreads = omp_get_num_threads();
+
+        // Initialize each threads memory
+        uint32_t* ASplitters = args->ASplitters + (numberOfThreads + 1) * threadNum;
+        uint32_t* BSplitters = args->BSplitters + (numberOfThreads + 1) * threadNum;
+
+        uint32_t subArraySize = array_length / numberOfThreads;
+
+        struct AlgoArgs mergeArgs;
+        mergeArgs.C = C + subArraySize*threadNum;
+        mergeArgs.C_length = subArraySize;
+        mergeArgs.CUnsorted = array + subArraySize*threadNum;
+
+        // Each thread does its own sort
+        Sort(&mergeArgs);
+
+        uint32_t numberOfSubArrays = numberOfThreads;
+
+        #pragma omp barrier
+        // Begin merging
+        while (subArraySize < array_length) {
+            uint32_t numPerMergeThreads = numberOfThreads/(numberOfSubArrays/2);
+            uint32_t mergeGroupNumber = threadNum/numPerMergeThreads;
+
+            MergePathSplitterThread(
+                array + subArraySize*mergeGroupNumber*2, subArraySize,
+                array + subArraySize*mergeGroupNumber*2 + subArraySize, subArraySize,
+                C + subArraySize*mergeGroupNumber*2, subArraySize*2,
+                numPerMergeThreads,
+                ASplitters, BSplitters, threadNum%numPerMergeThreads);
+
+            uint32_t A_start = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads];
+            uint32_t A_end = subArraySize*mergeGroupNumber*2 + ASplitters[threadNum%numPerMergeThreads + 1];
+            uint32_t A_length = A_end - A_start;
+            uint32_t B_start = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads];
+            uint32_t B_end = subArraySize*mergeGroupNumber*2 + subArraySize + BSplitters[threadNum%numPerMergeThreads + 1];
+            uint32_t B_length = B_end - B_start;
+            uint32_t C_start = ASplitters[threadNum%numPerMergeThreads] + BSplitters[threadNum%numPerMergeThreads] + subArraySize*mergeGroupNumber*2;
+            uint32_t C_length = A_length + B_length;
+
+            struct AlgoArgs mergeArgs;
+            mergeArgs.A = array + A_start;
+            mergeArgs.A_length = A_length;
+            mergeArgs.B = array + B_start;
+            mergeArgs.B_length = B_length;
+            mergeArgs.C = C + C_start;
+            mergeArgs.C_length = A_length + B_length;
+
+            Merge(&mergeArgs);
+
+            numberOfSubArrays /= 2;
+            subArraySize *= 2;
+
+            //swap pointers
+            #pragma omp barrier
+            #pragma omp single
+            {
+                vec_t* tmp = array;
+                array = C;
+                C = tmp;
+                numberOfSwaps++;
+            }
+        }
+    }
+
+    //must return original array
+    if (numberOfSwaps > 0 && numberOfSwaps%2 == 1) {
+        memcpy((void*)C,(void*)array, (array_length+32)*sizeof(vec_t));
+        vec_t* tmp = array;
+        array = C;
+        C = tmp;
+    }
+}
+
 /*
  * Template Instantiations
  */
@@ -847,3 +934,6 @@ template void parallelMerge<avx512Merge>(struct AlgoArgs *args);
 template void parallelIterativeMergeSort<iterativeMergeSort<serialMerge>,serialMerge>(struct AlgoArgs *args);
 template void parallelIterativeMergeSort<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(struct AlgoArgs *args);
 template void parallelIterativeMergeSort<avx512SortNoMergePathV2<avx512Merge>,avx512Merge>(struct AlgoArgs *args);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<serialMerge>,serialMerge>(struct AlgoArgs *args);
+template void parallelIterativeMergeSortPower2<iterativeMergeSort<bitonicMergeReal>,bitonicMergeReal>(struct AlgoArgs *args);
+template void parallelIterativeMergeSortPower2<avx512SortNoMergePathV2<avx512Merge>,avx512Merge>(struct AlgoArgs *args);
