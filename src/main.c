@@ -91,8 +91,8 @@ uint32_t  OutToFile                    = 0; // 1 if output to file
 
 uint32_t testingEntropies[] = {28};//{1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
 uint32_t testingEntropiesLength = 1;
-uint32_t testingSizes[] = {1048576, 16777216, 134217728};//{1000000000};//{1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
-uint32_t testingSizesLength = 3;//9;//11;
+uint32_t testingSizes[] = {16777216};//{1048576, 16777216, 134217728};//{1000000000};//{1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824};
+uint32_t testingSizesLength = 1;//9;//11;
 uint32_t testingThreads[] = {16, 64, 256};//{2, 4, 8, 16, 32, 64, 128, 256};
 uint32_t testingThreadsLength = 3;
 // Host Functions
