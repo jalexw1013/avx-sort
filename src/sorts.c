@@ -75,7 +75,6 @@ inline void serialMerge(struct AlgoArgs *args) {
     uint32_t Cindex = 0;
 
     while(Aindex < A_length && Bindex < B_length) {
-        //printf("10\n");
         C[Cindex++] = A[Aindex] < B[Bindex] ? A[Aindex++] : B[Bindex++];
     }
     while(Aindex < A_length) C[Cindex++] = A[Aindex++];
@@ -708,7 +707,8 @@ void avx512SortNoMergePathV3(struct AlgoArgs *args) {
         // Merge Using 512 bit vectors
         uint32_t numberOfExtraElementsMain = array_length%(32 * sortedArraySize);
         uint32_t maxValueMain = array_length - numberOfExtraElementsMain;
-        for (uint32_t index = 0; index < maxValueMain; index += 32 * sortedArraySize) {
+        uint32_t index;
+        for (index = 0; index < maxValueMain; index += 32 * sortedArraySize) {
             vindexAInner512 = vindexA512;
             vindexBInner512 = vindexB512;
             vindexCInner512 = vindexA512;
@@ -859,6 +859,17 @@ void avx512SortNoMergePathV3(struct AlgoArgs *args) {
         }
 
         // TODO now merge the rest
+        numberOfExtraElementsMain = array_length%(2 * sortedArraySize);
+        maxValueMain = array_length - numberOfExtraElementsMain;
+        for (; index < maxValueMain; index += 2 * sortedArraySize) {
+            uint32_t Aindex=0,Bindex=0,Cindex=0;
+            while(Aindex < sortedArraySize && Bindex < sortedArraySize) {
+                //printf("10\n");
+                (C + index)[Cindex++] = (array + index)[Aindex] < (array + index + sortedArraySize)[Bindex] ? (array + index)[Aindex++] : (array + index + sortedArraySize)[Bindex++];
+            }
+            while(Aindex < sortedArraySize) (C + index)[Cindex++] = (array + index)[Aindex++];
+            while(Bindex < sortedArraySize) (C + index)[Cindex++] = (array + index + sortedArraySize)[Bindex++];
+        }
 
 
         // Pointer Swap
