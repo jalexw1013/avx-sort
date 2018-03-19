@@ -7,9 +7,9 @@
 # job will be charged as if all 16 cores were requested.
 #-----------------------------------------------------------------
 
-#SBATCH -J mergeThreads3                 # Job name
-#SBATCH -o mergeThreads3.%j.out          # Specify stdout output file (%j expands to jobId)
-#SBATCH -p flat-quadrant         # Queue name
+#SBATCH -J merge                 # Job name
+#SBATCH -o merge.%j.out          # Specify stdout output file (%j expands to jobId)
+#SBATCH -p skx-normal         # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 1                   # Total number of tasks
 #SBATCH -t 8:00:00              # Run time (hh:mm:ss) - 8 hours
@@ -36,4 +36,4 @@
 #./merge -A 128 -B 128
 #./merge -A 200 -B 200
 #./merge -A 500 -B 500
-numactl --membind=1 ./merge -F
+./merge -F
