@@ -1,0 +1,112 @@
+
+
+Running with sizes:
+A Length:500
+B Length:500
+C Length:1000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     709,216
+Bitonic                          :     1,175,204
+AVX-512-BA                       :     19,691,568
+
+
+
+Running with sizes:
+A Length:5000
+B Length:5000
+C Length:10000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     207,638,811
+Bitonic                          :     710,898,983
+AVX-512-BA                       :     335,544,320
+
+
+
+Running with sizes:
+A Length:50000
+B Length:50000
+C Length:100000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     847,334,141
+Bitonic                          :     4,369,066,666
+AVX-512-BA                       :     4,559,026,086
+
+
+
+Running with sizes:
+A Length:500000
+B Length:500000
+C Length:1000000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     1,533,566,361
+Bitonic                          :     5,915,802,538
+AVX-512-BA                       :     11,618,570,637
+
+
+
+Running with sizes:
+A Length:5000000
+B Length:5000000
+C Length:10000000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     4,200,184,257
+Bitonic                          :     8,969,854,576
+AVX-512-BA                       :     7,918,263,167
+
+
+
+Running with sizes:
+A Length:50000000
+B Length:50000000
+C Length:100000000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     5,955,956,945
+Bitonic                          :     9,688,851,928
+AVX-512-BA                       :     6,771,012,995
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:28
+Runs:1
+
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Traditional                      :     6,521,410,724
+Bitonic                          :     8,416,297,619
+AVX-512-BA                       :     5,633,583,069
+
