@@ -1,0 +1,147 @@
+
+
+Running with sizes:
+A Length:500
+B Length:500
+C Length:1000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     3,048,186
+Bitonic                          :     349,525,333
+AVX-512 MP                       :     3,533,533
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     117,097
+Bitonic                          :     66,576,253
+AVX-512 MP                       :     1,572,077
+
+
+
+Running with sizes:
+A Length:5000
+B Length:5000
+C Length:10000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     182,361,043
+Bitonic                          :     590,747,042
+AVX-512 MP                       :     710,898,983
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     155,922,081
+Bitonic                          :     505,337,831
+AVX-512 MP                       :     227,951,304
+
+
+
+Running with sizes:
+A Length:50000
+B Length:50000
+C Length:100000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     183,157,379
+Bitonic                          :     602,629,885
+AVX-512 MP                       :     689,852,631
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     1,997,287,619
+Bitonic                          :     4,559,026,086
+AVX-512 MP                       :     4,152,776,237
+
+
+
+Running with sizes:
+A Length:500000
+B Length:500000
+C Length:1000000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     285,307,394
+Bitonic                          :     678,909,679
+AVX-512 MP                       :     651,087,239
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     5,526,092,226
+Bitonic                          :     13,189,635,220
+AVX-512 MP                       :     15,592,208,178
+
+
+
+Running with sizes:
+A Length:5000000
+B Length:5000000
+C Length:10000000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     325,796,489
+Bitonic                          :     844,383,065
+AVX-512 MP                       :     432,996,170
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     7,396,057,132
+Bitonic                          :     9,960,351,460
+AVX-512 MP                       :     8,952,623,265
+
+
+
+Running with sizes:
+A Length:50000000
+B Length:50000000
+C Length:100000000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     320,786,351
+Bitonic                          :     830,703,293
+AVX-512 MP                       :     337,317,259
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,338,391,791
+Bitonic                          :     7,618,388,883
+AVX-512 MP                       :     5,345,922,659
+
+
+
+Running with sizes:
+A Length:500000000
+B Length:500000000
+C Length:1000000000
+Entropy:28
+Runs:1
+
+
+Single Threaded Merge Algorithms :  Elements Per Second
+Standard                         :     320,235,475
+Bitonic                          :     806,784,810
+AVX-512 MP                       :     364,690,533
+
+Thread Count:32
+Parallel Merge Algorithms        :  Elements Per Second
+Standard                         :     6,368,215,282
+Bitonic                          :     7,395,079,120
+AVX-512 MP                       :     5,311,491,187
+
