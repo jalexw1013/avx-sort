@@ -1,0 +1,57 @@
+
+
+Running with sizes:
+A Length:524288
+B Length:524288
+C Length:1048576
+Entropy:28
+Runs:1
+
+
+Single Threaded Sort Algorithms  :  Elements Per Second
+Standard                         :     11,211,469
+Bitonic                          :     17,796,921
+AVX-512 Optimized                :     22,370,645
+Quick Sort                       :     9,277,306
+Thread Count:2
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     24,191,941
+Bitonic                          :     34,035,865
+AVX-512 OLD                      :     42,591,966
+haichuanwang                     :     104,439,374
+
+Thread Count:4
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     50,793,381
+Bitonic                          :     70,030,357
+AVX-512 OLD                      :     88,078,956
+haichuanwang                     :     223,523,404
+
+Thread Count:8
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     91,179,569
+Bitonic                          :     122,269,850
+AVX-512 OLD                      :     158,757,048
+haichuanwang                     :     344,135,094
+
+Thread Count:16
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     153,098,009
+Bitonic                          :     184,450,868
+AVX-512 OLD                      :     287,510,394
+haichuanwang                     :     493,663,319
+
+Thread Count:32
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     173,863,318
+Bitonic                          :     262,272,437
+AVX-512 OLD                      :     332,354,455
+haichuanwang                     :     529,056,479
+
+Thread Count:64
+Parallel Sort Algorithms         :  Elements Per Second
+Standard                         :     206,986,375
+Bitonic                          :     229,603,054
+AVX-512 OLD                      :     308,591,531
+haichuanwang                     :     48,547,310
+
