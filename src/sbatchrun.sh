@@ -7,12 +7,12 @@
 # job will be charged as if all 16 cores were requested.
 #-----------------------------------------------------------------
 
-#SBATCH -J mergeByThreads                 # Job name
-#SBATCH -o mergeByThreads.%j.out          # Specify stdout output file (%j expands to jobId)
+#SBATCH -J sortByEntropy                 # Job name
+#SBATCH -o sortByEntropy.%j.out          # Specify stdout output file (%j expands to jobId)
 #SBATCH -p skx-normal         # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 1                   # Total number of tasks
-#SBATCH -t 8:00:00              # Run time (hh:mm:ss) - 8 hours
+#SBATCH -t 0:20:00              # Run time (hh:mm:ss) - 8 hours
 #SBATCH --mail-user=jwatkins45@gatech.edu
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
