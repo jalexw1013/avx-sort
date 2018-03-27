@@ -7,8 +7,8 @@
 # job will be charged as if all 16 cores were requested.
 #-----------------------------------------------------------------
 
-#SBATCH -J sortByThreads                 # Job name
-#SBATCH -o sortByThreads.%j.out          # Specify stdout output file (%j expands to jobId)
+#SBATCH -J parallelMergeRun2                 # Job name
+#SBATCH -o parallelMergeRun2.%j.out          # Specify stdout output file (%j expands to jobId)
 #SBATCH -p skx-normal         # Queue name
 #SBATCH -N 1                     # Total number of nodes requested (16 cores/node)
 #SBATCH -n 1                   # Total number of tasks
