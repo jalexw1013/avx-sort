@@ -89,12 +89,12 @@ uint32_t  RUNS                         = 1;
 uint32_t  entropy                      = 28;
 uint32_t  OutToFile                    = 0; // 1 if output to file
 
-uint32_t testingEntropies[] = {28};//{4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
-uint32_t testingEntropiesLength = 1;
+uint32_t testingEntropies[] = {4, 7, 10, 13, 16, 19, 22, 25, 28, 31};
+uint32_t testingEntropiesLength = 10;
 uint32_t testingSizes[] = {1000000000};//{1000,10000,100000,1000000,10000000,100000000,1000000000};//{1024, 16384, 262144, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728};//, 268435456, 536870912, 1073741824};
 uint32_t testingSizesLength = 1;
-uint32_t testingThreads[] = {2,4,8,16,32,64};//{2, 4, 8, 16, 32, 64, 128, 256};
-uint32_t testingThreadsLength = 6;
+uint32_t testingThreads[] = {32};//{2,4,8,16,32,64};//{2, 4, 8, 16, 32, 64, 128, 256};
+uint32_t testingThreadsLength = 1;
 // Host Functions
 ////////////////////////////
 
